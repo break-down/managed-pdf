@@ -181,22 +181,17 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// <summary>
         /// Get regex instance for the given regex string.
         /// </summary>
-        /// <param name="key">the regex string to use</param>
+        /// <param name="regex">the regex string to use</param>
         /// <returns>the regex instance</returns>
-        private static Regex GetRegex(string key)
+        private static Regex GetRegex(string regex)
         {
-            lock (_regexes)
+            if (!_regexes.TryGetValue(regex, out var r))
             {
-                if (_regexes.TryGetValue(key, out var regex))
-                {
-                    return regex;
-                }
-
-                regex = new Regex(key, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-                _regexes[key] = regex;
-
-                return regex;
+                r = new Regex(regex, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                _regexes[regex] = r;
             }
+
+            return r;
         }
     }
 }

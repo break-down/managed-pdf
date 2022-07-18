@@ -113,13 +113,10 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
 
         public void Read(OpenTypeFontface fontData)
         {
-            lock (this)
-            {
-                Tag = fontData.ReadTag();
-                CheckSum = fontData.ReadULong();
-                Offset = fontData.ReadLong();
-                Length = (int)fontData.ReadULong();
-            }
+            Tag = fontData.ReadTag();
+            CheckSum = fontData.ReadULong();
+            Offset = fontData.ReadLong();
+            Length = (int)fontData.ReadULong();
         }
 
         public void Write(OpenTypeFontWriter writer)
@@ -127,13 +124,10 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
             Debug.Assert(Tag.Length == 4);
             Debug.Assert(Offset != 0);
             Debug.Assert(Length != 0);
-            lock (writer)
-            {
-                writer.WriteTag(Tag);
-                writer.WriteUInt(CheckSum);
-                writer.WriteInt(Offset);
-                writer.WriteUInt((uint)Length);
-            }
+            writer.WriteTag(Tag);
+            writer.WriteUInt(CheckSum);
+            writer.WriteInt(Offset);
+            writer.WriteUInt((uint)Length);
         }
     }
 }
