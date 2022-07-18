@@ -11,6 +11,7 @@
 // "The Art of War"
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -415,9 +416,9 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// </summary>
         /// <param name="blockSource">the raw css block to parse</param>
         /// <returns>dictionary with parsed css block properties</returns>
-        private Dictionary<string, string> ParseCssBlockProperties(string blockSource)
+        private ConcurrentDictionary<string, string> ParseCssBlockProperties(string blockSource)
         {
-            var properties = new Dictionary<string, string>();
+            var properties = new ConcurrentDictionary<string, string>();
             var startIdx = 0;
             while (startIdx < blockSource.Length)
             {
@@ -469,7 +470,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// <param name="propName">the name of the css property to add</param>
         /// <param name="propValue">the value of the css property to add</param>
         /// <param name="properties">the properties collection to add to</param>
-        private void AddProperty(string propName, string propValue, Dictionary<string, string> properties)
+        private void AddProperty(string propName, string propValue, ConcurrentDictionary<string, string> properties)
         {
             // remove !important css crap
             propValue = propValue.Replace("!important", string.Empty).Trim();
@@ -551,7 +552,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// <param name="propName">the name of the css property to add</param>
         /// <param name="propValue">the value of the css property to add</param>
         /// <param name="properties">the properties collection to add to</param>
-        private static void ParseLengthProperty(string propName, string propValue, Dictionary<string, string> properties)
+        private static void ParseLengthProperty(string propName, string propValue, ConcurrentDictionary<string, string> properties)
         {
             if (CssValueParser.IsValidLength(propValue) || propValue.Equals(CssConstants.Auto, StringComparison.OrdinalIgnoreCase))
             {
@@ -565,7 +566,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// <param name="propName">the name of the css property to add</param>
         /// <param name="propValue">the value of the css property to add</param>
         /// <param name="properties">the properties collection to add to</param>
-        private void ParseColorProperty(string propName, string propValue, Dictionary<string, string> properties)
+        private void ParseColorProperty(string propName, string propValue, ConcurrentDictionary<string, string> properties)
         {
             if (_valueParser.IsColorValid(propValue))
             {
@@ -578,7 +579,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// </summary>
         /// <param name="propValue">the value of the property to parse to specific values</param>
         /// <param name="properties">the properties collection to add the specific properties to</param>
-        private void ParseFontProperty(string propValue, Dictionary<string, string> properties)
+        private void ParseFontProperty(string propValue, ConcurrentDictionary<string, string> properties)
         {
             var mustBe = RegexParserUtils.Search(RegexParserUtils.CssFontSizeAndLineHeight, propValue, out var mustBePos);
 
@@ -726,7 +727,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// <param name="propValue">the value of the property to parse to specific values</param>
         /// <param name="direction">the left, top, right or bottom direction of the border to parse</param>
         /// <param name="properties">the properties collection to add the specific properties to</param>
-        private void ParseBorderProperty(string propValue, string direction, Dictionary<string, string> properties)
+        private void ParseBorderProperty(string propValue, string direction, ConcurrentDictionary<string, string> properties)
         {
             ParseBorder(propValue, out var borderWidth, out var borderStyle, out var borderColor);
 
@@ -771,7 +772,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// </summary>
         /// <param name="propValue">the value of the property to parse to specific values</param>
         /// <param name="properties">the properties collection to add the specific properties to</param>
-        private static void ParseMarginProperty(string propValue, Dictionary<string, string> properties)
+        private static void ParseMarginProperty(string propValue, ConcurrentDictionary<string, string> properties)
         {
             SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
 
@@ -801,7 +802,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// </summary>
         /// <param name="propValue">the value of the property to parse to specific values</param>
         /// <param name="properties">the properties collection to add the specific properties to</param>
-        private static void ParseBorderStyleProperty(string propValue, Dictionary<string, string> properties)
+        private static void ParseBorderStyleProperty(string propValue, ConcurrentDictionary<string, string> properties)
         {
             SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
 
@@ -831,7 +832,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// </summary>
         /// <param name="propValue">the value of the property to parse to specific values</param>
         /// <param name="properties">the properties collection to add the specific properties to</param>
-        private static void ParseBorderWidthProperty(string propValue, Dictionary<string, string> properties)
+        private static void ParseBorderWidthProperty(string propValue, ConcurrentDictionary<string, string> properties)
         {
             SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
 
@@ -861,7 +862,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// </summary>
         /// <param name="propValue">the value of the property to parse to specific values</param>
         /// <param name="properties">the properties collection to add the specific properties to</param>
-        private static void ParseBorderColorProperty(string propValue, Dictionary<string, string> properties)
+        private static void ParseBorderColorProperty(string propValue, ConcurrentDictionary<string, string> properties)
         {
             SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
 
@@ -891,7 +892,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// </summary>
         /// <param name="propValue">the value of the property to parse to specific values</param>
         /// <param name="properties">the properties collection to add the specific properties to</param>
-        private static void ParsePaddingProperty(string propValue, Dictionary<string, string> properties)
+        private static void ParsePaddingProperty(string propValue, ConcurrentDictionary<string, string> properties)
         {
             SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
 

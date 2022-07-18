@@ -47,7 +47,7 @@ using WpfTypeface = System.Windows.Media.Typeface;
 using WpfGlyphTypeface = System.Windows.Media.GlyphTypeface;
 #endif
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -175,7 +175,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
         /// <summary>
         /// The dictionary of all font tables.
         /// </summary>
-        internal Dictionary<string, TableDirectoryEntry> TableDictionary = new Dictionary<string, TableDirectoryEntry>();
+        internal ConcurrentDictionary<string, TableDirectoryEntry> TableDictionary = new ConcurrentDictionary<string, TableDirectoryEntry>();
 
         // Keep names identical to OpenType spec.
         // ReSharper disable InconsistentNaming
@@ -226,10 +226,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
 
             if (fontTable._fontData == null)
             {
-                lock (fontTable)
-                {
-                    fontTable._fontData = this;
-                }
+                fontTable._fontData = this;
             }
             else
             {
@@ -242,10 +239,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
             //Debug.Assert(fontTable.FontData == null);
             //fontTable.fontData = this;
 
-            lock (TableDictionary)
-            {
-                TableDictionary[fontTable.DirectoryEntry.Tag] = fontTable.DirectoryEntry;
-            }
+            TableDictionary[fontTable.DirectoryEntry.Tag] = fontTable.DirectoryEntry;
 
             switch (fontTable.DirectoryEntry.Tag)
             {
@@ -357,10 +351,8 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
                 for (var idx = 0; idx < _offsetTable.TableCount; idx++)
                 {
                     var entry = TableDirectoryEntry.ReadFrom(this);
-                    lock (TableDictionary)
-                    {
-                        TableDictionary.Add(entry.Tag, entry);
-                    }
+                    TableDictionary.TryAdd(entry.Tag, entry);
+
 #if VERBOSE
           Debug.WriteLine(String.Format("Font table: {0}", entry.Tag));
 #endif
@@ -453,7 +445,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
         /// <summary>
         /// Creates a new font image that is a subset of this font image containing only the specified glyphs.
         /// </summary>
-        public OpenTypeFontface CreateFontSubSet(Dictionary<int, object> glyphs, bool cidFont)
+        public OpenTypeFontface CreateFontSubSet(ConcurrentDictionary<int, object> glyphs, bool cidFont)
         {
             // Create new font image
             var fontData = new OpenTypeFontface(this);
@@ -527,16 +519,25 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
             for (var idx = 0; idx < numGlyphs; idx++)
             {
                 locaNew.LocaTable[idx] = glyphOffset;
-                if (glyphIndex < glyphCount && glyphArray[glyphIndex] == idx)
+
+                if (glyphIndex >= glyphCount || glyphArray[glyphIndex] != idx)
                 {
-                    glyphIndex++;
-                    var bytes = glyf.GetGlyphData(idx);
-                    var length = bytes.Length;
-                    if (length > 0)
-                    {
-                        Buffer.BlockCopy(bytes, 0, glyfNew.GlyphTable, glyphOffset, length);
-                        glyphOffset += length;
-                    }
+                    continue;
+                }
+
+                glyphIndex++;
+                var bytes = glyf.GetGlyphData(idx);
+
+                var length = bytes.Length;
+                if (length <= 0)
+                {
+                    continue;
+                }
+
+                lock (glyfNew.GlyphTable)
+                {
+                    Buffer.BlockCopy(bytes, 0, glyfNew.GlyphTable, glyphOffset, length);
+                    glyphOffset += length;
                 }
             }
 

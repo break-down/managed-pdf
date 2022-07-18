@@ -30,7 +30,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using BreakDown.ManagedPdf.Core.Drawing;
 
@@ -153,7 +153,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
                     var table = _forms[selector];
                     if (table.ExternalDocument != null && table.ExternalDocument.Handle == handle)
                     {
-                        _forms.Remove(selector);
+                        _forms.TryRemove(selector, out _);
                         break;
                     }
                 }
@@ -169,7 +169,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
                     var table = _forms[selector];
                     if (table.ExternalDocument == null)
                     {
-                        _forms.Remove(selector);
+                        _forms.TryRemove(selector, out _);
                         itemRemoved = true;
                         break;
                     }
@@ -180,7 +180,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
         /// <summary>
         /// Map from Selector to PdfImportedObjectTable.
         /// </summary>
-        readonly Dictionary<Selector, PdfImportedObjectTable> _forms = new Dictionary<Selector, PdfImportedObjectTable>();
+        readonly ConcurrentDictionary<Selector, PdfImportedObjectTable> _forms = new ConcurrentDictionary<Selector, PdfImportedObjectTable>();
 
         /// <summary>
         /// A collection of information that uniquely identifies a particular ImportedObjectTable.

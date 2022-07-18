@@ -30,7 +30,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using BreakDown.ManagedPdf.Core.Drawing;
 using BreakDown.ManagedPdf.Core.Drawing.enums;
 using BreakDown.ManagedPdf.Core.Fonts.OpenType;
@@ -45,7 +45,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts
     {
         FontDescriptorCache()
         {
-            _cache = new Dictionary<string, FontDescriptor>();
+            _cache = new ConcurrentDictionary<string, FontDescriptor>();
         }
 
         ///// <summary>
@@ -89,7 +89,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts
                 if (!Singleton._cache.TryGetValue(fontDescriptorKey, out var descriptor))
                 {
                     descriptor = new OpenTypeDescriptor(fontDescriptorKey, font);
-                    Singleton._cache.Add(fontDescriptorKey, descriptor);
+                    Singleton._cache.TryAdd(fontDescriptorKey, descriptor);
                 }
 
                 return descriptor;
@@ -126,7 +126,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts
                     }
                     else
                     {
-                        Singleton._cache.Add(fontDescriptorKey, descriptor);
+                        Singleton._cache.TryAdd(fontDescriptorKey, descriptor);
                     }
                 }
 
@@ -148,7 +148,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts
                 if (!Singleton._cache.TryGetValue(fontDescriptorKey, out var descriptor))
                 {
                     descriptor = GetOrCreateOpenTypeDescriptor(fontDescriptorKey, idName, fontData);
-                    Singleton._cache.Add(fontDescriptorKey, descriptor);
+                    Singleton._cache.TryAdd(fontDescriptorKey, descriptor);
                 }
 
                 return descriptor;
@@ -196,6 +196,6 @@ namespace BreakDown.ManagedPdf.Core.Fonts
         /// <summary>
         /// Maps font font descriptor key to font descriptor.
         /// </summary>
-        readonly Dictionary<string, FontDescriptor> _cache;
+        readonly ConcurrentDictionary<string, FontDescriptor> _cache;
     }
 }

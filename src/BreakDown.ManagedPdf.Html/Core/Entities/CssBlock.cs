@@ -10,6 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using BreakDown.ManagedPdf.Html.Core.Utils;
 
@@ -35,7 +36,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Entities
         /// <summary>
         /// the CSS block properties and values
         /// </summary>
-        private readonly Dictionary<string, string> _properties;
+        private readonly ConcurrentDictionary<string, string> _properties;
 
         /// <summary>
         /// additional selectors to used in hierarchy (p className1 > className2)
@@ -56,7 +57,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Entities
         /// <param name="properties">the CSS block properties and values</param>
         /// <param name="selectors">optional: additional selectors to used in hierarchy</param>
         /// <param name="hover">optional: is the css block has :hover pseudo-class</param>
-        public CssBlock(string @class, Dictionary<string, string> properties, List<CssBlockSelectorItem> selectors = null, bool hover = false)
+        public CssBlock(string @class, ConcurrentDictionary<string, string> properties, List<CssBlockSelectorItem> selectors = null, bool hover = false)
         {
             ArgChecker.AssertArgNotNullOrEmpty(@class, "@class");
             ArgChecker.AssertArgNotNull(properties, "properties");
@@ -120,7 +121,8 @@ namespace BreakDown.ManagedPdf.Html.Core.Entities
         /// <returns>new CssBlock with same data</returns>
         public CssBlock Clone()
         {
-            return new CssBlock(_class, new Dictionary<string, string>(_properties), _selectors != null ? new List<CssBlockSelectorItem>(_selectors) : null);
+            return new CssBlock(_class, new ConcurrentDictionary<string, string>(_properties),
+                                _selectors != null ? new List<CssBlockSelectorItem>(_selectors) : null);
         }
 
         /// <summary>

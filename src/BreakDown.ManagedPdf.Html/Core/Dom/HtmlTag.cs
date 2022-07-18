@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using BreakDown.ManagedPdf.Html.Core.Utils;
 
 namespace BreakDown.ManagedPdf.Html.Core.Dom
@@ -32,7 +32,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
         /// <summary>
         /// collection of attributes and their value the html tag has
         /// </summary>
-        private readonly Dictionary<string, string> _attributes;
+        private readonly ConcurrentDictionary<string, string> _attributes;
 
         #endregion
 
@@ -42,7 +42,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
         /// <param name="name">the name of the html tag</param>
         /// <param name="isSingle">if the tag is single placed; in other words it doesn't have a separate closing tag;</param>
         /// <param name="attributes">collection of attributes and their value the html tag has</param>
-        public HtmlTag(string name, bool isSingle, Dictionary<string, string> attributes = null)
+        public HtmlTag(string name, bool isSingle, ConcurrentDictionary<string, string> attributes = null)
         {
             ArgChecker.AssertArgNotNullOrEmpty(name, "name");
 
@@ -62,7 +62,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
         /// <summary>
         /// Gets collection of attributes and their value the html tag has
         /// </summary>
-        public Dictionary<string, string> Attributes
+        public ConcurrentDictionary<string, string> Attributes
         {
             get { return _attributes; }
         }

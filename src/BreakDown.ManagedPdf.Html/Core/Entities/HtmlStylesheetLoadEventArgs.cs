@@ -11,7 +11,7 @@
 // "The Art of War"
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace BreakDown.ManagedPdf.Html.Core.Entities
 {
@@ -33,7 +33,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Entities
         /// <summary>
         /// collection of all the attributes that are defined on the link element
         /// </summary>
-        private readonly Dictionary<string, string> _attributes;
+        private readonly ConcurrentDictionary<string, string> _attributes;
 
         /// <summary>
         /// provide the new source (file path or URL) to load stylesheet from
@@ -57,7 +57,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Entities
         /// </summary>
         /// <param name="src">the source of the image (file path or URL)</param>
         /// <param name="attributes">collection of all the attributes that are defined on the image element</param>
-        internal HtmlStylesheetLoadEventArgs(string src, Dictionary<string, string> attributes)
+        internal HtmlStylesheetLoadEventArgs(string src, ConcurrentDictionary<string, string> attributes)
         {
             _src = src;
             _attributes = attributes;
@@ -74,7 +74,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Entities
         /// <summary>
         /// collection of all the attributes that are defined on the link element
         /// </summary>
-        public Dictionary<string, string> Attributes
+        public ConcurrentDictionary<string, string> Attributes
         {
             get { return _attributes; }
         }

@@ -11,6 +11,7 @@
 // "The Art of War"
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using BreakDown.ManagedPdf.Html.Adapters;
@@ -55,7 +56,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
         private readonly List<CssBox> _boxes = new List<CssBox>();
         private readonly List<CssLineBox> _lineBoxes = new List<CssLineBox>();
         private readonly List<CssLineBox> _parentLineBoxes = new List<CssLineBox>();
-        private readonly Dictionary<CssLineBox, RRect> _rectangles = new Dictionary<CssLineBox, RRect>();
+        private readonly ConcurrentDictionary<CssLineBox, RRect> _rectangles = new ConcurrentDictionary<CssLineBox, RRect>();
 
         /// <summary>
         /// the inner text of the box
@@ -318,7 +319,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
         /// <summary>
         /// Gets the rectangles where this box should be painted
         /// </summary>
-        internal Dictionary<CssLineBox, RRect> Rectangles
+        internal ConcurrentDictionary<CssLineBox, RRect> Rectangles
         {
             get { return _rectangles; }
         }

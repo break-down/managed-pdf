@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using BreakDown.ManagedPdf.Core.Pdf.Content.Objects.@enum;
 
@@ -34,15 +34,15 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Content.Objects
         /// </summary>
         static OpCodes()
         {
-            StringToOpCode = new Dictionary<string, OpCode>();
+            StringToOpCode = new ConcurrentDictionary<string, OpCode>();
             for (var idx = 0; idx < ops.Length; idx++)
             {
                 var op = ops[idx];
-                StringToOpCode.Add(op.Name, op);
+                StringToOpCode.TryAdd(op.Name, op);
             }
         }
 
-        static readonly Dictionary<string, OpCode> StringToOpCode;
+        static readonly ConcurrentDictionary<string, OpCode> StringToOpCode;
 
         // ReSharper disable InconsistentNaming
 

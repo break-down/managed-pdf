@@ -30,7 +30,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using BreakDown.ManagedPdf.Core.Drawing.enums;
 #if WPF
@@ -423,13 +423,13 @@ namespace BreakDown.ManagedPdf.Core.Drawing
             return familyName + "#" + (bold ? "b" : "") + (italic ? "i" : "");
         }
 
-        readonly Dictionary<string, XGlyphTypeface> _typefaces = new Dictionary<string, XGlyphTypeface>();
+        readonly ConcurrentDictionary<string, XGlyphTypeface> _typefaces = new ConcurrentDictionary<string, XGlyphTypeface>();
 #if GDI
         //List<XGlyphTypeface> privateFonts = new List<XGlyphTypeface>();
-        readonly Dictionary<string, XFontSource> _fontSources = new Dictionary<string, XFontSource>(StringComparer.OrdinalIgnoreCase);
+        readonly ConcurrentDictionary<string, XFontSource> _fontSources = new ConcurrentDictionary<string, XFontSource>(StringComparer.OrdinalIgnoreCase);
 #endif
 #if WPF
-        readonly Dictionary<string, WpfFontFamily> _fontFamilies = new Dictionary<string, WpfFontFamily>(StringComparer.OrdinalIgnoreCase);
+        readonly ConcurrentDictionary<string, WpfFontFamily> _fontFamilies = new ConcurrentDictionary<string, WpfFontFamily>(StringComparer.OrdinalIgnoreCase);
 #endif
     }
 #endif

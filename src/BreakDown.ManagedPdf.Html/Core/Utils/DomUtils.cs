@@ -11,6 +11,7 @@
 // "The Art of War"
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using BreakDown.ManagedPdf.Html.Adapters.Entities;
@@ -598,10 +599,10 @@ namespace BreakDown.ManagedPdf.Html.Core.Utils
         /// </summary>
         /// <param name="root">the box to check its sub-tree</param>
         /// <returns>the collection to add the selected tags to</returns>
-        private static Dictionary<CssBox, bool> CollectSelectedBoxes(CssBox root)
+        private static ConcurrentDictionary<CssBox, bool> CollectSelectedBoxes(CssBox root)
         {
-            var selectedBoxes = new Dictionary<CssBox, bool>();
-            var maybeBoxes = new Dictionary<CssBox, bool>();
+            var selectedBoxes = new ConcurrentDictionary<CssBox, bool>();
+            var maybeBoxes = new ConcurrentDictionary<CssBox, bool>();
             CollectSelectedBoxes(root, selectedBoxes, maybeBoxes);
             return selectedBoxes;
         }
@@ -614,7 +615,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Utils
         /// <param name="selectedBoxes">the hash to add the selected boxes to</param>
         /// <param name="maybeBoxes">used to handle boxes that are between selected words but don't have selected word inside</param>
         /// <returns>is the current box is in selected sub-tree</returns>
-        private static bool CollectSelectedBoxes(CssBox box, Dictionary<CssBox, bool> selectedBoxes, Dictionary<CssBox, bool> maybeBoxes)
+        private static bool CollectSelectedBoxes(CssBox box, ConcurrentDictionary<CssBox, bool> selectedBoxes, ConcurrentDictionary<CssBox, bool> maybeBoxes)
         {
             var isInSelection = false;
             foreach (var word in box.Words)
@@ -656,7 +657,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Utils
         /// <param name="root">the root of the boxes tree</param>
         /// <param name="selectedBoxes">the selected boxes to find selection root in</param>
         /// <returns>the box that is the root of selected boxes</returns>
-        private static CssBox GetSelectionRoot(CssBox root, Dictionary<CssBox, bool> selectedBoxes)
+        private static CssBox GetSelectionRoot(CssBox root, ConcurrentDictionary<CssBox, bool> selectedBoxes)
         {
             var selectionRoot = root;
             var selectionRootRun = root;
@@ -742,7 +743,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Utils
                                       StringBuilder sb,
                                       CssBox box,
                                       HtmlGenerationStyle styleGen,
-                                      Dictionary<CssBox, bool> selectedBoxes,
+                                      ConcurrentDictionary<CssBox, bool> selectedBoxes,
                                       CssBox selectionRoot)
         {
             if (box.HtmlTag == null || selectedBoxes == null || selectedBoxes.ContainsKey(box))
@@ -808,7 +809,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Utils
             sb.AppendFormat("<{0}", box.HtmlTag.Name);
 
             // collect all element style properties including from stylesheet
-            var tagStyles = new Dictionary<string, string>();
+            var tagStyles = new ConcurrentDictionary<string, string>();
             var tagCssBlock = box.HtmlContainer.CssData.GetCssBlock(box.HtmlTag.Name);
             if (tagCssBlock != null)
             {
@@ -889,10 +890,10 @@ namespace BreakDown.ManagedPdf.Html.Core.Utils
         /// <param name="box">the box the styles apply to, used to know the default style</param>
         /// <param name="tagStyles">the collection of styles to clean</param>
         /// <returns>new cleaned styles collection</returns>
-        private static Dictionary<string, string> StripDefaultStyles(CssBox box, Dictionary<string, string> tagStyles)
+        private static ConcurrentDictionary<string, string> StripDefaultStyles(CssBox box, ConcurrentDictionary<string, string> tagStyles)
         {
             // ReSharper disable PossibleMultipleEnumeration
-            var cleanTagStyles = new Dictionary<string, string>();
+            var cleanTagStyles = new ConcurrentDictionary<string, string>();
             var defaultBlocks = box.HtmlContainer.Adapter.DefaultCssData.GetCssBlock(box.HtmlTag.Name);
             foreach (var style in tagStyles)
             {

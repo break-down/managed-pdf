@@ -29,7 +29,7 @@
 
 #endregion
 
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using BreakDown.ManagedPdf.Core.Drawing;
 
@@ -130,7 +130,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
         /// <summary>
         /// Map from PdfFontSelector to PdfFont.
         /// </summary>
-        readonly Dictionary<string, PdfFont> _fonts = new Dictionary<string, PdfFont>();
+        readonly ConcurrentDictionary<string, PdfFont> _fonts = new ConcurrentDictionary<string, PdfFont>();
 
         public void PrepareForSave()
         {

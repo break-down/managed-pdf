@@ -30,6 +30,7 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using BreakDown.ManagedPdf.Core.Pdf.AcroForms.enums;
@@ -211,7 +212,7 @@ public abstract class PdfAcroField : PdfDictionary
     /// </summary>
     public string[] GetAppearanceNames()
     {
-        var names = new Dictionary<string, object>();
+        var names = new ConcurrentDictionary<string, object>();
         var dict = Elements["/AP"] as PdfDictionary;
         if (dict != null)
         {
@@ -243,7 +244,7 @@ public abstract class PdfAcroField : PdfDictionary
 
     //static string[] AppearanceNames(PdfDictionary dictIn)
     //{
-    //  Dictionary<string, object> names = new Dictionary<string, object>();
+    //  ConcurrentDictionary<string, object> names = new ConcurrentDictionary<string, object>();
     //  PdfDictionary dict = dictIn["/AP"] as PdfDictionary;
     //  if (dict != null)
     //  {
@@ -270,7 +271,7 @@ public abstract class PdfAcroField : PdfDictionary
     //  return array;
     //}
 
-    static void AppDict(PdfDictionary dict, Dictionary<string, object> names)
+    static void AppDict(PdfDictionary dict, ConcurrentDictionary<string, object> names)
     {
         PdfDictionary sub;
         if ((sub = dict.Elements["/D"] as PdfDictionary) != null)
@@ -284,13 +285,13 @@ public abstract class PdfAcroField : PdfDictionary
         }
     }
 
-    static void AppDict2(PdfDictionary dict, Dictionary<string, object> names)
+    static void AppDict2(PdfDictionary dict, ConcurrentDictionary<string, object> names)
     {
         foreach (var key in dict.Elements.Keys)
         {
             if (!names.ContainsKey(key))
             {
-                names.Add(key, null);
+                names.TryAdd(key, null);
             }
         }
     }

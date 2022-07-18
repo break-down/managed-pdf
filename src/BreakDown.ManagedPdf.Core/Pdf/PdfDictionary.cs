@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -302,14 +303,14 @@ namespace BreakDown.ManagedPdf.Core.Pdf
         {
             internal DictionaryElements(PdfDictionary ownerDictionary)
             {
-                _elements = new Dictionary<string, PdfItem>();
+                _elements = new ConcurrentDictionary<string, PdfItem>();
                 _ownerDictionary = ownerDictionary;
             }
 
             object ICloneable.Clone()
             {
                 var dictionaryElements = (DictionaryElements)MemberwiseClone();
-                dictionaryElements._elements = new Dictionary<string, PdfItem>(dictionaryElements._elements);
+                dictionaryElements._elements = new ConcurrentDictionary<string, PdfItem>(dictionaryElements._elements);
                 dictionaryElements._ownerDictionary = null;
                 return dictionaryElements;
             }
@@ -1510,7 +1511,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf
             /// </summary>
             public bool Remove(string key)
             {
-                return _elements.Remove(key);
+                return _elements.TryRemove(key, out _);
             }
 
             /// <summary>
@@ -1576,7 +1577,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf
                     value = obj.Reference;
                 }
 
-                _elements.Add(key, value);
+                _elements.TryAdd(key, value);
             }
 
             /// <summary>
@@ -1594,7 +1595,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf
             {
                 get
                 {
-                    ICollection values = _elements.Keys;
+                    var values = _elements.Keys;
                     var count = values.Count;
                     var strings = new string[count];
                     values.CopyTo(strings, 0);
@@ -1616,7 +1617,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf
                 // It is by design not to return _elements.Keys, but a copy.
                 get
                 {
-                    ICollection values = _elements.Keys;
+                    var values = _elements.Keys;
                     var count = values.Count;
                     var keys = new string[count];
                     values.CopyTo(keys, 0);
@@ -1642,7 +1643,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf
                 // It is by design not to return _elements.Values, but a copy.
                 get
                 {
-                    ICollection values = _elements.Values;
+                    var values = _elements.Values;
                     var items = new PdfItem[values.Count];
                     values.CopyTo(items, 0);
                     return items;
@@ -1730,7 +1731,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf
             /// The elements of the dictionary with a string as key.
             /// Because the string is a name it starts always with a '/'.
             /// </summary>
-            Dictionary<string, PdfItem> _elements;
+            ConcurrentDictionary<string, PdfItem> _elements;
 
             /// <summary>
             /// The dictionary this objects belongs to.

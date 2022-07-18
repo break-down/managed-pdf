@@ -11,7 +11,7 @@
 // "The Art of War"
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
 using BreakDown.ManagedPdf.Html.Core.Entities;
@@ -37,7 +37,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Handlers
         /// <param name="stylesheetData">return stylesheet data object that was provided by overwrite (null if failed or <paramref name="stylesheet"/> is given)</param>
         public static void LoadStylesheet(HtmlContainerInt htmlContainer,
                                           string src,
-                                          Dictionary<string, string> attributes,
+                                          ConcurrentDictionary<string, string> attributes,
                                           out string stylesheet,
                                           out CssData stylesheetData)
         {

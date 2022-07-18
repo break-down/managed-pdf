@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using BreakDown.ManagedPdf.Core.Pdf.IO;
@@ -53,7 +54,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
         /// <summary>
         /// Represents the relation between PdfObjectID and PdfReference for a PdfDocument.
         /// </summary>
-        public Dictionary<PdfObjectID, PdfReference> ObjectTable = new Dictionary<PdfObjectID, PdfReference>();
+        public ConcurrentDictionary<PdfObjectID, PdfReference> ObjectTable = new ConcurrentDictionary<PdfObjectID, PdfReference>();
 
         internal bool IsUnderConstruction
         {
@@ -84,7 +85,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
                 throw new InvalidOperationException("Object already in table.");
             }
 
-            ObjectTable.Add(iref.ObjectID, iref);
+            ObjectTable.TryAdd(iref.ObjectID, iref);
         }
 
         /// <summary>
@@ -111,12 +112,12 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
                 throw new InvalidOperationException("Object already in table.");
             }
 
-            ObjectTable.Add(value.ObjectID, value.Reference);
+            ObjectTable.TryAdd(value.ObjectID, value.Reference);
         }
 
         public void Remove(PdfReference iref)
         {
-            ObjectTable.Remove(iref.ObjectID);
+            ObjectTable.TryRemove(iref.ObjectID, out _);
         }
 
         /// <summary>
@@ -197,7 +198,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
         {
             get
             {
-                ICollection collection = ObjectTable.Keys;
+                var collection = ObjectTable.Keys;
                 var objectIDs = new PdfObjectID[collection.Count];
                 collection.CopyTo(objectIDs, 0);
                 return objectIDs;
@@ -240,25 +241,25 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
 #if DEBUG
 
             // Have any two objects the same ID?
-            var ids = new Dictionary<int, int>();
+            var ids = new ConcurrentDictionary<int, int>();
             foreach (var objID in ObjectTable.Keys)
             {
-                ids.Add(objID.ObjectNumber, 0);
+                ids.TryAdd(objID.ObjectNumber, 0);
             }
 
             // Have any two irefs the same value?
-            //Dictionary<int, int> ids = new Dictionary<int, int>();
+            //ConcurrentDictionary<int, int> ids = new ConcurrentDictionary<int, int>();
             ids.Clear();
             foreach (var iref in ObjectTable.Values)
             {
-                ids.Add(iref.ObjectNumber, 0);
+                ids.TryAdd(iref.ObjectNumber, 0);
             }
 
             //
-            var refs = new Dictionary<PdfReference, int>();
+            var refs = new ConcurrentDictionary<PdfReference, int>();
             foreach (var iref in irefs)
             {
-                refs.Add(iref, 0);
+                refs.TryAdd(iref, 0);
             }
 
             foreach (var value in ObjectTable.Values)
@@ -306,7 +307,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
                 // With the if, the first object with the ID will be used and later objects with the same ID will be ignored.
                 if (!ObjectTable.ContainsKey(iref.ObjectID))
                 {
-                    ObjectTable.Add(iref.ObjectID, iref);
+                    ObjectTable.TryAdd(iref.ObjectID, iref);
                     _maxObjectNumber = Math.Max(_maxObjectNumber, iref.ObjectNumber);
                 }
             }
@@ -337,7 +338,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
                 iref.ObjectID = new PdfObjectID(idx + 1);
 
                 // Rehash with new number.
-                ObjectTable.Add(iref.ObjectID, iref);
+                ObjectTable.TryAdd(iref.ObjectID, iref);
             }
 
             _maxObjectNumber = count;
@@ -351,22 +352,22 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
         [Conditional("DEBUG_")]
         public void CheckConsistence()
         {
-            var ht1 = new Dictionary<PdfReference, object>();
+            var ht1 = new ConcurrentDictionary<PdfReference, object>();
             foreach (var iref in ObjectTable.Values)
             {
                 Debug.Assert(!ht1.ContainsKey(iref), "Duplicate iref.");
                 Debug.Assert(iref.Value != null);
-                ht1.Add(iref, null);
+                ht1.TryAdd(iref, null);
             }
 
-            var ht2 = new Dictionary<PdfObjectID, object>();
+            var ht2 = new ConcurrentDictionary<PdfObjectID, object>();
             foreach (var iref in ObjectTable.Values)
             {
                 Debug.Assert(!ht2.ContainsKey(iref.ObjectID), "Duplicate iref.");
-                ht2.Add(iref.ObjectID, null);
+                ht2.TryAdd(iref.ObjectID, null);
             }
 
-            ICollection collection = ObjectTable.Values;
+            var collection = ObjectTable.Values;
             var count = collection.Count;
             var irefs = new PdfReference[count];
             collection.CopyTo(irefs, 0);
@@ -428,15 +429,15 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
         public PdfReference[] TransitiveClosure(PdfObject pdfObject, int depth)
         {
             CheckConsistence();
-            var objects = new Dictionary<PdfItem, object>();
-            _overflow = new Dictionary<PdfItem, object>();
+            var objects = new ConcurrentDictionary<PdfItem, object>();
+            _overflow = new ConcurrentDictionary<PdfItem, object>();
             TransitiveClosureImplementation(objects, pdfObject);
             TryAgain:
             if (_overflow.Count > 0)
             {
                 var array = new PdfObject[_overflow.Count];
                 _overflow.Keys.CopyTo(array, 0);
-                _overflow = new Dictionary<PdfItem, object>();
+                _overflow = new ConcurrentDictionary<PdfItem, object>();
                 for (var idx = 0; idx < array.Length; idx++)
                 {
                     var obj = array[idx];
@@ -448,7 +449,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
 
             CheckConsistence();
 
-            ICollection collection = objects.Keys;
+            var collection = objects.Keys;
             var count = collection.Count;
             var irefs = new PdfReference[count];
             collection.CopyTo(irefs, 0);
@@ -472,9 +473,9 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
         }
 
         static int _nestingLevel;
-        Dictionary<PdfItem, object> _overflow = new Dictionary<PdfItem, object>();
+        ConcurrentDictionary<PdfItem, object> _overflow = new ConcurrentDictionary<PdfItem, object>();
 
-        void TransitiveClosureImplementation(Dictionary<PdfItem, object> objects, PdfObject pdfObject /*, ref int depth*/)
+        void TransitiveClosureImplementation(ConcurrentDictionary<PdfItem, object> objects, PdfObject pdfObject /*, ref int depth*/)
         {
             try
             {
@@ -483,7 +484,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
                 {
                     if (!_overflow.ContainsKey(pdfObject))
                     {
-                        _overflow.Add(pdfObject, null);
+                        _overflow.TryAdd(pdfObject, null);
                     }
 
                     return;
@@ -567,7 +568,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
                                     }
 
                                     Debug.Assert(ReferenceEquals(iref.Document, _document));
-                                    objects.Add(iref, null);
+                                    objects.TryAdd(iref, null);
 
                                     //Debug.WriteLine(String.Format("objects.Add('{0}', null);", iref.ObjectID.ToString()));
                                     if (value is PdfArray || value is PdfDictionary)

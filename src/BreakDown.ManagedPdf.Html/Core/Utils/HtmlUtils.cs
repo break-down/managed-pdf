@@ -11,6 +11,7 @@
 // "The Art of War"
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace BreakDown.ManagedPdf.Html.Core.Utils
@@ -45,7 +46,8 @@ namespace BreakDown.ManagedPdf.Html.Core.Utils
         /// <summary>
         /// the html decode only pairs
         /// </summary>
-        private static readonly Dictionary<string, char> _decodeOnly = new Dictionary<string, char>(StringComparer.InvariantCultureIgnoreCase);
+        private static readonly ConcurrentDictionary<string, char> _decodeOnly =
+            new ConcurrentDictionary<string, char>(StringComparer.InvariantCultureIgnoreCase);
 
         #endregion
 

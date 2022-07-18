@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using BreakDown.ManagedPdf.Html.Core.Utils;
 
 namespace BreakDown.ManagedPdf.Html.Core.Dom
@@ -26,13 +26,20 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
         #endregion
 
         public CssSpacingBox(CssBox tableBox, ref CssBox extendedBox, int startRow)
-            : base(tableBox, new HtmlTag("none", false, new Dictionary<string, string> { { "colspan", "1" } }))
+            : base(tableBox, new HtmlTag("none", false, GetDefaultColSpan()))
         {
             _extendedBox = extendedBox;
             Display = CssConstants.None;
 
             _startRow = startRow;
             _endRow = startRow + Int32.Parse(extendedBox.GetAttribute("rowspan", "1")) - 1;
+        }
+
+        private static ConcurrentDictionary<string, string> GetDefaultColSpan()
+        {
+            var span = new ConcurrentDictionary<string, string>();
+            span.TryAdd("colspan", "1");
+            return span;
         }
 
         public CssBox ExtendedBox

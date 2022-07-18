@@ -11,7 +11,7 @@
 // "The Art of War"
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using BreakDown.ManagedPdf.Html.Adapters.Entities;
 using BreakDown.ManagedPdf.Html.Core;
@@ -41,12 +41,12 @@ namespace BreakDown.ManagedPdf.Html.Adapters
         /// <summary>
         /// cache of brush color to brush instance
         /// </summary>
-        private readonly Dictionary<RColor, RBrush> _brushesCache = new Dictionary<RColor, RBrush>();
+        private readonly ConcurrentDictionary<RColor, RBrush> _brushesCache = new ConcurrentDictionary<RColor, RBrush>();
 
         /// <summary>
         /// cache of pen color to pen instance
         /// </summary>
-        private readonly Dictionary<RColor, RPen> _penCache = new Dictionary<RColor, RPen>();
+        private readonly ConcurrentDictionary<RColor, RPen> _penCache = new ConcurrentDictionary<RColor, RPen>();
 
         /// <summary>
         /// cache of all the font used not to create same font again and again

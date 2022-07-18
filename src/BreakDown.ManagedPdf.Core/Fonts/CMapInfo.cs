@@ -30,7 +30,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using BreakDown.ManagedPdf.Core.Fonts.OpenType;
 using BreakDown.ManagedPdf.Core.Pdf.Internal;
@@ -72,7 +72,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts
                         }
 
                         var glyphIndex = _descriptor.CharCodeToGlyphIndex(ch2);
-                        CharacterToGlyphIndex.Add(ch, glyphIndex);
+                        CharacterToGlyphIndex.TryAdd(ch, glyphIndex);
                         GlyphIndices[glyphIndex] = null;
                         MinChar = (char)Math.Min(MinChar, ch);
                         MaxChar = (char)Math.Max(MaxChar, ch);
@@ -141,7 +141,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts
 
         public char MinChar = char.MaxValue;
         public char MaxChar = char.MinValue;
-        public Dictionary<char, int> CharacterToGlyphIndex = new Dictionary<char, int>();
-        public Dictionary<int, object> GlyphIndices = new Dictionary<int, object>();
+        public ConcurrentDictionary<char, int> CharacterToGlyphIndex = new ConcurrentDictionary<char, int>();
+        public ConcurrentDictionary<int, object> GlyphIndices = new ConcurrentDictionary<int, object>();
     }
 }

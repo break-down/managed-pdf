@@ -11,6 +11,7 @@
 // "The Art of War"
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using BreakDown.ManagedPdf.Html.Adapters;
 using BreakDown.ManagedPdf.Html.Core.Entities;
@@ -38,8 +39,8 @@ namespace BreakDown.ManagedPdf.Html.Core
         /// <summary>
         /// dictionary of media type to dictionary of css class name to the cssBlocks collection with all the data.
         /// </summary>
-        private readonly Dictionary<string, Dictionary<string, List<CssBlock>>> _mediaBlocks =
-            new Dictionary<string, Dictionary<string, List<CssBlock>>>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, List<CssBlock>>> _mediaBlocks =
+            new ConcurrentDictionary<string, ConcurrentDictionary<string, List<CssBlock>>>(StringComparer.InvariantCultureIgnoreCase);
 
         #endregion
 
@@ -48,7 +49,7 @@ namespace BreakDown.ManagedPdf.Html.Core
         /// </summary>
         internal CssData()
         {
-            _mediaBlocks.Add("all", new Dictionary<string, List<CssBlock>>(StringComparer.InvariantCultureIgnoreCase));
+            _mediaBlocks.TryAdd("all", new ConcurrentDictionary<string, List<CssBlock>>(StringComparer.InvariantCultureIgnoreCase));
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace BreakDown.ManagedPdf.Html.Core
         /// <summary>
         /// dictionary of media type to dictionary of css class name to the cssBlocks collection with all the data
         /// </summary>
-        internal IDictionary<string, Dictionary<string, List<CssBlock>>> MediaBlocks
+        internal IDictionary<string, ConcurrentDictionary<string, List<CssBlock>>> MediaBlocks
         {
             get { return _mediaBlocks; }
         }
@@ -125,8 +126,8 @@ namespace BreakDown.ManagedPdf.Html.Core
         {
             if (!_mediaBlocks.TryGetValue(media, out var mid))
             {
-                mid = new Dictionary<string, List<CssBlock>>(StringComparer.InvariantCultureIgnoreCase);
-                _mediaBlocks.Add(media, mid);
+                mid = new ConcurrentDictionary<string, List<CssBlock>>(StringComparer.InvariantCultureIgnoreCase);
+                _mediaBlocks.TryAdd(media, mid);
             }
 
             if (!mid.ContainsKey(cssBlock.Class))
@@ -198,7 +199,7 @@ namespace BreakDown.ManagedPdf.Html.Core
             var clone = new CssData();
             foreach (var mid in _mediaBlocks)
             {
-                var cloneMid = new Dictionary<string, List<CssBlock>>(StringComparer.InvariantCultureIgnoreCase);
+                var cloneMid = new ConcurrentDictionary<string, List<CssBlock>>(StringComparer.InvariantCultureIgnoreCase);
                 foreach (var blocks in mid.Value)
                 {
                     var cloneList = new List<CssBlock>();

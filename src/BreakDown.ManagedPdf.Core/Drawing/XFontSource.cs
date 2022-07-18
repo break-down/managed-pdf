@@ -30,6 +30,7 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -63,7 +64,7 @@ namespace BreakDown.ManagedPdf.Core.Drawing
         /// <summary>
         /// (fontName, fileName)
         /// </summary>
-        internal static Dictionary<string, string> FontFilePaths = new Dictionary<string, string>();
+        internal static ConcurrentDictionary<string, string> FontFilePaths = new ConcurrentDictionary<string, string>();
 
         static XFontSource()
         {
@@ -112,7 +113,7 @@ namespace BreakDown.ManagedPdf.Core.Drawing
                         var fontName = fontCollection.Families[0].Name;
                         if (!FontFilePaths.ContainsKey(fontName))
                         {
-                            FontFilePaths.Add(fontName, fileName);
+                            FontFilePaths.TryAdd(fontName, fileName);
                             Debug.WriteLine($"Add font {fontName}: {fileName}");
                         }
                     }

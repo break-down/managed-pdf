@@ -369,7 +369,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
             {
                 // hack for actual width handling
                 curx += box.ActualWidth - (curx - startX);
-                line.Rectangles.Add(box, new RRect(startX, startY, box.ActualWidth, box.ActualHeight));
+                line.Rectangles.TryAdd(box, new RRect(startX, startY, box.ActualWidth, box.ActualHeight));
             }
 
             // handle box that is only a whitespace

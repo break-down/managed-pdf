@@ -29,7 +29,7 @@
 
 #endregion
 
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
 {
@@ -66,13 +66,13 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
         /// <summary>
         /// Adds all imported resource names to the specified hashtable.
         /// </summary>
-        internal void CollectResourceNames(Dictionary<string, object> usedResourceNames)
+        internal void CollectResourceNames(ConcurrentDictionary<string, object> usedResourceNames)
         {
             // ?TODO: Imported resources (e.g. fonts) can be reused, but I think this is rather difficult. Will be an issue in PDFsharp 2.0.
             var names = Elements.KeyNames;
             foreach (var name in names)
             {
-                usedResourceNames.Add(name.ToString(), null);
+                usedResourceNames.TryAdd(name.ToString(), null);
             }
         }
     }

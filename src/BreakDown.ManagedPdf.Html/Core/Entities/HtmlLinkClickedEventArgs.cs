@@ -11,7 +11,7 @@
 // "The Art of War"
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace BreakDown.ManagedPdf.Html.Core.Entities
 {
@@ -28,7 +28,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Entities
         /// <summary>
         /// collection of all the attributes that are defined on the link element
         /// </summary>
-        private readonly Dictionary<string, string> _attributes;
+        private readonly ConcurrentDictionary<string, string> _attributes;
 
         /// <summary>
         /// use to cancel the execution of the link
@@ -39,7 +39,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Entities
         /// Init.
         /// </summary>
         /// <param name="link">the link href that was clicked</param>
-        public HtmlLinkClickedEventArgs(string link, Dictionary<string, string> attributes)
+        public HtmlLinkClickedEventArgs(string link, ConcurrentDictionary<string, string> attributes)
         {
             _link = link;
             _attributes = attributes;
@@ -56,7 +56,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Entities
         /// <summary>
         /// collection of all the attributes that are defined on the link element
         /// </summary>
-        public Dictionary<string, string> Attributes
+        public ConcurrentDictionary<string, string> Attributes
         {
             get { return _attributes; }
         }

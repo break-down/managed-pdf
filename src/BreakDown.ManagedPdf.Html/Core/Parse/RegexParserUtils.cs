@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace BreakDown.ManagedPdf.Html.Core.Parse
@@ -87,7 +87,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// <summary>
         /// the regexes cache that is used by the parser so not to create regex each time
         /// </summary>
-        private static readonly Dictionary<string, Regex> _regexes = new Dictionary<string, Regex>();
+        private static readonly ConcurrentDictionary<string, Regex> regexes = new();
 
         #endregion
 
@@ -100,35 +100,39 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         public static string GetCssAtRules(string stylesheet, ref int startIdx)
         {
             startIdx = stylesheet.IndexOf('@', startIdx);
-            if (startIdx > -1)
+            if (startIdx <= -1)
             {
-                var count = 1;
-                var endIdx = stylesheet.IndexOf('{', startIdx);
-                if (endIdx > -1)
-                {
-                    while (count > 0 && endIdx < stylesheet.Length)
-                    {
-                        endIdx++;
-                        if (stylesheet[endIdx] == '{')
-                        {
-                            count++;
-                        }
-                        else if (stylesheet[endIdx] == '}')
-                        {
-                            count--;
-                        }
-                    }
+                return null;
+            }
 
-                    if (endIdx < stylesheet.Length)
-                    {
-                        var atrule = stylesheet.Substring(startIdx, endIdx - startIdx + 1);
-                        startIdx = endIdx;
-                        return atrule;
-                    }
+            var count = 1;
+            var endIdx = stylesheet.IndexOf('{', startIdx);
+            if (endIdx <= -1)
+            {
+                return null;
+            }
+
+            while (count > 0 && endIdx < stylesheet.Length)
+            {
+                endIdx++;
+                if (stylesheet[endIdx] == '{')
+                {
+                    count++;
+                }
+                else if (stylesheet[endIdx] == '}')
+                {
+                    count--;
                 }
             }
 
-            return null;
+            if (endIdx >= stylesheet.Length)
+            {
+                return null;
+            }
+
+            var atrule = stylesheet.Substring(startIdx, endIdx - startIdx + 1);
+            startIdx = endIdx;
+            return atrule;
         }
 
         /// <summary>
@@ -185,10 +189,10 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// <returns>the regex instance</returns>
         private static Regex GetRegex(string regex)
         {
-            if (!_regexes.TryGetValue(regex, out var r))
+            if (!regexes.TryGetValue(regex, out var r))
             {
                 r = new Regex(regex, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-                _regexes[regex] = r;
+                regexes[regex] = r;
             }
 
             return r;

@@ -10,7 +10,7 @@
 // - Sun Tsu,
 // "The Art of War"
 
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace BreakDown.ManagedPdf.Html.Core.Parse
@@ -118,7 +118,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Parse
         /// <summary>
         /// the regexes cache that is used by the parser so not to create regex each time
         /// </summary>
-        private static readonly Dictionary<string, Regex> _regexes = new Dictionary<string, Regex>();
+        private static readonly ConcurrentDictionary<string, Regex> _regexes = new ConcurrentDictionary<string, Regex>();
 
         #endregion
 

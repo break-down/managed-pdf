@@ -11,6 +11,7 @@
 // "The Art of War"
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -37,8 +38,8 @@ namespace BreakDown.ManagedPdf.Html.Core.Handlers
         /// <summary>
         /// dictionary of image cache path to callbacks of download to handle multiple requests to download the same image 
         /// </summary>
-        private readonly Dictionary<string, List<DownloadFileAsyncCallback>>
-            _imageDownloadCallbacks = new Dictionary<string, List<DownloadFileAsyncCallback>>();
+        private readonly ConcurrentDictionary<string, List<DownloadFileAsyncCallback>>
+            _imageDownloadCallbacks = new ConcurrentDictionary<string, List<DownloadFileAsyncCallback>>();
 
         public ImageDownloader()
         {
@@ -198,7 +199,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Handlers
             {
                 if (_imageDownloadCallbacks.TryGetValue(filePath, out callbacksList))
                 {
-                    _imageDownloadCallbacks.Remove(filePath);
+                    _imageDownloadCallbacks.TryRemove(filePath, out _);
                 }
             }
 

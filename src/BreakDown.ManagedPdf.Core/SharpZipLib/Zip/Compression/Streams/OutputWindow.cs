@@ -163,9 +163,9 @@ namespace BreakDown.ManagedPdf.Core.SharpZipLib.Zip.Compression.Streams
         /// <summary>
         /// Copy dictionary to window
         /// </summary>
-        /// <param name="dictionary">source dictionary</param>
-        /// <param name="offset">offset of start in source dictionary</param>
-        /// <param name="length">length of dictionary</param>
+        /// <param name="dictionary">source ConcurrentDictionary</param>
+        /// <param name="offset">offset of start in source ConcurrentDictionary</param>
+        /// <param name="length">length of ConcurrentDictionary</param>
         /// <exception cref="InvalidOperationException">
         /// If window isnt empty
         /// </exception>

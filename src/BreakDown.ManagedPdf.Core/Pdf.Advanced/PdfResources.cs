@@ -29,7 +29,7 @@
 
 #endregion
 
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
 {
@@ -390,7 +390,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
             // Collect all resouce names of all imported resources.
             if (_importedResourceNames == null)
             {
-                _importedResourceNames = new Dictionary<string, object>();
+                _importedResourceNames = new ConcurrentDictionary<string, object>();
 
                 if (Elements[Keys.Font] != null)
                 {
@@ -437,12 +437,12 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
         /// <summary>
         /// All the names of imported resources.
         /// </summary>
-        Dictionary<string, object> _importedResourceNames;
+        ConcurrentDictionary<string, object> _importedResourceNames;
 
         /// <summary>
         /// Maps all PDFsharp resources to their local resource names.
         /// </summary>
-        readonly Dictionary<PdfObject, string> _resources = new Dictionary<PdfObject, string>();
+        readonly ConcurrentDictionary<PdfObject, string> _resources = new ConcurrentDictionary<PdfObject, string>();
 
         /// <summary>
         /// Predefined keys of this dictionary.

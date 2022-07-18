@@ -32,7 +32,7 @@
 #define VERBOSE_
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using BreakDown.ManagedPdf.Core.Fonts.OpenType.enums;
 
 //using Fixed = System.Int32;
@@ -108,20 +108,26 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
         /// </summary>
         public int GetOffset(int glyph)
         {
-            return DirectoryEntry.Offset + _fontData.loca.LocaTable[glyph];
+            lock (_fontData.loca.LocaTable)
+            {
+                lock (DirectoryEntry)
+                {
+                    return DirectoryEntry.Offset + _fontData.loca.LocaTable[glyph];
+                }
+            }
         }
 
         /// <summary>
         /// Adds for all composite glyphs the glyphs the composite one is made of.
         /// </summary>
-        public void CompleteGlyphClosure(Dictionary<int, object> glyphs)
+        public void CompleteGlyphClosure(ConcurrentDictionary<int, object> glyphs)
         {
             var count = glyphs.Count;
             var glyphArray = new int[glyphs.Count];
             glyphs.Keys.CopyTo(glyphArray, 0);
             if (!glyphs.ContainsKey(0))
             {
-                glyphs.Add(0, null);
+                glyphs.TryAdd(0, null);
             }
 
             for (var idx = 0; idx < count; idx++)
@@ -133,7 +139,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
         /// <summary>
         /// If the specified glyph is a composite glyph add the glyphs it is made of to the glyph table.
         /// </summary>
-        void AddCompositeGlyphs(Dictionary<int, object> glyphs, int glyph)
+        void AddCompositeGlyphs(ConcurrentDictionary<int, object> glyphs, int glyph)
         {
             //int start = fontData.loca.GetOffset(glyph);
             var start = GetOffset(glyph);
@@ -160,7 +166,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
                 int cGlyph = _fontData.ReadUFWord();
                 if (!glyphs.ContainsKey(cGlyph))
                 {
-                    glyphs.Add(cGlyph, null);
+                    glyphs.TryAdd(cGlyph, null);
                 }
 
                 if ((flags & MORE_COMPONENTS) == 0)

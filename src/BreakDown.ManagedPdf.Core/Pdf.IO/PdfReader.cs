@@ -30,7 +30,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using BreakDown.ManagedPdf.Core.Internal;
@@ -386,7 +386,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.IO
                 var count2 = irefs2.Length;
 
                 // 3rd: Create iRefs for all compressed objects.
-                var objectStreams = new Dictionary<int, object>();
+                var objectStreams = new ConcurrentDictionary<int, object>();
                 for (var idx = 0; idx < count2; idx++)
                 {
                     var iref = irefs2[idx];
@@ -405,7 +405,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.IO
                                 var objectNumber = (int)item.Field2;
                                 if (!objectStreams.ContainsKey(objectNumber))
                                 {
-                                    objectStreams.Add(objectNumber, null);
+                                    objectStreams.TryAdd(objectNumber, null);
                                     var objectID = new PdfObjectID((int)item.Field2);
                                     parser.ReadIRefsFromCompressedObject(objectID);
                                 }

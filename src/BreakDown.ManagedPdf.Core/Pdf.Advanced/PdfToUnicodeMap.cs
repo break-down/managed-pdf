@@ -30,7 +30,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using BreakDown.ManagedPdf.Core.Fonts;
@@ -81,7 +81,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
                 "/CMapName /Adobe-Identity-UCS def /CMapType 2 def\n";
             var suffix = "endcmap CMapName currentdict /CMap defineresource pop end end";
 
-            var glyphIndexToCharacter = new Dictionary<int, char>();
+            var glyphIndexToCharacter = new ConcurrentDictionary<int, char>();
             int lowIndex = 65536, hiIndex = -1;
             foreach (var entry in _cmapInfo.CharacterToGlyphIndex)
             {

@@ -29,7 +29,7 @@
 
 #endregion
 
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
 {
@@ -94,7 +94,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
             return extGState;
         }
 
-        readonly Dictionary<string, PdfExtGState> _strokeAlphaValues = new Dictionary<string, PdfExtGState>();
-        readonly Dictionary<string, PdfExtGState> _nonStrokeStates = new Dictionary<string, PdfExtGState>();
+        readonly ConcurrentDictionary<string, PdfExtGState> _strokeAlphaValues = new ConcurrentDictionary<string, PdfExtGState>();
+        readonly ConcurrentDictionary<string, PdfExtGState> _nonStrokeStates = new ConcurrentDictionary<string, PdfExtGState>();
     }
 }

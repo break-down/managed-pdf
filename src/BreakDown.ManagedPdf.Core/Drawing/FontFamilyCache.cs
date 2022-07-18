@@ -30,7 +30,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Text;
 using BreakDown.ManagedPdf.Core.Internal;
 #if WPF
@@ -48,7 +48,7 @@ namespace BreakDown.ManagedPdf.Core.Drawing
     {
         FontFamilyCache()
         {
-            _familiesByName = new Dictionary<string, FontFamilyInternal>(StringComparer.OrdinalIgnoreCase);
+            _familiesByName = new ConcurrentDictionary<string, FontFamilyInternal>(StringComparer.OrdinalIgnoreCase);
         }
 
         public static FontFamilyInternal GetFamilyByName(string familyName)
@@ -84,7 +84,7 @@ namespace BreakDown.ManagedPdf.Core.Drawing
                     return existingFontFamily;
                 }
 
-                Singleton._familiesByName.Add(fontFamily.Name, fontFamily);
+                Singleton._familiesByName.TryAdd(fontFamily.Name, fontFamily);
                 return fontFamily;
             }
             finally
@@ -145,6 +145,6 @@ namespace BreakDown.ManagedPdf.Core.Drawing
         /// <summary>
         /// Maps family name to internal font family.
         /// </summary>
-        readonly Dictionary<string, FontFamilyInternal> _familiesByName;
+        readonly ConcurrentDictionary<string, FontFamilyInternal> _familiesByName;
     }
 }

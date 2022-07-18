@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Reflection;
 
 namespace BreakDown.ManagedPdf.Core.Pdf
@@ -124,6 +124,6 @@ namespace BreakDown.ManagedPdf.Core.Pdf
             }
         }
 
-        readonly Dictionary<string, KeyDescriptor> _keyDescriptors = new Dictionary<string, KeyDescriptor>();
+        readonly ConcurrentDictionary<string, KeyDescriptor> _keyDescriptors = new ConcurrentDictionary<string, KeyDescriptor>();
     }
 }

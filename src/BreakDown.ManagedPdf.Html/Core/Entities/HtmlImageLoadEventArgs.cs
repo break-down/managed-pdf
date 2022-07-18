@@ -11,7 +11,7 @@
 // "The Art of War"
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using BreakDown.ManagedPdf.Html.Adapters.Entities;
 using BreakDown.ManagedPdf.Html.Core.Utils;
 
@@ -43,7 +43,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Entities
         /// <summary>
         /// collection of all the attributes that are defined on the image element
         /// </summary>
-        private readonly Dictionary<string, string> _attributes;
+        private readonly ConcurrentDictionary<string, string> _attributes;
 
         /// <summary>
         /// Callback used to allow setting image externally and async.
@@ -58,7 +58,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Entities
         /// <param name="src">the source of the image (file path or Uri)</param>
         /// <param name="attributes">collection of all the attributes that are defined on the image element</param>
         /// <param name="callback">Callback used to allow setting image externally and async.</param>
-        internal HtmlImageLoadEventArgs(string src, Dictionary<string, string> attributes, HtmlImageLoadCallback callback)
+        internal HtmlImageLoadEventArgs(string src, ConcurrentDictionary<string, string> attributes, HtmlImageLoadCallback callback)
         {
             _src = src;
             _attributes = attributes;
@@ -76,7 +76,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Entities
         /// <summary>
         /// collection of all the attributes that are defined on the image element or CSS style
         /// </summary>
-        public Dictionary<string, string> Attributes
+        public ConcurrentDictionary<string, string> Attributes
         {
             get { return _attributes; }
         }

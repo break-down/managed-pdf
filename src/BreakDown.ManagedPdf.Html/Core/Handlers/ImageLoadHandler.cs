@@ -11,7 +11,7 @@
 // "The Art of War"
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -130,7 +130,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Handlers
         /// <param name="src">the source of the image to load</param>
         /// <param name="attributes">the collection of attributes on the element to use in event</param>
         /// <returns>the image object (null if failed)</returns>
-        public void LoadImage(string src, Dictionary<string, string> attributes)
+        public void LoadImage(string src, ConcurrentDictionary<string, string> attributes)
         {
             try
             {

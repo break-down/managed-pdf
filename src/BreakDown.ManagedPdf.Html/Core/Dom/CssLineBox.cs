@@ -11,6 +11,7 @@
 // "The Art of War"
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using BreakDown.ManagedPdf.Html.Adapters;
 using BreakDown.ManagedPdf.Html.Adapters.Entities;
@@ -30,7 +31,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
 
         private readonly List<CssRect> _words;
         private readonly CssBox _ownerBox;
-        private readonly Dictionary<CssBox, RRect> _rects;
+        private readonly ConcurrentDictionary<CssBox, RRect> _rects;
         private readonly List<CssBox> _relatedBoxes;
 
         #endregion
@@ -40,7 +41,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
         /// </summary>
         public CssLineBox(CssBox ownerBox)
         {
-            _rects = new Dictionary<CssBox, RRect>();
+            _rects = new ConcurrentDictionary<CssBox, RRect>();
             _relatedBoxes = new List<CssBox>();
             _words = new List<CssRect>();
             _ownerBox = ownerBox;
@@ -75,7 +76,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
         /// <summary>
         /// Gets a List of rectangles that are to be painted on this linebox
         /// </summary>
-        public Dictionary<CssBox, RRect> Rectangles
+        public ConcurrentDictionary<CssBox, RRect> Rectangles
         {
             get { return _rects; }
         }
@@ -184,7 +185,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
 
             if (!Rectangles.ContainsKey(box))
             {
-                Rectangles.Add(box, RRect.FromLTRB(x, y, r, b));
+                Rectangles.TryAdd(box, RRect.FromLTRB(x, y, r, b));
             }
             else
             {
@@ -207,7 +208,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
         {
             foreach (var b in Rectangles.Keys)
             {
-                b.Rectangles.Add(this, Rectangles[b]);
+                b.Rectangles.TryAdd(this, Rectangles[b]);
             }
         }
 

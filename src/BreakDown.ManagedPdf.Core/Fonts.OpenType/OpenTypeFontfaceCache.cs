@@ -30,7 +30,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
@@ -46,8 +46,8 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
     {
         OpenTypeFontfaceCache()
         {
-            _fontfaceCache = new Dictionary<string, OpenTypeFontface>(StringComparer.OrdinalIgnoreCase);
-            _fontfacesByCheckSum = new Dictionary<ulong, OpenTypeFontface>();
+            _fontfaceCache = new ConcurrentDictionary<string, OpenTypeFontface>(StringComparer.OrdinalIgnoreCase);
+            _fontfacesByCheckSum = new ConcurrentDictionary<ulong, OpenTypeFontface>();
         }
 
         /// <summary>
@@ -99,8 +99,8 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
                     return fontfaceCheck;
                 }
 
-                Singleton._fontfaceCache.Add(fontface.FullFaceName, fontface);
-                Singleton._fontfacesByCheckSum.Add(fontface.CheckSum, fontface);
+                Singleton._fontfaceCache.TryAdd(fontface.FullFaceName, fontface);
+                Singleton._fontfacesByCheckSum.TryAdd(fontface.CheckSum, fontface);
                 return fontface;
             }
             finally
@@ -161,12 +161,12 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
         /// <summary>
         /// Maps face name to OpenType fontface.
         /// </summary>
-        readonly Dictionary<string, OpenTypeFontface> _fontfaceCache;
+        readonly ConcurrentDictionary<string, OpenTypeFontface> _fontfaceCache;
 
         /// <summary>
         /// Maps font source key to OpenType fontface.
         /// </summary>
-        readonly Dictionary<ulong, OpenTypeFontface> _fontfacesByCheckSum;
+        readonly ConcurrentDictionary<ulong, OpenTypeFontface> _fontfacesByCheckSum;
 
         /// <summary>
         /// Gets the DebuggerDisplayAttribute text.

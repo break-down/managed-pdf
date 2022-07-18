@@ -11,7 +11,7 @@
 // "The Art of War"
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using BreakDown.ManagedPdf.Html.Adapters;
 using BreakDown.ManagedPdf.Html.Adapters.Entities;
 using BreakDown.ManagedPdf.Html.Core.Utils;
@@ -33,18 +33,20 @@ namespace BreakDown.ManagedPdf.Html.Core.Handlers
         /// <summary>
         /// Allow to map not installed fonts to different
         /// </summary>
-        private readonly Dictionary<string, string> _fontsMapping = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly ConcurrentDictionary<string, string> _fontsMapping =
+            new ConcurrentDictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// collection of all installed and added font families to check if font exists
         /// </summary>
-        private readonly Dictionary<string, RFontFamily> _existingFontFamilies = new Dictionary<string, RFontFamily>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly ConcurrentDictionary<string, RFontFamily> _existingFontFamilies =
+            new ConcurrentDictionary<string, RFontFamily>(StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// cache of all the font used not to create same font again and again
         /// </summary>
-        private readonly Dictionary<string, Dictionary<double, Dictionary<RFontStyle, RFont>>> _fontsCache =
-            new Dictionary<string, Dictionary<double, Dictionary<RFontStyle, RFont>>>(StringComparer.InvariantCultureIgnoreCase);
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<double, ConcurrentDictionary<RFontStyle, RFont>>> _fontsCache =
+            new ConcurrentDictionary<string, ConcurrentDictionary<double, ConcurrentDictionary<RFontStyle, RFont>>>(StringComparer.InvariantCultureIgnoreCase);
 
         #endregion
 
@@ -172,7 +174,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Handlers
                 {
                     lock (_fontsCache)
                     {
-                        _fontsCache[family][size] = new Dictionary<RFontStyle, RFont>();
+                        _fontsCache[family][size] = new ConcurrentDictionary<RFontStyle, RFont>();
                     }
                 }
             }
@@ -180,8 +182,8 @@ namespace BreakDown.ManagedPdf.Html.Core.Handlers
             {
                 lock (_fontsCache)
                 {
-                    _fontsCache[family] = new Dictionary<double, Dictionary<RFontStyle, RFont>>();
-                    _fontsCache[family][size] = new Dictionary<RFontStyle, RFont>();
+                    _fontsCache[family] = new ConcurrentDictionary<double, ConcurrentDictionary<RFontStyle, RFont>>();
+                    _fontsCache[family][size] = new ConcurrentDictionary<RFontStyle, RFont>();
                 }
             }
 

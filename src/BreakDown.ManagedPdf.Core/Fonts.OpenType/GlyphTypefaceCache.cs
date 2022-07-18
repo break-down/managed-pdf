@@ -30,7 +30,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text;
 using BreakDown.ManagedPdf.Core.Drawing;
@@ -45,7 +45,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
     {
         GlyphTypefaceCache()
         {
-            _glyphTypefacesByKey = new Dictionary<string, XGlyphTypeface>();
+            _glyphTypefacesByKey = new ConcurrentDictionary<string, XGlyphTypeface>();
         }
 
         public static bool TryGetGlyphTypeface(string key, out XGlyphTypeface glyphTypeface)
@@ -69,7 +69,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
                 Lock.EnterFontFactory();
                 var cache = Singleton;
                 Debug.Assert(!cache._glyphTypefacesByKey.ContainsKey(glyphTypeface.Key));
-                cache._glyphTypefacesByKey.Add(glyphTypeface.Key, glyphTypeface);
+                cache._glyphTypefacesByKey.TryAdd(glyphTypeface.Key, glyphTypeface);
             }
             finally
             {
@@ -129,6 +129,6 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
         /// <summary>
         /// Maps typeface key to glyph typeface.
         /// </summary>
-        readonly Dictionary<string, XGlyphTypeface> _glyphTypefacesByKey;
+        readonly ConcurrentDictionary<string, XGlyphTypeface> _glyphTypefacesByKey;
     }
 }

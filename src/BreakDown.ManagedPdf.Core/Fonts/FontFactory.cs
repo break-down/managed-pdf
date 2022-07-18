@@ -30,7 +30,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text;
 using BreakDown.ManagedPdf.Core.Drawing;
@@ -114,7 +114,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts
                             fontResolverInfo = existingFontResolverInfo;
 
                             // Associate with typeface key.
-                            FontResolverInfosByName.Add(typefaceKey, fontResolverInfo);
+                            FontResolverInfosByName.TryAdd(typefaceKey, fontResolverInfo);
 #if DEBUG
 
                             // The font source should exist.
@@ -125,9 +125,9 @@ namespace BreakDown.ManagedPdf.Core.Fonts
                         {
                             // Case: No such font resolver info exists.
                             // Add to both dictionaries.
-                            FontResolverInfosByName.Add(typefaceKey, fontResolverInfo);
+                            FontResolverInfosByName.TryAdd(typefaceKey, fontResolverInfo);
                             Debug.Assert(resolverInfoKey == fontResolverInfo.Key);
-                            FontResolverInfosByName.Add(resolverInfoKey, fontResolverInfo);
+                            FontResolverInfosByName.TryAdd(resolverInfoKey, fontResolverInfo);
 
                             // Create font source if not yet exists.
                             if (FontSourcesByName.TryGetValue(fontResolverInfo.FaceName, out var previousFontSource))
@@ -145,7 +145,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts
                                 // Add font source's font resolver name if it is different to the face name.
                                 if (string.Compare(fontResolverInfo.FaceName, fontSource.FontName, StringComparison.OrdinalIgnoreCase) != 0)
                                 {
-                                    FontSourcesByName.Add(fontResolverInfo.FaceName, fontSource);
+                                    FontSourcesByName.TryAdd(fontResolverInfo.FaceName, fontSource);
                                 }
                             }
                         }
@@ -275,8 +275,8 @@ namespace BreakDown.ManagedPdf.Core.Fonts
             }
 
             // Add to both dictionaries.
-            FontResolverInfosByName.Add(typefaceKey, fontResolverInfo);
-            FontResolverInfosByName.Add(fontResolverInfo.Key, fontResolverInfo);
+            FontResolverInfosByName.TryAdd(typefaceKey, fontResolverInfo);
+            FontResolverInfosByName.TryAdd(fontResolverInfo.Key, fontResolverInfo);
         }
 
         /// <summary>
@@ -324,8 +324,8 @@ namespace BreakDown.ManagedPdf.Core.Fonts
                     fontSource.Fontface = new OpenTypeFontface(fontSource);
                 }
 
-                FontSourcesByKey.Add(fontSource.Key, fontSource);
-                FontSourcesByName.Add(fontSource.FontName, fontSource);
+                FontSourcesByKey.TryAdd(fontSource.Key, fontSource);
+                FontSourcesByName.TryAdd(fontSource.FontName, fontSource);
                 return fontSource;
             }
             finally
@@ -374,9 +374,9 @@ namespace BreakDown.ManagedPdf.Core.Fonts
                 fontSource.Fontface = fontface; // Also sets the font name in fontSource
             }
 
-            FontSourcesByName.Add(typefaceKey, fontSource);
-            FontSourcesByName.Add(fontSource.FontName, fontSource);
-            FontSourcesByKey.Add(fontSource.Key, fontSource);
+            FontSourcesByName.TryAdd(typefaceKey, fontSource);
+            FontSourcesByName.TryAdd(fontSource.FontName, fontSource);
+            FontSourcesByKey.TryAdd(fontSource.Key, fontSource);
 
             return fontSource;
         }
@@ -386,7 +386,7 @@ namespace BreakDown.ManagedPdf.Core.Fonts
             try
             {
                 Lock.EnterFontFactory();
-                FontSourcesByName.Add(typefaceKey, fontSource);
+                FontSourcesByName.TryAdd(typefaceKey, fontSource);
             }
             finally
             {
@@ -456,30 +456,31 @@ namespace BreakDown.ManagedPdf.Core.Fonts
         /// Maps font typeface key to font resolver info.
         /// </summary>
 
-        //static readonly Dictionary<string, FontResolverInfo> FontResolverInfosByTypefaceKey = new Dictionary<string, FontResolverInfo>(StringComparer.OrdinalIgnoreCase);
-        static readonly Dictionary<string, FontResolverInfo> FontResolverInfosByName =
-            new Dictionary<string, FontResolverInfo>(StringComparer.OrdinalIgnoreCase);
+        //static readonly ConcurrentDictionary<string, FontResolverInfo> FontResolverInfosByTypefaceKey = new ConcurrentDictionary<string, FontResolverInfo>(StringComparer.OrdinalIgnoreCase);
+        static readonly ConcurrentDictionary<string, FontResolverInfo> FontResolverInfosByName =
+            new ConcurrentDictionary<string, FontResolverInfo>(StringComparer.OrdinalIgnoreCase);
 
         ///// <summary>
         ///// Maps font resolver info key to font resolver info.
         ///// </summary>
-        //static readonly Dictionary<string, FontResolverInfo> FontResolverInfosByKey = new Dictionary<string, FontResolverInfo>();
+        //static readonly ConcurrentDictionary<string, FontResolverInfo> FontResolverInfosByKey = new ConcurrentDictionary<string, FontResolverInfo>();
 
         /// <summary>
         /// Maps typeface key or font name to font source.
         /// </summary>
 
-        //static readonly Dictionary<string, XFontSource> FontSourcesByTypefaceKey = new Dictionary<string, XFontSource>(StringComparer.OrdinalIgnoreCase);
-        static readonly Dictionary<string, XFontSource> FontSourcesByName = new Dictionary<string, XFontSource>(StringComparer.OrdinalIgnoreCase);
+        //static readonly ConcurrentDictionary<string, XFontSource> FontSourcesByTypefaceKey = new ConcurrentDictionary<string, XFontSource>(StringComparer.OrdinalIgnoreCase);
+        static readonly ConcurrentDictionary<string, XFontSource> FontSourcesByName =
+            new ConcurrentDictionary<string, XFontSource>(StringComparer.OrdinalIgnoreCase);
 
         ///// <summary>
         ///// Maps font name to font source.
         ///// </summary>
-        //static readonly Dictionary<string, XFontSource> FontSourcesByFontName = new Dictionary<string, XFontSource>();
+        //static readonly ConcurrentDictionary<string, XFontSource> FontSourcesByFontName = new ConcurrentDictionary<string, XFontSource>();
 
         /// <summary>
         /// Maps font source key to font source.
         /// </summary>
-        static readonly Dictionary<ulong, XFontSource> FontSourcesByKey = new Dictionary<ulong, XFontSource>();
+        static readonly ConcurrentDictionary<ulong, XFontSource> FontSourcesByKey = new ConcurrentDictionary<ulong, XFontSource>();
     }
 }

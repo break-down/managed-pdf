@@ -30,6 +30,7 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -45,17 +46,17 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Internal
     {
         public ThreadLocalStorage()
         {
-            _importedDocuments = new Dictionary<string, PdfDocument.DocumentHandle>(StringComparer.OrdinalIgnoreCase);
+            _importedDocuments = new ConcurrentDictionary<string, PdfDocument.DocumentHandle>(StringComparer.OrdinalIgnoreCase);
         }
 
         public void AddDocument(string path, PdfDocument document)
         {
-            _importedDocuments.Add(path, document.Handle);
+            _importedDocuments.TryAdd(path, document.Handle);
         }
 
         public void RemoveDocument(string path)
         {
-            _importedDocuments.Remove(path);
+            _importedDocuments.TryRemove(path, out _);
         }
 
         public PdfDocument GetDocument(string path)
@@ -75,7 +76,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Internal
             if (document == null)
             {
                 document = PdfReader.Open(path, PdfDocumentOpenMode.Import);
-                _importedDocuments.Add(path, document.Handle);
+                _importedDocuments.TryAdd(path, document.Handle);
             }
 
             return document;
@@ -106,7 +107,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Internal
                 {
                     if (_importedDocuments[path] == handle)
                     {
-                        _importedDocuments.Remove(path);
+                        _importedDocuments.TryRemove(path, out _);
                         break;
                     }
                 }
@@ -121,7 +122,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Internal
                 {
                     if (!_importedDocuments[path].IsAlive)
                     {
-                        _importedDocuments.Remove(path);
+                        _importedDocuments.TryRemove(path, out _);
                         itemRemoved = true;
                         break;
                     }
@@ -132,6 +133,6 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Internal
         /// <summary>
         /// Maps path to document handle.
         /// </summary>
-        readonly Dictionary<string, PdfDocument.DocumentHandle> _importedDocuments;
+        readonly ConcurrentDictionary<string, PdfDocument.DocumentHandle> _importedDocuments;
     }
 }

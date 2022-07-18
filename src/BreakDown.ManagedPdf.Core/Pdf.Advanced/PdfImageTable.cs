@@ -30,7 +30,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using BreakDown.ManagedPdf.Core.Drawing;
 
@@ -76,7 +76,7 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
         /// <summary>
         /// Map from ImageSelector to PdfImage.
         /// </summary>
-        readonly Dictionary<ImageSelector, PdfImage> _images = new Dictionary<ImageSelector, PdfImage>();
+        readonly ConcurrentDictionary<ImageSelector, PdfImage> _images = new ConcurrentDictionary<ImageSelector, PdfImage>();
 
         /// <summary>
         /// A collection of information that uniquely identifies a particular PdfImage.

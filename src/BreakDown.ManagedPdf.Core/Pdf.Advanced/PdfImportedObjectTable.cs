@@ -30,7 +30,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
 {
@@ -123,6 +123,6 @@ namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
         /// Maps external object identifiers to cross reference entries of the importing document
         /// {PdfObjectID -> PdfReference}.
         /// </summary>
-        readonly Dictionary<string, PdfReference> _externalIDs = new Dictionary<string, PdfReference>();
+        readonly ConcurrentDictionary<string, PdfReference> _externalIDs = new ConcurrentDictionary<string, PdfReference>();
     }
 }
