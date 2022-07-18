@@ -29,54 +29,55 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting;
-
-/// <summary>
-/// Represents the collection of values on the X-Axis.
-/// </summary>
-public class XValues : DocumentObjectCollection
+namespace BreakDown.ManagedPdf.Charting.Charting
 {
     /// <summary>
-    /// Initializes a new instance of the XValues class.
+    /// Represents the collection of values on the X-Axis.
     /// </summary>
-    public XValues()
+    public class XValues : DocumentObjectCollection
     {
+        /// <summary>
+        /// Initializes a new instance of the XValues class.
+        /// </summary>
+        public XValues()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the XValues class with the specified parent.
+        /// </summary>
+        internal XValues(DocumentObject parent) : base(parent)
+        {
+        }
+
+        #region Methods
+
+        /// <summary>
+        /// Creates a deep copy of this object.
+        /// </summary>
+        public new XValues Clone()
+        {
+            return (XValues)DeepCopy();
+        }
+
+        /// <summary>
+        /// Gets an XSeries by its index.
+        /// </summary>
+        public new XSeries this[int index]
+        {
+            get { return base[index] as XSeries; }
+        }
+
+        /// <summary>
+        /// Adds a new XSeries to the collection.
+        /// </summary>
+        public XSeries AddXSeries()
+        {
+            var xSeries = new XSeries();
+            Add(xSeries);
+            return xSeries;
+        }
+
+        #endregion
     }
-
-    /// <summary>
-    /// Initializes a new instance of the XValues class with the specified parent.
-    /// </summary>
-    internal XValues(DocumentObject parent) : base(parent)
-    {
-    }
-
-    #region Methods
-
-    /// <summary>
-    /// Creates a deep copy of this object.
-    /// </summary>
-    public new XValues Clone()
-    {
-        return (XValues)DeepCopy();
-    }
-
-    /// <summary>
-    /// Gets an XSeries by its index.
-    /// </summary>
-    public new XSeries this[int index]
-    {
-        get { return base[index] as XSeries; }
-    }
-
-    /// <summary>
-    /// Adds a new XSeries to the collection.
-    /// </summary>
-    public XSeries AddXSeries()
-    {
-        var xSeries = new XSeries();
-        Add(xSeries);
-        return xSeries;
-    }
-
-    #endregion
 }

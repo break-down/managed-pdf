@@ -29,20 +29,21 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Pdf.enums;
-
-/// <summary>
-/// Specifies how the document should be displayed by a viewer when opened.
-/// </summary>
-public enum PdfReadingDirection
+namespace BreakDown.ManagedPdf.Core.Pdf.enums
 {
     /// <summary>
-    /// Left to right.
+    /// Specifies how the document should be displayed by a viewer when opened.
     /// </summary>
-    LeftToRight,
+    public enum PdfReadingDirection
+    {
+        /// <summary>
+        /// Left to right.
+        /// </summary>
+        LeftToRight,
 
-    /// <summary>
-    /// Right to left (including vertical writing systems, such as Chinese, Japanese, and Korean)
-    /// </summary>
-    RightToLeft,
+        /// <summary>
+        /// Right to left (including vertical writing systems, such as Chinese, Japanese, and Korean)
+        /// </summary>
+        RightToLeft,
+    }
 }

@@ -29,26 +29,27 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents the base class for all X axis renderer.
-/// </summary>
-internal abstract class XAxisRenderer : AxisRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the XAxisRenderer class with the specified renderer parameters.
+    /// Represents the base class for all X axis renderer.
     /// </summary>
-    internal XAxisRenderer(RendererParameters parms)
-        : base(parms)
+    internal abstract class XAxisRenderer : AxisRenderer
     {
-    }
+        /// <summary>
+        /// Initializes a new instance of the XAxisRenderer class with the specified renderer parameters.
+        /// </summary>
+        internal XAxisRenderer(RendererParameters parms)
+            : base(parms)
+        {
+        }
 
-    /// <summary>
-    /// Returns the default tick labels format string.
-    /// </summary>
-    protected override string GetDefaultTickLabelsFormat()
-    {
-        return "0";
+        /// <summary>
+        /// Returns the default tick labels format string.
+        /// </summary>
+        protected override string GetDefaultTickLabelsFormat()
+        {
+            return "0";
+        }
     }
 }

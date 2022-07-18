@@ -10,15 +10,16 @@
 // - Sun Tsu,
 // "The Art of War"
 
-namespace BreakDown.ManagedPdf.Html.Core.Dom;
-
-/// <summary>
-/// Border types
-/// </summary>
-internal enum Border
+namespace BreakDown.ManagedPdf.Html.Core.Dom
 {
-    Top,
-    Right,
-    Bottom,
-    Left
+    /// <summary>
+    /// Border types
+    /// </summary>
+    internal enum Border
+    {
+        Top,
+        Right,
+        Bottom,
+        Left
+    }
 }

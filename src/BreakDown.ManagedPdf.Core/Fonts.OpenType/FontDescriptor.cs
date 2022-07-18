@@ -42,373 +42,374 @@ using BreakDown.ManagedPdf.Core.Drawing.enums;
 
 #pragma warning disable 0649
 
-namespace BreakDown.ManagedPdf.Core.Fonts.OpenType;
-
-// TODO: Needs to be refactored #???
-/// <summary>
-/// Base class for all font descriptors.
-/// Currently only OpenTypeDescriptor is derived from this base class.
-/// </summary>
-internal class FontDescriptor
+namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
 {
-    protected FontDescriptor(string key)
-    {
-        _key = key;
-    }
-
-    public string Key
-    {
-        get { return _key; }
-    }
-
-    readonly string _key;
-
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //public string FontFile
-    //{
-    //  get { return _fontFile; }
-    //  private set { _fontFile = value; }  // BUG: never set
-    //}
-    //string _fontFile;
-
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //public string FontType
-    //{
-    //  get { return _fontType; }
-    //  private set { _fontType = value; }  // BUG: never set
-    //}
-    //string _fontType;
-
+    // TODO: Needs to be refactored #???
     /// <summary>
-    /// 
+    /// Base class for all font descriptors.
+    /// Currently only OpenTypeDescriptor is derived from this base class.
     /// </summary>
-    public string FontName
+    internal class FontDescriptor
     {
-        get { return _fontName; }
-        protected set { _fontName = value; }
-    }
+        protected FontDescriptor(string key)
+        {
+            _key = key;
+        }
 
-    string _fontName;
+        public string Key
+        {
+            get { return _key; }
+        }
 
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //public string FullName
-    //{
-    //    get { return _fullName; }
-    //    private set { _fullName = value; }  // BUG: never set
-    //}
-    //string _fullName;
+        readonly string _key;
 
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //public string FamilyName
-    //{
-    //    get { return _familyName; }
-    //    private set { _familyName = value; }  // BUG: never set
-    //}
-    //string _familyName;
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public string FontFile
+        //{
+        //  get { return _fontFile; }
+        //  private set { _fontFile = value; }  // BUG: never set
+        //}
+        //string _fontFile;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public string Weight
-    {
-        get { return _weight; }
-        private set { _weight = value; } // BUG: never set
-    }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public string FontType
+        //{
+        //  get { return _fontType; }
+        //  private set { _fontType = value; }  // BUG: never set
+        //}
+        //string _fontType;
 
-    string _weight;
+        /// <summary>
+        /// 
+        /// </summary>
+        public string FontName
+        {
+            get { return _fontName; }
+            protected set { _fontName = value; }
+        }
 
-    /// <summary>
-    /// Gets a value indicating whether this instance belongs to a bold font.
-    /// </summary>
-    public virtual bool IsBoldFace
-    {
-        get { return false; }
-    }
+        string _fontName;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public float ItalicAngle
-    {
-        get { return _italicAngle; }
-        protected set { _italicAngle = value; }
-    }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public string FullName
+        //{
+        //    get { return _fullName; }
+        //    private set { _fullName = value; }  // BUG: never set
+        //}
+        //string _fullName;
 
-    float _italicAngle;
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public string FamilyName
+        //{
+        //    get { return _familyName; }
+        //    private set { _familyName = value; }  // BUG: never set
+        //}
+        //string _familyName;
 
-    /// <summary>
-    /// Gets a value indicating whether this instance belongs to an italic font.
-    /// </summary>
-    public virtual bool IsItalicFace
-    {
-        get { return false; }
-    }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Weight
+        {
+            get { return _weight; }
+            private set { _weight = value; } // BUG: never set
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int XMin
-    {
-        get { return _xMin; }
-        protected set { _xMin = value; }
-    }
+        string _weight;
 
-    int _xMin;
+        /// <summary>
+        /// Gets a value indicating whether this instance belongs to a bold font.
+        /// </summary>
+        public virtual bool IsBoldFace
+        {
+            get { return false; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int YMin
-    {
-        get { return _yMin; }
-        protected set { _yMin = value; }
-    }
+        /// <summary>
+        /// 
+        /// </summary>
+        public float ItalicAngle
+        {
+            get { return _italicAngle; }
+            protected set { _italicAngle = value; }
+        }
 
-    int _yMin;
+        float _italicAngle;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int XMax
-    {
-        get { return _xMax; }
-        protected set { _xMax = value; }
-    }
+        /// <summary>
+        /// Gets a value indicating whether this instance belongs to an italic font.
+        /// </summary>
+        public virtual bool IsItalicFace
+        {
+            get { return false; }
+        }
 
-    int _xMax;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int XMin
+        {
+            get { return _xMin; }
+            protected set { _xMin = value; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int YMax
-    {
-        get { return _yMax; }
-        protected set { _yMax = value; }
-    }
+        int _xMin;
 
-    int _yMax;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int YMin
+        {
+            get { return _yMin; }
+            protected set { _yMin = value; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public bool IsFixedPitch
-    {
-        get { return _isFixedPitch; }
-        private set { _isFixedPitch = value; } // BUG: never set
-    }
+        int _yMin;
 
-    bool _isFixedPitch;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int XMax
+        {
+            get { return _xMax; }
+            protected set { _xMax = value; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int UnderlinePosition
-    {
-        get { return _underlinePosition; }
-        protected set { _underlinePosition = value; }
-    }
+        int _xMax;
 
-    int _underlinePosition;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int YMax
+        {
+            get { return _yMax; }
+            protected set { _yMax = value; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int UnderlineThickness
-    {
-        get { return _underlineThickness; }
-        protected set { _underlineThickness = value; }
-    }
+        int _yMax;
 
-    int _underlineThickness;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsFixedPitch
+        {
+            get { return _isFixedPitch; }
+            private set { _isFixedPitch = value; } // BUG: never set
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int StrikeoutPosition
-    {
-        get { return _strikeoutPosition; }
-        protected set { _strikeoutPosition = value; }
-    }
+        bool _isFixedPitch;
 
-    int _strikeoutPosition;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int UnderlinePosition
+        {
+            get { return _underlinePosition; }
+            protected set { _underlinePosition = value; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int StrikeoutSize
-    {
-        get { return _strikeoutSize; }
-        protected set { _strikeoutSize = value; }
-    }
+        int _underlinePosition;
 
-    int _strikeoutSize;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int UnderlineThickness
+        {
+            get { return _underlineThickness; }
+            protected set { _underlineThickness = value; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public string Version
-    {
-        get { return _version; }
-        private set { _version = value; } // BUG: never set
-    }
+        int _underlineThickness;
 
-    string _version;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int StrikeoutPosition
+        {
+            get { return _strikeoutPosition; }
+            protected set { _strikeoutPosition = value; }
+        }
 
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //public string Notice
-    //{
-    //  get { return Notice; }
-    //}
-    //protected string notice;
+        int _strikeoutPosition;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public string EncodingScheme
-    {
-        get { return _encodingScheme; }
-        private set { _encodingScheme = value; } // BUG: never set
-    }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int StrikeoutSize
+        {
+            get { return _strikeoutSize; }
+            protected set { _strikeoutSize = value; }
+        }
 
-    string _encodingScheme;
+        int _strikeoutSize;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int UnitsPerEm
-    {
-        get { return _unitsPerEm; }
-        protected set { _unitsPerEm = value; }
-    }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Version
+        {
+            get { return _version; }
+            private set { _version = value; } // BUG: never set
+        }
 
-    int _unitsPerEm;
+        string _version;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int CapHeight
-    {
-        get { return _capHeight; }
-        protected set { _capHeight = value; }
-    }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public string Notice
+        //{
+        //  get { return Notice; }
+        //}
+        //protected string notice;
 
-    int _capHeight;
+        /// <summary>
+        /// 
+        /// </summary>
+        public string EncodingScheme
+        {
+            get { return _encodingScheme; }
+            private set { _encodingScheme = value; } // BUG: never set
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int XHeight
-    {
-        get { return _xHeight; }
-        protected set { _xHeight = value; }
-    }
+        string _encodingScheme;
 
-    int _xHeight;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int UnitsPerEm
+        {
+            get { return _unitsPerEm; }
+            protected set { _unitsPerEm = value; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int Ascender
-    {
-        get { return _ascender; }
-        protected set { _ascender = value; }
-    }
+        int _unitsPerEm;
 
-    int _ascender;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int CapHeight
+        {
+            get { return _capHeight; }
+            protected set { _capHeight = value; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int Descender
-    {
-        get { return _descender; }
-        protected set { _descender = value; }
-    }
+        int _capHeight;
 
-    int _descender;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int XHeight
+        {
+            get { return _xHeight; }
+            protected set { _xHeight = value; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int Leading
-    {
-        get { return _leading; }
-        protected set { _leading = value; }
-    }
+        int _xHeight;
 
-    int _leading;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Ascender
+        {
+            get { return _ascender; }
+            protected set { _ascender = value; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int Flags
-    {
-        get { return _flags; }
-        private set { _flags = value; } // BUG: never set
-    }
+        int _ascender;
 
-    int _flags;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Descender
+        {
+            get { return _descender; }
+            protected set { _descender = value; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int StemV
-    {
-        get { return _stemV; }
-        protected set { _stemV = value; }
-    }
+        int _descender;
 
-    int _stemV;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Leading
+        {
+            get { return _leading; }
+            protected set { _leading = value; }
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public int LineSpacing
-    {
-        get { return _lineSpacing; }
-        protected set { _lineSpacing = value; }
-    }
+        int _leading;
 
-    int _lineSpacing;
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Flags
+        {
+            get { return _flags; }
+            private set { _flags = value; } // BUG: never set
+        }
 
-    internal static string ComputeKey(XFont font)
-    {
-        return font.GlyphTypeface.Key;
+        int _flags;
 
-        //return ComputeKey(font.GlyphTypeface.Fontface.FullFaceName, font.Style);
-        //XGlyphTypeface glyphTypeface = font.GlyphTypeface;
-        //string key = glyphTypeface.Fontface.FullFaceName.ToLowerInvariant() +
-        //    (glyphTypeface.IsBold ? "/b" : "") + (glyphTypeface.IsItalic ? "/i" : "");
-        //return key;
-    }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int StemV
+        {
+            get { return _stemV; }
+            protected set { _stemV = value; }
+        }
 
-    internal static string ComputeKey(string name, XFontStyle style)
-    {
-        return ComputeKey(name,
-                          (style & XFontStyle.Bold) == XFontStyle.Bold,
-                          (style & XFontStyle.Italic) == XFontStyle.Italic);
-    }
+        int _stemV;
 
-    internal static string ComputeKey(string name, bool isBold, bool isItalic)
-    {
-        var key = name.ToLowerInvariant() + '/'
-                                          + (isBold ? "b" : "") + (isItalic ? "i" : "");
-        return key;
-    }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int LineSpacing
+        {
+            get { return _lineSpacing; }
+            protected set { _lineSpacing = value; }
+        }
 
-    internal static string ComputeKey(string name)
-    {
-        var key = name.ToLowerInvariant();
-        return key;
+        int _lineSpacing;
+
+        internal static string ComputeKey(XFont font)
+        {
+            return font.GlyphTypeface.Key;
+
+            //return ComputeKey(font.GlyphTypeface.Fontface.FullFaceName, font.Style);
+            //XGlyphTypeface glyphTypeface = font.GlyphTypeface;
+            //string key = glyphTypeface.Fontface.FullFaceName.ToLowerInvariant() +
+            //    (glyphTypeface.IsBold ? "/b" : "") + (glyphTypeface.IsItalic ? "/i" : "");
+            //return key;
+        }
+
+        internal static string ComputeKey(string name, XFontStyle style)
+        {
+            return ComputeKey(name,
+                              (style & XFontStyle.Bold) == XFontStyle.Bold,
+                              (style & XFontStyle.Italic) == XFontStyle.Italic);
+        }
+
+        internal static string ComputeKey(string name, bool isBold, bool isItalic)
+        {
+            var key = name.ToLowerInvariant() + '/'
+                                              + (isBold ? "b" : "") + (isItalic ? "i" : "");
+            return key;
+        }
+
+        internal static string ComputeKey(string name)
+        {
+            var key = name.ToLowerInvariant();
+            return key;
+        }
     }
 }

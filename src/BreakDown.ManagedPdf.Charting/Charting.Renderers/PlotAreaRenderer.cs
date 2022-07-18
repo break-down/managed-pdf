@@ -31,59 +31,60 @@
 
 using BreakDown.ManagedPdf.Core.Drawing;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Base class for all plot area renderers.
-/// </summary>
-internal abstract class PlotAreaRenderer : Renderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the PlotAreaRenderer class with the specified renderer parameters.
+    /// Base class for all plot area renderers.
     /// </summary>
-    internal PlotAreaRenderer(RendererParameters parms)
-        : base(parms)
+    internal abstract class PlotAreaRenderer : Renderer
     {
-    }
-
-    /// <summary>
-    /// Returns an initialized PlotAreaRendererInfo.
-    /// </summary>
-    internal override RendererInfo Init()
-    {
-        var pari = new PlotAreaRendererInfo();
-        pari._plotArea = ((ChartRendererInfo)_rendererParms.RendererInfo)._chart._plotArea;
-        InitLineFormat(pari);
-        InitFillFormat(pari);
-        return pari;
-    }
-
-    /// <summary>
-    /// Initializes the plot area's line format common to all derived plot area renderers.
-    /// If line format is given all uninitialized values will be set.
-    /// </summary>
-    protected void InitLineFormat(PlotAreaRendererInfo rendererInfo)
-    {
-        if (rendererInfo._plotArea._lineFormat != null)
+        /// <summary>
+        /// Initializes a new instance of the PlotAreaRenderer class with the specified renderer parameters.
+        /// </summary>
+        internal PlotAreaRenderer(RendererParameters parms)
+            : base(parms)
         {
-            rendererInfo.LineFormat = Converter.ToXPen(rendererInfo._plotArea._lineFormat, XColors.Black, DefaultLineWidth);
         }
-    }
 
-    /// <summary>
-    /// Initializes the plot area's fill format common to all derived plot area renderers.
-    /// If fill format is given all uninitialized values will be set.
-    /// </summary>
-    protected void InitFillFormat(PlotAreaRendererInfo rendererInfo)
-    {
-        if (rendererInfo._plotArea._fillFormat != null)
+        /// <summary>
+        /// Returns an initialized PlotAreaRendererInfo.
+        /// </summary>
+        internal override RendererInfo Init()
         {
-            rendererInfo.FillFormat = Converter.ToXBrush(rendererInfo._plotArea._fillFormat, XColors.White);
+            var pari = new PlotAreaRendererInfo();
+            pari._plotArea = ((ChartRendererInfo)_rendererParms.RendererInfo)._chart._plotArea;
+            InitLineFormat(pari);
+            InitFillFormat(pari);
+            return pari;
         }
-    }
 
-    /// <summary>
-    /// Represents the default line width for the plot area's border.
-    /// </summary>
-    protected const double DefaultLineWidth = 0.15;
+        /// <summary>
+        /// Initializes the plot area's line format common to all derived plot area renderers.
+        /// If line format is given all uninitialized values will be set.
+        /// </summary>
+        protected void InitLineFormat(PlotAreaRendererInfo rendererInfo)
+        {
+            if (rendererInfo._plotArea._lineFormat != null)
+            {
+                rendererInfo.LineFormat = Converter.ToXPen(rendererInfo._plotArea._lineFormat, XColors.Black, DefaultLineWidth);
+            }
+        }
+
+        /// <summary>
+        /// Initializes the plot area's fill format common to all derived plot area renderers.
+        /// If fill format is given all uninitialized values will be set.
+        /// </summary>
+        protected void InitFillFormat(PlotAreaRendererInfo rendererInfo)
+        {
+            if (rendererInfo._plotArea._fillFormat != null)
+            {
+                rendererInfo.FillFormat = Converter.ToXBrush(rendererInfo._plotArea._fillFormat, XColors.White);
+            }
+        }
+
+        /// <summary>
+        /// Represents the default line width for the plot area's border.
+        /// </summary>
+        protected const double DefaultLineWidth = 0.15;
+    }
 }

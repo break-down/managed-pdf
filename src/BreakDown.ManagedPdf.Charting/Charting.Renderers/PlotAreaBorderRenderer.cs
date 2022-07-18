@@ -29,33 +29,34 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents the border renderer for plot areas.
-/// </summary>
-internal class PlotAreaBorderRenderer : Renderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the PlotAreaBorderRenderer class with the specified
-    /// renderer parameters.
+    /// Represents the border renderer for plot areas.
     /// </summary>
-    internal PlotAreaBorderRenderer(RendererParameters parms)
-        : base(parms)
+    internal class PlotAreaBorderRenderer : Renderer
     {
-    }
-
-    /// <summary>
-    /// Draws the border around the plot area.
-    /// </summary>
-    internal override void Draw()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        if (cri.plotAreaRendererInfo.LineFormat != null && cri.plotAreaRendererInfo.LineFormat.Width > 0)
+        /// <summary>
+        /// Initializes a new instance of the PlotAreaBorderRenderer class with the specified
+        /// renderer parameters.
+        /// </summary>
+        internal PlotAreaBorderRenderer(RendererParameters parms)
+            : base(parms)
         {
-            var gfx = _rendererParms.Graphics;
-            var lineFormatRenderer = new LineFormatRenderer(gfx, cri.plotAreaRendererInfo.LineFormat);
-            lineFormatRenderer.DrawRectangle(cri.plotAreaRendererInfo.Rect);
+        }
+
+        /// <summary>
+        /// Draws the border around the plot area.
+        /// </summary>
+        internal override void Draw()
+        {
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            if (cri.plotAreaRendererInfo.LineFormat != null && cri.plotAreaRendererInfo.LineFormat.Width > 0)
+            {
+                var gfx = _rendererParms.Graphics;
+                var lineFormatRenderer = new LineFormatRenderer(gfx, cri.plotAreaRendererInfo.LineFormat);
+                lineFormatRenderer.DrawRectangle(cri.plotAreaRendererInfo.Rect);
+            }
         }
     }
 }

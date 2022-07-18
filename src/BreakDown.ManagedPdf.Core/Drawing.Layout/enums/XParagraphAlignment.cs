@@ -29,35 +29,36 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Drawing.Layout.enums;
-
-/// <summary>
-/// Specifies the alignment of a paragraph.
-/// </summary>
-public enum XParagraphAlignment
+namespace BreakDown.ManagedPdf.Core.Drawing.Layout.enums
 {
     /// <summary>
-    /// Default alignment, typically left alignment.
+    /// Specifies the alignment of a paragraph.
     /// </summary>
-    Default,
+    public enum XParagraphAlignment
+    {
+        /// <summary>
+        /// Default alignment, typically left alignment.
+        /// </summary>
+        Default,
 
-    /// <summary>
-    /// The paragraph is rendered left aligned.
-    /// </summary>
-    Left,
+        /// <summary>
+        /// The paragraph is rendered left aligned.
+        /// </summary>
+        Left,
 
-    /// <summary>
-    /// The paragraph is rendered centered.
-    /// </summary>
-    Center,
+        /// <summary>
+        /// The paragraph is rendered centered.
+        /// </summary>
+        Center,
 
-    /// <summary>
-    /// The paragraph is rendered right aligned.
-    /// </summary>
-    Right,
+        /// <summary>
+        /// The paragraph is rendered right aligned.
+        /// </summary>
+        Right,
 
-    /// <summary>
-    /// The paragraph is rendered justified.
-    /// </summary>
-    Justify,
+        /// <summary>
+        /// The paragraph is rendered justified.
+        /// </summary>
+        Justify,
+    }
 }

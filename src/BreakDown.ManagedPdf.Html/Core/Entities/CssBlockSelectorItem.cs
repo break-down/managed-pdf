@@ -12,61 +12,62 @@
 
 using BreakDown.ManagedPdf.Html.Core.Utils;
 
-namespace BreakDown.ManagedPdf.Html.Core.Entities;
-
-/// <summary>
-/// Holds single class selector in css block hierarchical selection (p class1 > div.class2)
-/// </summary>
-public struct CssBlockSelectorItem
+namespace BreakDown.ManagedPdf.Html.Core.Entities
 {
-    #region Fields and Consts
-
     /// <summary>
-    /// the name of the css class of the block
+    /// Holds single class selector in css block hierarchical selection (p class1 > div.class2)
     /// </summary>
-    private readonly string _class;
-
-    /// <summary>
-    /// is the selector item has to be direct parent
-    /// </summary>
-    private readonly bool _directParent;
-
-    #endregion
-
-    /// <summary>
-    /// Creates a new block from the block's source
-    /// </summary>
-    /// <param name="class">the name of the css class of the block</param>
-    /// <param name="directParent"> </param>
-    public CssBlockSelectorItem(string @class, bool directParent)
+    public struct CssBlockSelectorItem
     {
-        ArgChecker.AssertArgNotNullOrEmpty(@class, "@class");
+        #region Fields and Consts
 
-        _class = @class;
-        _directParent = directParent;
-    }
+        /// <summary>
+        /// the name of the css class of the block
+        /// </summary>
+        private readonly string _class;
 
-    /// <summary>
-    /// the name of the css class of the block
-    /// </summary>
-    public string Class
-    {
-        get { return _class; }
-    }
+        /// <summary>
+        /// is the selector item has to be direct parent
+        /// </summary>
+        private readonly bool _directParent;
 
-    /// <summary>
-    /// is the selector item has to be direct parent
-    /// </summary>
-    public bool DirectParent
-    {
-        get { return _directParent; }
-    }
+        #endregion
 
-    /// <summary>
-    /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-    /// </summary>
-    public override string ToString()
-    {
-        return _class + (_directParent ? " > " : string.Empty);
+        /// <summary>
+        /// Creates a new block from the block's source
+        /// </summary>
+        /// <param name="class">the name of the css class of the block</param>
+        /// <param name="directParent"> </param>
+        public CssBlockSelectorItem(string @class, bool directParent)
+        {
+            ArgChecker.AssertArgNotNullOrEmpty(@class, "@class");
+
+            _class = @class;
+            _directParent = directParent;
+        }
+
+        /// <summary>
+        /// the name of the css class of the block
+        /// </summary>
+        public string Class
+        {
+            get { return _class; }
+        }
+
+        /// <summary>
+        /// is the selector item has to be direct parent
+        /// </summary>
+        public bool DirectParent
+        {
+            get { return _directParent; }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+        /// </summary>
+        public override string ToString()
+        {
+            return _class + (_directParent ? " > " : string.Empty);
+        }
     }
 }

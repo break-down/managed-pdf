@@ -31,120 +31,121 @@
 
 using BreakDown.ManagedPdf.Core.Drawing;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a plot area renderer of clustered columns, i. e. all columns are drawn side by side.
-/// </summary>
-internal abstract class ColumnPlotAreaRenderer : ColumnLikePlotAreaRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the ColumnPlotAreaRenderer class with the
-    /// specified renderer parameters.
+    /// Represents a plot area renderer of clustered columns, i. e. all columns are drawn side by side.
     /// </summary>
-    internal ColumnPlotAreaRenderer(RendererParameters parms)
-        : base(parms)
+    internal abstract class ColumnPlotAreaRenderer : ColumnLikePlotAreaRenderer
     {
-    }
-
-    /// <summary>
-    /// Layouts and calculates the space for each column.
-    /// </summary>
-    internal override void Format()
-    {
-        base.Format();
-        CalcColumns();
-    }
-
-    /// <summary>
-    /// Draws the content of the column plot area.
-    /// </summary>
-    internal override void Draw()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-
-        var plotAreaBox = cri.plotAreaRendererInfo.Rect;
-        if (plotAreaBox.IsEmpty)
+        /// <summary>
+        /// Initializes a new instance of the ColumnPlotAreaRenderer class with the
+        /// specified renderer parameters.
+        /// </summary>
+        internal ColumnPlotAreaRenderer(RendererParameters parms)
+            : base(parms)
         {
-            return;
         }
 
-        var gfx = _rendererParms.Graphics;
-
-        var xMin = cri.xAxisRendererInfo.MinimumScale;
-        var xMax = cri.xAxisRendererInfo.MaximumScale;
-        var yMin = cri.yAxisRendererInfo.MinimumScale;
-        var yMax = cri.yAxisRendererInfo.MaximumScale;
-
-        LineFormatRenderer lineFormatRenderer;
-
-        // Under some circumstances it is possible that no zero base line will be drawn,
-        // e. g. because of unfavourable minimum/maximum scale and/or major tick, so force to draw
-        // a zero base line if necessary.
-        if (cri.yAxisRendererInfo.MajorGridlinesLineFormat != null ||
-            cri.yAxisRendererInfo.MinorGridlinesLineFormat != null)
+        /// <summary>
+        /// Layouts and calculates the space for each column.
+        /// </summary>
+        internal override void Format()
         {
-            if (yMin < 0 && yMax > 0)
+            base.Format();
+            CalcColumns();
+        }
+
+        /// <summary>
+        /// Draws the content of the column plot area.
+        /// </summary>
+        internal override void Draw()
+        {
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+
+            var plotAreaBox = cri.plotAreaRendererInfo.Rect;
+            if (plotAreaBox.IsEmpty)
             {
-                var points = new XPoint[2];
-                points[0].X = xMin;
-                points[0].Y = 0;
-                points[1].X = xMax;
-                points[1].Y = 0;
-                cri.plotAreaRendererInfo._matrix.TransformPoints(points);
-
-                if (cri.yAxisRendererInfo.MinorGridlinesLineFormat != null)
-                {
-                    lineFormatRenderer = new LineFormatRenderer(gfx, cri.yAxisRendererInfo.MinorGridlinesLineFormat);
-                }
-                else
-                {
-                    lineFormatRenderer = new LineFormatRenderer(gfx, cri.yAxisRendererInfo.MajorGridlinesLineFormat);
-                }
-
-                lineFormatRenderer.DrawLine(points[0], points[1]);
+                return;
             }
-        }
 
-        // Draw columns
-        var state = gfx.Save();
-        foreach (var sri in cri.seriesRendererInfos)
-        {
-            foreach (ColumnRendererInfo column in sri._pointRendererInfos)
+            var gfx = _rendererParms.Graphics;
+
+            var xMin = cri.xAxisRendererInfo.MinimumScale;
+            var xMax = cri.xAxisRendererInfo.MaximumScale;
+            var yMin = cri.yAxisRendererInfo.MinimumScale;
+            var yMax = cri.yAxisRendererInfo.MaximumScale;
+
+            LineFormatRenderer lineFormatRenderer;
+
+            // Under some circumstances it is possible that no zero base line will be drawn,
+            // e. g. because of unfavourable minimum/maximum scale and/or major tick, so force to draw
+            // a zero base line if necessary.
+            if (cri.yAxisRendererInfo.MajorGridlinesLineFormat != null ||
+                cri.yAxisRendererInfo.MinorGridlinesLineFormat != null)
             {
-                // Do not draw column if value is outside yMin/yMax range. Clipping does not make sense.
-                if (IsDataInside(yMin, yMax, column.Point._value))
+                if (yMin < 0 && yMax > 0)
                 {
-                    gfx.DrawRectangle(column.FillFormat, column.Rect);
+                    var points = new XPoint[2];
+                    points[0].X = xMin;
+                    points[0].Y = 0;
+                    points[1].X = xMax;
+                    points[1].Y = 0;
+                    cri.plotAreaRendererInfo._matrix.TransformPoints(points);
+
+                    if (cri.yAxisRendererInfo.MinorGridlinesLineFormat != null)
+                    {
+                        lineFormatRenderer = new LineFormatRenderer(gfx, cri.yAxisRendererInfo.MinorGridlinesLineFormat);
+                    }
+                    else
+                    {
+                        lineFormatRenderer = new LineFormatRenderer(gfx, cri.yAxisRendererInfo.MajorGridlinesLineFormat);
+                    }
+
+                    lineFormatRenderer.DrawLine(points[0], points[1]);
                 }
             }
-        }
 
-        // Draw borders around column.
-        // A border can overlap neighbor columns, so it is important to draw borders at the end.
-        foreach (var sri in cri.seriesRendererInfos)
-        {
-            foreach (ColumnRendererInfo column in sri._pointRendererInfos)
+            // Draw columns
+            var state = gfx.Save();
+            foreach (var sri in cri.seriesRendererInfos)
             {
-                // Do not draw column if value is outside yMin/yMax range. Clipping does not make sense.
-                if (IsDataInside(yMin, yMax, column.Point._value) && column.LineFormat.Width > 0)
+                foreach (ColumnRendererInfo column in sri._pointRendererInfos)
                 {
-                    lineFormatRenderer = new LineFormatRenderer(gfx, column.LineFormat);
-                    lineFormatRenderer.DrawRectangle(column.Rect);
+                    // Do not draw column if value is outside yMin/yMax range. Clipping does not make sense.
+                    if (IsDataInside(yMin, yMax, column.Point._value))
+                    {
+                        gfx.DrawRectangle(column.FillFormat, column.Rect);
+                    }
                 }
             }
+
+            // Draw borders around column.
+            // A border can overlap neighbor columns, so it is important to draw borders at the end.
+            foreach (var sri in cri.seriesRendererInfos)
+            {
+                foreach (ColumnRendererInfo column in sri._pointRendererInfos)
+                {
+                    // Do not draw column if value is outside yMin/yMax range. Clipping does not make sense.
+                    if (IsDataInside(yMin, yMax, column.Point._value) && column.LineFormat.Width > 0)
+                    {
+                        lineFormatRenderer = new LineFormatRenderer(gfx, column.LineFormat);
+                        lineFormatRenderer.DrawRectangle(column.Rect);
+                    }
+                }
+            }
+
+            gfx.Restore(state);
         }
 
-        gfx.Restore(state);
+        /// <summary>
+        /// Calculates the position, width and height of each column of all series.
+        /// </summary>
+        protected abstract void CalcColumns();
+
+        /// <summary>
+        /// If yValue is within the range from yMin to yMax returns true, otherwise false.
+        /// </summary>
+        protected abstract bool IsDataInside(double yMin, double yMax, double yValue);
     }
-
-    /// <summary>
-    /// Calculates the position, width and height of each column of all series.
-    /// </summary>
-    protected abstract void CalcColumns();
-
-    /// <summary>
-    /// If yValue is within the range from yMin to yMax returns true, otherwise false.
-    /// </summary>
-    protected abstract bool IsDataInside(double yMin, double yMax, double yValue);
 }

@@ -29,82 +29,83 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Events;
-
-/// <summary>
-/// A class encapsulating all events of a PdfDocument.
-/// </summary>
-public class DocumentEvents
+namespace BreakDown.ManagedPdf.Core.Events
 {
     /// <summary>
-    /// An event raised if a page was added.
+    /// A class encapsulating all events of a PdfDocument.
     /// </summary>
-    /// <param name="sender">The sender of the event.</param>
-    /// <param name="args">The PageEventArgs of the event.</param>
-    public void OnPageAdded(object sender, PageEventArgs args)
+    public class DocumentEvents
     {
-        if (PageAdded != null)
+        /// <summary>
+        /// An event raised if a page was added.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="args">The PageEventArgs of the event.</param>
+        public void OnPageAdded(object sender, PageEventArgs args)
         {
-            PageAdded(sender, args);
+            if (PageAdded != null)
+            {
+                PageAdded(sender, args);
+            }
         }
-    }
 
-    /// <summary>
-    /// EventHandler for OnPageAdded.
-    /// </summary>
-    public event PageAddedOrRemovedEventHandler PageAdded;
+        /// <summary>
+        /// EventHandler for OnPageAdded.
+        /// </summary>
+        public event PageAddedOrRemovedEventHandler PageAdded;
 
-    /// <summary>
-    /// An event raised if a page was removes.
-    /// </summary>
-    /// <param name="sender">The sender of the event.</param>
-    /// <param name="args">The PageEventArgs of the event.</param>
-    public void OnPageRemoved(object sender, PageEventArgs args)
-    {
-        if (PageRemoved != null)
+        /// <summary>
+        /// An event raised if a page was removes.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="args">The PageEventArgs of the event.</param>
+        public void OnPageRemoved(object sender, PageEventArgs args)
         {
-            PageRemoved(sender, args);
+            if (PageRemoved != null)
+            {
+                PageRemoved(sender, args);
+            }
         }
-    }
 
-    /// <summary>
-    /// EventHandler for OnPageRemoved.
-    /// </summary>
-    public event PageAddedOrRemovedEventHandler PageRemoved;
+        /// <summary>
+        /// EventHandler for OnPageRemoved.
+        /// </summary>
+        public event PageAddedOrRemovedEventHandler PageRemoved;
 
-    /// <summary>
-    /// An event raised if the XGraphics object of a page is created.
-    /// </summary>
-    /// <param name="sender">The sender of the event.</param>
-    /// <param name="args">The PageGraphicsEventArgs of the event.</param>
-    public void OnPageGraphicsCreated(object sender, PageGraphicsEventArgs args)
-    {
-        if (PageGraphicsCreated != null)
+        /// <summary>
+        /// An event raised if the XGraphics object of a page is created.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="args">The PageGraphicsEventArgs of the event.</param>
+        public void OnPageGraphicsCreated(object sender, PageGraphicsEventArgs args)
         {
-            PageGraphicsCreated(sender, args);
+            if (PageGraphicsCreated != null)
+            {
+                PageGraphicsCreated(sender, args);
+            }
         }
-    }
 
-    /// <summary>
-    /// EventHandler for OnPageGraphicsCreated.
-    /// </summary>
-    public event PageGraphicsEventHandler PageGraphicsCreated;
+        /// <summary>
+        /// EventHandler for OnPageGraphicsCreated.
+        /// </summary>
+        public event PageGraphicsEventHandler PageGraphicsCreated;
 
-    /// <summary>
-    /// An event raised if something is drawn on a page's XGraphics object.
-    /// </summary>
-    /// <param name="sender">The sender of the event.</param>
-    /// <param name="args">The PageGraphicsEventArgs of the event.</param>
-    public void OnPageGraphicsAction(object sender, PageGraphicsEventArgs args)
-    {
-        if (PageGraphicsAction != null)
+        /// <summary>
+        /// An event raised if something is drawn on a page's XGraphics object.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="args">The PageGraphicsEventArgs of the event.</param>
+        public void OnPageGraphicsAction(object sender, PageGraphicsEventArgs args)
         {
-            PageGraphicsAction(sender, args);
+            if (PageGraphicsAction != null)
+            {
+                PageGraphicsAction(sender, args);
+            }
         }
-    }
 
-    /// <summary>
-    /// EventHandler for OnPageGraphicsAction.
-    /// </summary>
-    public event PageGraphicsEventHandler PageGraphicsAction;
+        /// <summary>
+        /// EventHandler for OnPageGraphicsAction.
+        /// </summary>
+        public event PageGraphicsEventHandler PageGraphicsAction;
+    }
 }

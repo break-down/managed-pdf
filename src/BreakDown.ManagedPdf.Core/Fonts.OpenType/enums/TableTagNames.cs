@@ -31,182 +31,183 @@
 
 // ReSharper disable InconsistentNaming
 
-namespace BreakDown.ManagedPdf.Core.Fonts.OpenType.enums;
-
-/// <summary>
-/// TrueType font table names.
-/// </summary>
-static class TableTagNames
+namespace BreakDown.ManagedPdf.Core.Fonts.OpenType.enums
 {
-    // --- Required Tables ---
-
     /// <summary>
-    /// Character to glyph mapping.
+    /// TrueType font table names.
     /// </summary>
-    public const string CMap = "cmap";
+    static class TableTagNames
+    {
+        // --- Required Tables ---
 
-    /// <summary>
-    /// Font header .
-    /// </summary>
-    public const string Head = "head";
+        /// <summary>
+        /// Character to glyph mapping.
+        /// </summary>
+        public const string CMap = "cmap";
 
-    /// <summary>
-    /// Horizontal header.
-    /// </summary>
-    public const string HHea = "hhea";
+        /// <summary>
+        /// Font header .
+        /// </summary>
+        public const string Head = "head";
 
-    /// <summary>
-    /// Horizontal Metrics.
-    /// </summary>
-    public const string HMtx = "hmtx";
+        /// <summary>
+        /// Horizontal header.
+        /// </summary>
+        public const string HHea = "hhea";
 
-    /// <summary>
-    /// Maximum profile.
-    /// </summary>
-    public const string MaxP = "maxp";
+        /// <summary>
+        /// Horizontal Metrics.
+        /// </summary>
+        public const string HMtx = "hmtx";
 
-    /// <summary>
-    /// Naming table.
-    /// </summary>
-    public const string Name = "name";
+        /// <summary>
+        /// Maximum profile.
+        /// </summary>
+        public const string MaxP = "maxp";
 
-    /// <summary>
-    /// OS/2 and Windows specific Metrics.
-    /// </summary>
-    public const string OS2 = "OS/2";
+        /// <summary>
+        /// Naming table.
+        /// </summary>
+        public const string Name = "name";
 
-    /// <summary>
-    /// PostScript information.
-    /// </summary>
-    public const string Post = "post";
+        /// <summary>
+        /// OS/2 and Windows specific Metrics.
+        /// </summary>
+        public const string OS2 = "OS/2";
 
-    // --- Tables Related to TrueType Outlines ---
+        /// <summary>
+        /// PostScript information.
+        /// </summary>
+        public const string Post = "post";
 
-    /// <summary>
-    /// Control Value Table.
-    /// </summary>
-    public const string Cvt = "cvt ";
+        // --- Tables Related to TrueType Outlines ---
 
-    /// <summary>
-    /// Font program.
-    /// </summary>
-    public const string Fpgm = "fpgm";
+        /// <summary>
+        /// Control Value Table.
+        /// </summary>
+        public const string Cvt = "cvt ";
 
-    /// <summary>
-    /// Glyph data.
-    /// </summary>
-    public const string Glyf = "glyf";
+        /// <summary>
+        /// Font program.
+        /// </summary>
+        public const string Fpgm = "fpgm";
 
-    /// <summary>
-    /// Index to location.
-    /// </summary>
-    public const string Loca = "loca";
+        /// <summary>
+        /// Glyph data.
+        /// </summary>
+        public const string Glyf = "glyf";
 
-    /// <summary>
-    /// CVT Program.
-    /// </summary>
-    public const string Prep = "prep";
+        /// <summary>
+        /// Index to location.
+        /// </summary>
+        public const string Loca = "loca";
 
-    // --- Tables Related to PostScript Outlines ---
+        /// <summary>
+        /// CVT Program.
+        /// </summary>
+        public const string Prep = "prep";
 
-    /// <summary>
-    /// PostScript font program (compact font format).
-    /// </summary>
-    public const string Cff = "CFF";
+        // --- Tables Related to PostScript Outlines ---
 
-    /// <summary>
-    /// Vertical Origin.
-    /// </summary>
-    public const string VOrg = "VORG";
+        /// <summary>
+        /// PostScript font program (compact font format).
+        /// </summary>
+        public const string Cff = "CFF";
 
-    // --- Tables Related to Bitmap Glyphs ---
+        /// <summary>
+        /// Vertical Origin.
+        /// </summary>
+        public const string VOrg = "VORG";
 
-    /// <summary>
-    /// Embedded bitmap data.
-    /// </summary>
-    public const string EBDT = "EBDT";
+        // --- Tables Related to Bitmap Glyphs ---
 
-    /// <summary>
-    /// Embedded bitmap location data.
-    /// </summary>
-    public const string EBLC = "EBLC";
+        /// <summary>
+        /// Embedded bitmap data.
+        /// </summary>
+        public const string EBDT = "EBDT";
 
-    /// <summary>
-    /// Embedded bitmap scaling data.
-    /// </summary>
-    public const string EBSC = "EBSC";
+        /// <summary>
+        /// Embedded bitmap location data.
+        /// </summary>
+        public const string EBLC = "EBLC";
 
-    // --- Advanced Typographic Tables ---
+        /// <summary>
+        /// Embedded bitmap scaling data.
+        /// </summary>
+        public const string EBSC = "EBSC";
 
-    /// <summary>
-    /// Baseline data.
-    /// </summary>
-    public const string BASE = "BASE";
+        // --- Advanced Typographic Tables ---
 
-    /// <summary>
-    /// Glyph definition data.
-    /// </summary>
-    public const string GDEF = "GDEF";
+        /// <summary>
+        /// Baseline data.
+        /// </summary>
+        public const string BASE = "BASE";
 
-    /// <summary>
-    /// Glyph positioning data.
-    /// </summary>
-    public const string GPOS = "GPOS";
+        /// <summary>
+        /// Glyph definition data.
+        /// </summary>
+        public const string GDEF = "GDEF";
 
-    /// <summary>
-    /// Glyph substitution data.
-    /// </summary>
-    public const string GSUB = "GSUB";
+        /// <summary>
+        /// Glyph positioning data.
+        /// </summary>
+        public const string GPOS = "GPOS";
 
-    /// <summary>
-    /// Justification data.
-    /// </summary>
-    public const string JSTF = "JSTF";
+        /// <summary>
+        /// Glyph substitution data.
+        /// </summary>
+        public const string GSUB = "GSUB";
 
-    // --- Other OpenType Tables ---
+        /// <summary>
+        /// Justification data.
+        /// </summary>
+        public const string JSTF = "JSTF";
 
-    /// <summary>
-    /// Digital signature.
-    /// </summary>
-    public const string DSIG = "DSIG";
+        // --- Other OpenType Tables ---
 
-    /// <summary>
-    /// Grid-fitting/Scan-conversion.
-    /// </summary>
-    public const string Gasp = "gasp";
+        /// <summary>
+        /// Digital signature.
+        /// </summary>
+        public const string DSIG = "DSIG";
 
-    /// <summary>
-    /// Horizontal device Metrics.
-    /// </summary>
-    public const string Hdmx = "hdmx";
+        /// <summary>
+        /// Grid-fitting/Scan-conversion.
+        /// </summary>
+        public const string Gasp = "gasp";
 
-    /// <summary>
-    /// Kerning.
-    /// </summary>
-    public const string Kern = "kern";
+        /// <summary>
+        /// Horizontal device Metrics.
+        /// </summary>
+        public const string Hdmx = "hdmx";
 
-    /// <summary>
-    /// Linear threshold data.
-    /// </summary>
-    public const string LTSH = "LTSH";
+        /// <summary>
+        /// Kerning.
+        /// </summary>
+        public const string Kern = "kern";
 
-    /// <summary>
-    /// PCL 5 data.
-    /// </summary>
-    public const string PCLT = "PCLT";
+        /// <summary>
+        /// Linear threshold data.
+        /// </summary>
+        public const string LTSH = "LTSH";
 
-    /// <summary>
-    /// Vertical device Metrics.
-    /// </summary>
-    public const string VDMX = "VDMX";
+        /// <summary>
+        /// PCL 5 data.
+        /// </summary>
+        public const string PCLT = "PCLT";
 
-    /// <summary>
-    /// Vertical Header.
-    /// </summary>
-    public const string VHea = "vhea";
+        /// <summary>
+        /// Vertical device Metrics.
+        /// </summary>
+        public const string VDMX = "VDMX";
 
-    /// <summary>
-    /// Vertical Metrics.
-    /// </summary>
-    public const string VMtx = "vmtx";
+        /// <summary>
+        /// Vertical Header.
+        /// </summary>
+        public const string VHea = "vhea";
+
+        /// <summary>
+        /// Vertical Metrics.
+        /// </summary>
+        public const string VMtx = "vmtx";
+    }
 }

@@ -31,22 +31,23 @@
 
 using BreakDown.ManagedPdf.Core.Pdf;
 
-namespace BreakDown.ManagedPdf.Core.Drawing.Internal;
-
-/// <summary>
-/// This interface will be implemented by specialized classes, one for JPEG, one for BMP, one for PNG, one for GIF. Maybe more.
-/// </summary>
-internal interface IImageImporter
+namespace BreakDown.ManagedPdf.Core.Drawing.Internal
 {
     /// <summary>
-    /// Imports the image. Returns null if the image importer does not support the format.
+    /// This interface will be implemented by specialized classes, one for JPEG, one for BMP, one for PNG, one for GIF. Maybe more.
     /// </summary>
-    ImportedImage ImportImage(StreamReaderHelper stream, PdfDocument document);
+    internal interface IImageImporter
+    {
+        /// <summary>
+        /// Imports the image. Returns null if the image importer does not support the format.
+        /// </summary>
+        ImportedImage ImportImage(StreamReaderHelper stream, PdfDocument document);
 
-    /// <summary>
-    /// Prepares the image data needed for the PDF file.
-    /// </summary>
-    ImageData PrepareImage(ImagePrivateData data);
+        /// <summary>
+        /// Prepares the image data needed for the PDF file.
+        /// </summary>
+        ImageData PrepareImage(ImagePrivateData data);
+    }
 }
 
 // $THHO Add IDispose?.

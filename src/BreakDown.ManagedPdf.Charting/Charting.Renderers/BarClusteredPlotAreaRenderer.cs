@@ -31,107 +31,108 @@
 
 using BreakDown.ManagedPdf.Core.Drawing;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a plot area renderer of clustered bars, i. e. all bars are drawn side by side.
-/// </summary>
-internal class BarClusteredPlotAreaRenderer : BarPlotAreaRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the BarClusteredPlotAreaRenderer class with the
-    /// specified renderer parameters.
+    /// Represents a plot area renderer of clustered bars, i. e. all bars are drawn side by side.
     /// </summary>
-    internal BarClusteredPlotAreaRenderer(RendererParameters parms)
-        : base(parms)
+    internal class BarClusteredPlotAreaRenderer : BarPlotAreaRenderer
     {
-    }
-
-    /// <summary>
-    /// Calculates the position, width and height of each bar of all series.
-    /// </summary>
-    protected override void CalcBars()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        if (cri.seriesRendererInfos.Length == 0)
+        /// <summary>
+        /// Initializes a new instance of the BarClusteredPlotAreaRenderer class with the
+        /// specified renderer parameters.
+        /// </summary>
+        internal BarClusteredPlotAreaRenderer(RendererParameters parms)
+            : base(parms)
         {
-            return;
         }
 
-        var xMax = cri.xAxisRendererInfo.MaximumScale;
-        var yMin = cri.yAxisRendererInfo.MinimumScale;
-        var yMax = cri.yAxisRendererInfo.MaximumScale;
-
-        var pointCount = 0;
-        foreach (var sri in cri.seriesRendererInfos)
+        /// <summary>
+        /// Calculates the position, width and height of each bar of all series.
+        /// </summary>
+        protected override void CalcBars()
         {
-            pointCount += sri._series._seriesElements.Count;
-        }
-
-        // Space shared by one clustered bar.
-        var groupWidth = cri.xAxisRendererInfo.MajorTick;
-
-        // Space used by one bar.
-        var columnWidth = groupWidth * 0.75 / cri.seriesRendererInfos.Length;
-
-        var seriesIdx = 0;
-        var points = new XPoint[2];
-        foreach (var sri in cri.seriesRendererInfos)
-        {
-            // Set x to first clustered bar for each series.
-            var x = xMax - groupWidth / 2;
-
-            // Offset for bars of a particular series from the start of a clustered bar.
-            var dx = (columnWidth * seriesIdx) - (columnWidth / 2 * cri.seriesRendererInfos.Length);
-            var y0 = yMin;
-
-            foreach (ColumnRendererInfo column in sri._pointRendererInfos)
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            if (cri.seriesRendererInfos.Length == 0)
             {
-                if (column.Point != null)
-                {
-                    var x0 = x - dx;
-                    var x1 = x - dx - columnWidth;
-                    var y1 = column.Point.Value;
-
-                    // Draw from zero base line, if it exists.
-                    if (y0 < 0 && yMax >= 0)
-                    {
-                        y0 = 0;
-                    }
-
-                    // y0 should always be lower than y1, i. e. draw bar from bottom to top.
-                    if (y1 < 0 && y1 < y0)
-                    {
-                        var y = y0;
-                        y0 = y1;
-                        y1 = y;
-                    }
-
-                    points[0].X = y0; // upper left
-                    points[0].Y = x0;
-                    points[1].X = y1; // lower right
-                    points[1].Y = x1;
-
-                    cri.plotAreaRendererInfo._matrix.TransformPoints(points);
-
-                    column.Rect = new XRect(points[0].X,
-                                            points[1].Y,
-                                            points[1].X - points[0].X,
-                                            points[0].Y - points[1].Y);
-                }
-
-                x--; // Next clustered bar.
+                return;
             }
 
-            seriesIdx++;
-        }
-    }
+            var xMax = cri.xAxisRendererInfo.MaximumScale;
+            var yMin = cri.yAxisRendererInfo.MinimumScale;
+            var yMax = cri.yAxisRendererInfo.MaximumScale;
 
-    /// <summary>
-    /// If yValue is within the range from yMin to yMax returns true, otherwise false.
-    /// </summary>
-    protected override bool IsDataInside(double yMin, double yMax, double yValue)
-    {
-        return yValue <= yMax && yValue >= yMin;
+            var pointCount = 0;
+            foreach (var sri in cri.seriesRendererInfos)
+            {
+                pointCount += sri._series._seriesElements.Count;
+            }
+
+            // Space shared by one clustered bar.
+            var groupWidth = cri.xAxisRendererInfo.MajorTick;
+
+            // Space used by one bar.
+            var columnWidth = groupWidth * 0.75 / cri.seriesRendererInfos.Length;
+
+            var seriesIdx = 0;
+            var points = new XPoint[2];
+            foreach (var sri in cri.seriesRendererInfos)
+            {
+                // Set x to first clustered bar for each series.
+                var x = xMax - groupWidth / 2;
+
+                // Offset for bars of a particular series from the start of a clustered bar.
+                var dx = (columnWidth * seriesIdx) - (columnWidth / 2 * cri.seriesRendererInfos.Length);
+                var y0 = yMin;
+
+                foreach (ColumnRendererInfo column in sri._pointRendererInfos)
+                {
+                    if (column.Point != null)
+                    {
+                        var x0 = x - dx;
+                        var x1 = x - dx - columnWidth;
+                        var y1 = column.Point.Value;
+
+                        // Draw from zero base line, if it exists.
+                        if (y0 < 0 && yMax >= 0)
+                        {
+                            y0 = 0;
+                        }
+
+                        // y0 should always be lower than y1, i. e. draw bar from bottom to top.
+                        if (y1 < 0 && y1 < y0)
+                        {
+                            var y = y0;
+                            y0 = y1;
+                            y1 = y;
+                        }
+
+                        points[0].X = y0; // upper left
+                        points[0].Y = x0;
+                        points[1].X = y1; // lower right
+                        points[1].Y = x1;
+
+                        cri.plotAreaRendererInfo._matrix.TransformPoints(points);
+
+                        column.Rect = new XRect(points[0].X,
+                                                points[1].Y,
+                                                points[1].X - points[0].X,
+                                                points[0].Y - points[1].Y);
+                    }
+
+                    x--; // Next clustered bar.
+                }
+
+                seriesIdx++;
+            }
+        }
+
+        /// <summary>
+        /// If yValue is within the range from yMin to yMax returns true, otherwise false.
+        /// </summary>
+        protected override bool IsDataInside(double yMin, double yMax, double yValue)
+        {
+            return yValue <= yMax && yValue >= yMin;
+        }
     }
 }

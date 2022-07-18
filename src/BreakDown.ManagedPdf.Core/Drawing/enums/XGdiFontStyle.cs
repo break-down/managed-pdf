@@ -31,45 +31,46 @@
 
 using System;
 
-namespace BreakDown.ManagedPdf.Core.Drawing.enums;
-
-/// <summary>
-/// Backward compatibility.
-/// </summary>
-[Flags]
-internal enum XGdiFontStyle // Same values as System.Drawing.FontStyle.
+namespace BreakDown.ManagedPdf.Core.Drawing.enums
 {
-    // Must be identical to both:
-    // System.Drawing.FontStyle and
-    // BreakDown.ManagedPdf.Core.Drawing.FontStyle
-
     /// <summary>
-    /// Normal text.
+    /// Backward compatibility.
     /// </summary>
-    Regular = 0,
+    [Flags]
+    internal enum XGdiFontStyle // Same values as System.Drawing.FontStyle.
+    {
+        // Must be identical to both:
+        // System.Drawing.FontStyle and
+        // BreakDown.ManagedPdf.Core.Drawing.FontStyle
 
-    /// <summary>
-    /// Bold text.
-    /// </summary>
-    Bold = 1,
+        /// <summary>
+        /// Normal text.
+        /// </summary>
+        Regular = 0,
 
-    /// <summary>
-    /// Italic text.
-    /// </summary>
-    Italic = 2,
+        /// <summary>
+        /// Bold text.
+        /// </summary>
+        Bold = 1,
 
-    /// <summary>
-    /// Bold and italic text. 
-    /// </summary>
-    BoldItalic = 3,
+        /// <summary>
+        /// Italic text.
+        /// </summary>
+        Italic = 2,
 
-    /// <summary>
-    /// Underlined text.
-    /// </summary>
-    Underline = 4,
+        /// <summary>
+        /// Bold and italic text. 
+        /// </summary>
+        BoldItalic = 3,
 
-    /// <summary>
-    /// Text with a line through the middle.
-    /// </summary>
-    Strikeout = 8,
+        /// <summary>
+        /// Underlined text.
+        /// </summary>
+        Underline = 4,
+
+        /// <summary>
+        /// Text with a line through the middle.
+        /// </summary>
+        Strikeout = 8,
+    }
 }

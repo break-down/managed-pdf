@@ -33,87 +33,88 @@
 
 using BreakDown.ManagedPdf.Core.Pdf.enums;
 
-namespace BreakDown.ManagedPdf.Core.Pdf;
-
-/// <summary>
-/// Holds information how to handle the document when it is saved as PDF stream.
-/// </summary>
-public sealed class PdfDocumentOptions
+namespace BreakDown.ManagedPdf.Core.Pdf
 {
-    internal PdfDocumentOptions(PdfDocument document)
-    {
-        //_deflateContents = true;
-        //_writeProcedureSets = true;
-    }
-
     /// <summary>
-    /// Gets or sets the color mode.
+    /// Holds information how to handle the document when it is saved as PDF stream.
     /// </summary>
-    public PdfColorMode ColorMode
+    public sealed class PdfDocumentOptions
     {
-        get { return _colorMode; }
-        set { _colorMode = value; }
-    }
+        internal PdfDocumentOptions(PdfDocument document)
+        {
+            //_deflateContents = true;
+            //_writeProcedureSets = true;
+        }
 
-    PdfColorMode _colorMode = PdfColorMode.Rgb;
+        /// <summary>
+        /// Gets or sets the color mode.
+        /// </summary>
+        public PdfColorMode ColorMode
+        {
+            get { return _colorMode; }
+            set { _colorMode = value; }
+        }
 
-    /// <summary>
-    /// Gets or sets a value indicating whether to compress content streams of PDF pages.
-    /// </summary>
-    public bool CompressContentStreams
-    {
-        get { return _compressContentStreams; }
-        set { _compressContentStreams = value; }
-    }
+        PdfColorMode _colorMode = PdfColorMode.Rgb;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to compress content streams of PDF pages.
+        /// </summary>
+        public bool CompressContentStreams
+        {
+            get { return _compressContentStreams; }
+            set { _compressContentStreams = value; }
+        }
 #if DEBUG
-    bool _compressContentStreams = false;
+        bool _compressContentStreams = false;
 #else
         bool _compressContentStreams = true;
 #endif
 
-    /// <summary>
-    /// Gets or sets a value indicating that all objects are not compressed.
-    /// </summary>
-    public bool NoCompression
-    {
-        get { return _noCompression; }
-        set { _noCompression = value; }
+        /// <summary>
+        /// Gets or sets a value indicating that all objects are not compressed.
+        /// </summary>
+        public bool NoCompression
+        {
+            get { return _noCompression; }
+            set { _noCompression = value; }
+        }
+
+        bool _noCompression;
+
+        /// <summary>
+        /// Gets or sets the flate encode mode. Besides the balanced default mode you can set modes for best compression (slower) or best speed (larger files).
+        /// </summary>
+        public PdfFlateEncodeMode FlateEncodeMode
+        {
+            get { return _flateEncodeMode; }
+            set { _flateEncodeMode = value; }
+        }
+
+        PdfFlateEncodeMode _flateEncodeMode = PdfFlateEncodeMode.Default;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to compress bilevel images using CCITT compression.
+        /// With true, PDFsharp will try FlateDecode CCITT and will use the smallest one or a combination of both.
+        /// With false, PDFsharp will always use FlateDecode only - files may be a few bytes larger, but file creation is faster.
+        /// </summary>
+        public bool EnableCcittCompressionForBilevelImages
+        {
+            get { return _enableCcittCompressionForBilevelImages; }
+            set { _enableCcittCompressionForBilevelImages = value; }
+        }
+
+        bool _enableCcittCompressionForBilevelImages = false;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to compress JPEG images with the FlateDecode filter.
+        /// </summary>
+        public PdfUseFlateDecoderForJpegImages UseFlateDecoderForJpegImages
+        {
+            get { return _useFlateDecoderForJpegImages; }
+            set { _useFlateDecoderForJpegImages = value; }
+        }
+
+        PdfUseFlateDecoderForJpegImages _useFlateDecoderForJpegImages = PdfUseFlateDecoderForJpegImages.Never;
     }
-
-    bool _noCompression;
-
-    /// <summary>
-    /// Gets or sets the flate encode mode. Besides the balanced default mode you can set modes for best compression (slower) or best speed (larger files).
-    /// </summary>
-    public PdfFlateEncodeMode FlateEncodeMode
-    {
-        get { return _flateEncodeMode; }
-        set { _flateEncodeMode = value; }
-    }
-
-    PdfFlateEncodeMode _flateEncodeMode = PdfFlateEncodeMode.Default;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to compress bilevel images using CCITT compression.
-    /// With true, PDFsharp will try FlateDecode CCITT and will use the smallest one or a combination of both.
-    /// With false, PDFsharp will always use FlateDecode only - files may be a few bytes larger, but file creation is faster.
-    /// </summary>
-    public bool EnableCcittCompressionForBilevelImages
-    {
-        get { return _enableCcittCompressionForBilevelImages; }
-        set { _enableCcittCompressionForBilevelImages = value; }
-    }
-
-    bool _enableCcittCompressionForBilevelImages = false;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to compress JPEG images with the FlateDecode filter.
-    /// </summary>
-    public PdfUseFlateDecoderForJpegImages UseFlateDecoderForJpegImages
-    {
-        get { return _useFlateDecoderForJpegImages; }
-        set { _useFlateDecoderForJpegImages = value; }
-    }
-
-    PdfUseFlateDecoderForJpegImages _useFlateDecoderForJpegImages = PdfUseFlateDecoderForJpegImages.Never;
 }

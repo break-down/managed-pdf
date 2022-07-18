@@ -29,36 +29,37 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a renderer for the plot area background.
-/// </summary>
-internal class WallRenderer : Renderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the WallRenderer class with the specified renderer parameters.
+    /// Represents a renderer for the plot area background.
     /// </summary>
-    internal WallRenderer(RendererParameters parms)
-        : base(parms)
+    internal class WallRenderer : Renderer
     {
-    }
-
-    /// <summary>
-    /// Draws the wall.
-    /// </summary>
-    internal override void Draw()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        if (cri.plotAreaRendererInfo.FillFormat != null)
+        /// <summary>
+        /// Initializes a new instance of the WallRenderer class with the specified renderer parameters.
+        /// </summary>
+        internal WallRenderer(RendererParameters parms)
+            : base(parms)
         {
-            var plotAreaBox = cri.plotAreaRendererInfo.Rect;
-            if (plotAreaBox.IsEmpty)
-            {
-                return;
-            }
+        }
 
-            _rendererParms.Graphics.DrawRectangle(cri.plotAreaRendererInfo.FillFormat, plotAreaBox);
+        /// <summary>
+        /// Draws the wall.
+        /// </summary>
+        internal override void Draw()
+        {
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            if (cri.plotAreaRendererInfo.FillFormat != null)
+            {
+                var plotAreaBox = cri.plotAreaRendererInfo.Rect;
+                if (plotAreaBox.IsEmpty)
+                {
+                    return;
+                }
+
+                _rendererParms.Graphics.DrawRectangle(cri.plotAreaRendererInfo.FillFormat, plotAreaBox);
+            }
         }
     }
 }

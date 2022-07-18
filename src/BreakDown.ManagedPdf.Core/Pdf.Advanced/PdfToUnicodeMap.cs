@@ -36,123 +36,124 @@ using System.Text;
 using BreakDown.ManagedPdf.Core.Fonts;
 using BreakDown.ManagedPdf.Core.Pdf.Filters;
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Advanced;
-
-/// <summary>
-/// Represents a ToUnicode map for composite font.
-/// </summary>
-internal sealed class PdfToUnicodeMap : PdfDictionary
+namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
 {
-    public PdfToUnicodeMap(PdfDocument document)
-        : base(document)
-    {
-    }
-
-    public PdfToUnicodeMap(PdfDocument document, CMapInfo cmapInfo)
-        : base(document)
-    {
-        _cmapInfo = cmapInfo;
-    }
-
     /// <summary>
-    /// Gets or sets the CMap info.
+    /// Represents a ToUnicode map for composite font.
     /// </summary>
-    public CMapInfo CMapInfo
+    internal sealed class PdfToUnicodeMap : PdfDictionary
     {
-        get { return _cmapInfo; }
-        set { _cmapInfo = value; }
-    }
-
-    CMapInfo _cmapInfo;
-
-    /// <summary>
-    /// Creates the ToUnicode map from the CMapInfo.
-    /// </summary>
-    internal override void PrepareForSave()
-    {
-        base.PrepareForSave();
-
-        // This code comes literally from PDF Reference
-        var prefix =
-            "/CIDInit /ProcSet findresource begin\n" +
-            "12 dict begin\n" +
-            "begincmap\n" +
-            "/CIDSystemInfo << /Registry (Adobe)/Ordering (UCS)/Supplement 0>> def\n" +
-            "/CMapName /Adobe-Identity-UCS def /CMapType 2 def\n";
-        var suffix = "endcmap CMapName currentdict /CMap defineresource pop end end";
-
-        var glyphIndexToCharacter = new Dictionary<int, char>();
-        int lowIndex = 65536, hiIndex = -1;
-        foreach (var entry in _cmapInfo.CharacterToGlyphIndex)
+        public PdfToUnicodeMap(PdfDocument document)
+            : base(document)
         {
-            var index = (int)entry.Value;
-            lowIndex = Math.Min(lowIndex, index);
-            hiIndex = Math.Max(hiIndex, index);
-
-            //glyphIndexToCharacter.Add(index, entry.Key);
-            glyphIndexToCharacter[index] = entry.Key;
         }
 
-        var ms = new MemoryStream();
+        public PdfToUnicodeMap(PdfDocument document, CMapInfo cmapInfo)
+            : base(document)
+        {
+            _cmapInfo = cmapInfo;
+        }
+
+        /// <summary>
+        /// Gets or sets the CMap info.
+        /// </summary>
+        public CMapInfo CMapInfo
+        {
+            get { return _cmapInfo; }
+            set { _cmapInfo = value; }
+        }
+
+        CMapInfo _cmapInfo;
+
+        /// <summary>
+        /// Creates the ToUnicode map from the CMapInfo.
+        /// </summary>
+        internal override void PrepareForSave()
+        {
+            base.PrepareForSave();
+
+            // This code comes literally from PDF Reference
+            var prefix =
+                "/CIDInit /ProcSet findresource begin\n" +
+                "12 dict begin\n" +
+                "begincmap\n" +
+                "/CIDSystemInfo << /Registry (Adobe)/Ordering (UCS)/Supplement 0>> def\n" +
+                "/CMapName /Adobe-Identity-UCS def /CMapType 2 def\n";
+            var suffix = "endcmap CMapName currentdict /CMap defineresource pop end end";
+
+            var glyphIndexToCharacter = new Dictionary<int, char>();
+            int lowIndex = 65536, hiIndex = -1;
+            foreach (var entry in _cmapInfo.CharacterToGlyphIndex)
+            {
+                var index = (int)entry.Value;
+                lowIndex = Math.Min(lowIndex, index);
+                hiIndex = Math.Max(hiIndex, index);
+
+                //glyphIndexToCharacter.Add(index, entry.Key);
+                glyphIndexToCharacter[index] = entry.Key;
+            }
+
+            var ms = new MemoryStream();
 #if !SILVERLIGHT && !NETFX_CORE
-        var wrt = new StreamWriter(ms, Encoding.ASCII);
+            var wrt = new StreamWriter(ms, Encoding.ASCII);
 #else
             StreamWriter wrt = new StreamWriter(ms, Encoding.UTF8);
 #endif
-        wrt.Write(prefix);
+            wrt.Write(prefix);
 
-        wrt.WriteLine("1 begincodespacerange");
-        wrt.WriteLine(String.Format("<{0:X4}><{1:X4}>", lowIndex, hiIndex));
-        wrt.WriteLine("endcodespacerange");
+            wrt.WriteLine("1 begincodespacerange");
+            wrt.WriteLine(String.Format("<{0:X4}><{1:X4}>", lowIndex, hiIndex));
+            wrt.WriteLine("endcodespacerange");
 
-        // Sorting seems not necessary. The limit is 100 entries, we will see.
-        wrt.WriteLine(String.Format("{0} beginbfrange", glyphIndexToCharacter.Count));
-        foreach (var entry in glyphIndexToCharacter)
-        {
-            wrt.WriteLine(String.Format("<{0:X4}><{0:X4}><{1:X4}>", entry.Key, (int)entry.Value));
-        }
+            // Sorting seems not necessary. The limit is 100 entries, we will see.
+            wrt.WriteLine(String.Format("{0} beginbfrange", glyphIndexToCharacter.Count));
+            foreach (var entry in glyphIndexToCharacter)
+            {
+                wrt.WriteLine(String.Format("<{0:X4}><{0:X4}><{1:X4}>", entry.Key, (int)entry.Value));
+            }
 
-        wrt.WriteLine("endbfrange");
+            wrt.WriteLine("endbfrange");
 
-        wrt.Write(suffix);
+            wrt.Write(suffix);
 #if !UWP
-        wrt.Close();
+            wrt.Close();
 #else
             wrt.Dispose();
 #endif
 
-        // Compress like content streams
-        var bytes = ms.ToArray();
+            // Compress like content streams
+            var bytes = ms.ToArray();
 #if !UWP
-        ms.Close();
+            ms.Close();
 #else
             ms.Dispose();
 #endif
-        if (Owner.Options.CompressContentStreams)
-        {
-            Elements.SetName("/Filter", "/FlateDecode");
-            bytes = Filtering.FlateDecode.Encode(bytes, _document.Options.FlateEncodeMode);
+            if (Owner.Options.CompressContentStreams)
+            {
+                Elements.SetName("/Filter", "/FlateDecode");
+                bytes = Filtering.FlateDecode.Encode(bytes, _document.Options.FlateEncodeMode);
+            }
+
+            //PdfStream stream = CreateStream(bytes);
+            else
+            {
+                Elements.Remove("/Filter");
+            }
+
+            if (Stream == null)
+            {
+                CreateStream(bytes);
+            }
+            else
+            {
+                Stream.Value = bytes;
+                Elements.SetInteger(PdfStream.Keys.Length, Stream.Length);
+            }
         }
 
-        //PdfStream stream = CreateStream(bytes);
-        else
+        public sealed class Keys : PdfStream.Keys
         {
-            Elements.Remove("/Filter");
+            // No new keys.
         }
-
-        if (Stream == null)
-        {
-            CreateStream(bytes);
-        }
-        else
-        {
-            Stream.Value = bytes;
-            Elements.SetInteger(PdfStream.Keys.Length, Stream.Length);
-        }
-    }
-
-    public sealed class Keys : PdfStream.Keys
-    {
-        // No new keys.
     }
 }

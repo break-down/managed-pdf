@@ -12,31 +12,32 @@
 
 using BreakDown.ManagedPdf.Html.Core;
 
-namespace BreakDown.ManagedPdf.Html.Adapters.Entities;
-
-/// <summary>
-/// Even class for handling keyboard events in <see cref="HtmlContainerInt"/>.
-/// </summary>
-public sealed class RMouseEvent
+namespace BreakDown.ManagedPdf.Html.Adapters.Entities
 {
     /// <summary>
-    /// Is the left mouse button participated in the event
+    /// Even class for handling keyboard events in <see cref="HtmlContainerInt"/>.
     /// </summary>
-    private readonly bool _leftButton;
-
-    /// <summary>
-    /// Init.
-    /// </summary>
-    public RMouseEvent(bool leftButton)
+    public sealed class RMouseEvent
     {
-        _leftButton = leftButton;
-    }
+        /// <summary>
+        /// Is the left mouse button participated in the event
+        /// </summary>
+        private readonly bool _leftButton;
 
-    /// <summary>
-    /// Is the left mouse button participated in the event
-    /// </summary>
-    public bool LeftButton
-    {
-        get { return _leftButton; }
+        /// <summary>
+        /// Init.
+        /// </summary>
+        public RMouseEvent(bool leftButton)
+        {
+            _leftButton = leftButton;
+        }
+
+        /// <summary>
+        /// Is the left mouse button participated in the event
+        /// </summary>
+        public bool LeftButton
+        {
+            get { return _leftButton; }
+        }
     }
 }

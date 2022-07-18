@@ -39,185 +39,189 @@ using BreakDown.ManagedPdf.Core.Fonts.OpenType.enums;
 //using FWord = System.Int16;
 //using UFWord = System.UInt16;
 
-namespace BreakDown.ManagedPdf.Core.Fonts.OpenType;
-
-/// <summary>
-/// This table contains information that describes the glyphs in the font in the TrueType outline format.
-/// Information regarding the rasterizer (scaler) refers to the TrueType rasterizer. 
-/// http://www.microsoft.com/typography/otspec/glyf.htm
-/// </summary>
-internal class GlyphDataTable : OpenTypeFontTable
+namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
 {
-    public const string Tag = TableTagNames.Glyf;
-
-    internal byte[] GlyphTable;
-
-    public GlyphDataTable()
-        : base(null, Tag)
-    {
-        DirectoryEntry.Tag = TableTagNames.Glyf;
-    }
-
-    public GlyphDataTable(OpenTypeFontface fontData)
-        : base(fontData, Tag)
-    {
-        DirectoryEntry.Tag = TableTagNames.Glyf;
-        Read();
-    }
-
     /// <summary>
-    /// Converts the bytes in a handy representation
+    /// This table contains information that describes the glyphs in the font in the TrueType outline format.
+    /// Information regarding the rasterizer (scaler) refers to the TrueType rasterizer. 
+    /// http://www.microsoft.com/typography/otspec/glyf.htm
     /// </summary>
-    public void Read()
+    internal class GlyphDataTable : OpenTypeFontTable
     {
-        try
+        public const string Tag = TableTagNames.Glyf;
+
+        internal byte[] GlyphTable;
+
+        public GlyphDataTable()
+            : base(null, Tag)
         {
-            // not yet needed...
-        }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
-    }
-
-    /// <summary>
-    /// Gets the data of the specified glyph.
-    /// </summary>
-    public byte[] GetGlyphData(int glyph)
-    {
-        var loca = _fontData.loca;
-        var start = GetOffset(glyph);
-        var next = GetOffset(glyph + 1);
-        var count = next - start;
-        var bytes = new byte[count];
-        Buffer.BlockCopy(_fontData.FontSource.Bytes, start, bytes, 0, count);
-        return bytes;
-    }
-
-    /// <summary>
-    /// Gets the size of the byte array that defines the glyph.
-    /// </summary>
-    public int GetGlyphSize(int glyph)
-    {
-        var loca = _fontData.loca;
-        return GetOffset(glyph + 1) - GetOffset(glyph);
-    }
-
-    /// <summary>
-    /// Gets the offset of the specified glyph relative to the first byte of the font image.
-    /// </summary>
-    public int GetOffset(int glyph)
-    {
-        return DirectoryEntry.Offset + _fontData.loca.LocaTable[glyph];
-    }
-
-    /// <summary>
-    /// Adds for all composite glyphs the glyphs the composite one is made of.
-    /// </summary>
-    public void CompleteGlyphClosure(Dictionary<int, object> glyphs)
-    {
-        var count = glyphs.Count;
-        var glyphArray = new int[glyphs.Count];
-        glyphs.Keys.CopyTo(glyphArray, 0);
-        if (!glyphs.ContainsKey(0))
-        {
-            glyphs.Add(0, null);
+            DirectoryEntry.Tag = TableTagNames.Glyf;
         }
 
-        for (var idx = 0; idx < count; idx++)
+        public GlyphDataTable(OpenTypeFontface fontData)
+            : base(fontData, Tag)
         {
-            AddCompositeGlyphs(glyphs, glyphArray[idx]);
-        }
-    }
-
-    /// <summary>
-    /// If the specified glyph is a composite glyph add the glyphs it is made of to the glyph table.
-    /// </summary>
-    void AddCompositeGlyphs(Dictionary<int, object> glyphs, int glyph)
-    {
-        //int start = fontData.loca.GetOffset(glyph);
-        var start = GetOffset(glyph);
-
-        // Has no contour?
-        if (start == GetOffset(glyph + 1))
-        {
-            return;
+            DirectoryEntry.Tag = TableTagNames.Glyf;
+            Read();
         }
 
-        _fontData.Position = start;
-        int numContours = _fontData.ReadShort();
-
-        // Is not a composite glyph?
-        if (numContours >= 0)
+        /// <summary>
+        /// Converts the bytes in a handy representation
+        /// </summary>
+        public void Read()
         {
-            return;
-        }
-
-        _fontData.SeekOffset(8);
-        for (;;)
-        {
-            int flags = _fontData.ReadUFWord();
-            int cGlyph = _fontData.ReadUFWord();
-            if (!glyphs.ContainsKey(cGlyph))
+            try
             {
-                glyphs.Add(cGlyph, null);
+                // not yet needed...
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Gets the data of the specified glyph.
+        /// </summary>
+        public byte[] GetGlyphData(int glyph)
+        {
+            var loca = _fontData.loca;
+            var start = GetOffset(glyph);
+            var next = GetOffset(glyph + 1);
+            var count = next - start;
+            var bytes = new byte[count];
+            Buffer.BlockCopy(_fontData.FontSource.Bytes, start, bytes, 0, count);
+            return bytes;
+        }
+
+        /// <summary>
+        /// Gets the size of the byte array that defines the glyph.
+        /// </summary>
+        public int GetGlyphSize(int glyph)
+        {
+            var loca = _fontData.loca;
+            return GetOffset(glyph + 1) - GetOffset(glyph);
+        }
+
+        /// <summary>
+        /// Gets the offset of the specified glyph relative to the first byte of the font image.
+        /// </summary>
+        public int GetOffset(int glyph)
+        {
+            return DirectoryEntry.Offset + _fontData.loca.LocaTable[glyph];
+        }
+
+        /// <summary>
+        /// Adds for all composite glyphs the glyphs the composite one is made of.
+        /// </summary>
+        public void CompleteGlyphClosure(Dictionary<int, object> glyphs)
+        {
+            var count = glyphs.Count;
+            var glyphArray = new int[glyphs.Count];
+            glyphs.Keys.CopyTo(glyphArray, 0);
+            if (!glyphs.ContainsKey(0))
+            {
+                glyphs.Add(0, null);
             }
 
-            if ((flags & MORE_COMPONENTS) == 0)
+            for (var idx = 0; idx < count; idx++)
+            {
+                AddCompositeGlyphs(glyphs, glyphArray[idx]);
+            }
+        }
+
+        /// <summary>
+        /// If the specified glyph is a composite glyph add the glyphs it is made of to the glyph table.
+        /// </summary>
+        void AddCompositeGlyphs(Dictionary<int, object> glyphs, int glyph)
+        {
+            //int start = fontData.loca.GetOffset(glyph);
+            var start = GetOffset(glyph);
+
+            // Has no contour?
+            if (start == GetOffset(glyph + 1))
             {
                 return;
             }
 
-            var offset = (flags & ARG_1_AND_2_ARE_WORDS) == 0 ? 2 : 4;
-            if ((flags & WE_HAVE_A_SCALE) != 0)
+            _fontData.Position = start;
+            int numContours = _fontData.ReadShort();
+
+            // Is not a composite glyph?
+            if (numContours >= 0)
             {
-                offset += 2;
-            }
-            else if ((flags & WE_HAVE_AN_X_AND_Y_SCALE) != 0)
-            {
-                offset += 4;
+                return;
             }
 
-            if ((flags & WE_HAVE_A_TWO_BY_TWO) != 0)
+            _fontData.SeekOffset(8);
+            for (;;)
             {
-                offset += 8;
-            }
+                int flags = _fontData.ReadUFWord();
+                int cGlyph = _fontData.ReadUFWord();
+                if (!glyphs.ContainsKey(cGlyph))
+                {
+                    glyphs.Add(cGlyph, null);
+                }
 
-            _fontData.SeekOffset(offset);
+                if ((flags & MORE_COMPONENTS) == 0)
+                {
+                    return;
+                }
+
+                var offset = (flags & ARG_1_AND_2_ARE_WORDS) == 0 ? 2 : 4;
+                if ((flags & WE_HAVE_A_SCALE) != 0)
+                {
+                    offset += 2;
+                }
+                else if ((flags & WE_HAVE_AN_X_AND_Y_SCALE) != 0)
+                {
+                    offset += 4;
+                }
+
+                if ((flags & WE_HAVE_A_TWO_BY_TWO) != 0)
+                {
+                    offset += 8;
+                }
+
+                _fontData.SeekOffset(offset);
+            }
         }
-    }
 
-    /// <summary>
-    /// Prepares the font table to be compiled into its binary representation.
-    /// </summary>
-    public override void PrepareForCompilation()
-    {
-        base.PrepareForCompilation();
-
-        if (DirectoryEntry.Length == 0)
+        /// <summary>
+        /// Prepares the font table to be compiled into its binary representation.
+        /// </summary>
+        public override void PrepareForCompilation()
         {
-            DirectoryEntry.Length = GlyphTable.Length;
+            base.PrepareForCompilation();
+
+            if (DirectoryEntry.Length == 0)
+            {
+                DirectoryEntry.Length = GlyphTable.Length;
+            }
+
+            DirectoryEntry.CheckSum = CalcChecksum(GlyphTable);
         }
 
-        DirectoryEntry.CheckSum = CalcChecksum(GlyphTable);
+        /// <summary>
+        /// Converts the font into its binary representation.
+        /// </summary>
+        public override void Write(OpenTypeFontWriter writer)
+        {
+            lock (GlyphTable)
+            {
+                writer.Write(GlyphTable, 0, DirectoryEntry.PaddedLength);
+            }
+        }
+
+        // ReSharper disable InconsistentNaming
+        // Constants from OpenType spec.
+        const int ARG_1_AND_2_ARE_WORDS = 1;
+        const int WE_HAVE_A_SCALE = 8;
+        const int MORE_COMPONENTS = 32;
+        const int WE_HAVE_AN_X_AND_Y_SCALE = 64;
+
+        const int WE_HAVE_A_TWO_BY_TWO = 128;
+
+        // ReSharper restore InconsistentNaming
     }
-
-    /// <summary>
-    /// Converts the font into its binary representation.
-    /// </summary>
-    public override void Write(OpenTypeFontWriter writer)
-    {
-        writer.Write(GlyphTable, 0, DirectoryEntry.PaddedLength);
-    }
-
-    // ReSharper disable InconsistentNaming
-    // Constants from OpenType spec.
-    const int ARG_1_AND_2_ARE_WORDS = 1;
-    const int WE_HAVE_A_SCALE = 8;
-    const int MORE_COMPONENTS = 32;
-    const int WE_HAVE_AN_X_AND_Y_SCALE = 64;
-
-    const int WE_HAVE_A_TWO_BY_TWO = 128;
-
-    // ReSharper restore InconsistentNaming
 }

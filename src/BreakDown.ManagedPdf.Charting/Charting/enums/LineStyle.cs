@@ -29,15 +29,16 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting.enums;
-
-/// <summary>
-/// Specifies the line style of the LineFormat object.
-/// </summary>
-public enum LineStyle
+namespace BreakDown.ManagedPdf.Charting.Charting.enums
 {
     /// <summary>
-    /// 
+    /// Specifies the line style of the LineFormat object.
     /// </summary>
-    Single
+    public enum LineStyle
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        Single
+    }
 }

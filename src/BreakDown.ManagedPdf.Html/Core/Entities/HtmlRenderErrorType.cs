@@ -10,20 +10,21 @@
 // - Sun Tsu,
 // "The Art of War"
 
-namespace BreakDown.ManagedPdf.Html.Core.Entities;
-
-/// <summary>
-/// Enum of possible error types that can be reported.
-/// </summary>
-public enum HtmlRenderErrorType
+namespace BreakDown.ManagedPdf.Html.Core.Entities
 {
-    General = 0,
-    CssParsing = 1,
-    HtmlParsing = 2,
-    Image = 3,
-    Paint = 4,
-    Layout = 5,
-    KeyboardMouse = 6,
-    Iframe = 7,
-    ContextMenu = 8,
+    /// <summary>
+    /// Enum of possible error types that can be reported.
+    /// </summary>
+    public enum HtmlRenderErrorType
+    {
+        General = 0,
+        CssParsing = 1,
+        HtmlParsing = 2,
+        Image = 3,
+        Paint = 4,
+        Layout = 5,
+        KeyboardMouse = 6,
+        Iframe = 7,
+        ContextMenu = 8,
+    }
 }

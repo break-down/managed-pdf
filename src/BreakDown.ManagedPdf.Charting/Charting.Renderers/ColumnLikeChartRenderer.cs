@@ -29,40 +29,41 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents column like chart renderer.
-/// </summary>
-internal abstract class ColumnLikeChartRenderer : ChartRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the ColumnLikeChartRenderer class with the
-    /// specified renderer parameters.
+    /// Represents column like chart renderer.
     /// </summary>
-    internal ColumnLikeChartRenderer(RendererParameters parms)
-        : base(parms)
+    internal abstract class ColumnLikeChartRenderer : ChartRenderer
     {
-    }
+        /// <summary>
+        /// Initializes a new instance of the ColumnLikeChartRenderer class with the
+        /// specified renderer parameters.
+        /// </summary>
+        internal ColumnLikeChartRenderer(RendererParameters parms)
+            : base(parms)
+        {
+        }
 
-    /// <summary>
-    /// Calculates the chart layout.
-    /// </summary>
-    internal void CalcLayout()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+        /// <summary>
+        /// Calculates the chart layout.
+        /// </summary>
+        internal void CalcLayout()
+        {
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
 
-        // Calculate rects and positions.
-        var chartRect = LayoutLegend();
-        cri.xAxisRendererInfo.X = chartRect.Left + cri.yAxisRendererInfo.Width;
-        cri.xAxisRendererInfo.Y = chartRect.Bottom - cri.xAxisRendererInfo.Height;
-        cri.xAxisRendererInfo.Width = chartRect.Width - cri.yAxisRendererInfo.Width;
-        cri.yAxisRendererInfo.X = chartRect.Left;
-        cri.yAxisRendererInfo.Y = chartRect.Top;
-        cri.yAxisRendererInfo.Height = cri.xAxisRendererInfo.Y - chartRect.Top;
-        cri.plotAreaRendererInfo.X = cri.xAxisRendererInfo.X;
-        cri.plotAreaRendererInfo.Y = cri.yAxisRendererInfo.InnerRect.Y;
-        cri.plotAreaRendererInfo.Width = cri.xAxisRendererInfo.Width;
-        cri.plotAreaRendererInfo.Height = cri.yAxisRendererInfo.InnerRect.Height;
+            // Calculate rects and positions.
+            var chartRect = LayoutLegend();
+            cri.xAxisRendererInfo.X = chartRect.Left + cri.yAxisRendererInfo.Width;
+            cri.xAxisRendererInfo.Y = chartRect.Bottom - cri.xAxisRendererInfo.Height;
+            cri.xAxisRendererInfo.Width = chartRect.Width - cri.yAxisRendererInfo.Width;
+            cri.yAxisRendererInfo.X = chartRect.Left;
+            cri.yAxisRendererInfo.Y = chartRect.Top;
+            cri.yAxisRendererInfo.Height = cri.xAxisRendererInfo.Y - chartRect.Top;
+            cri.plotAreaRendererInfo.X = cri.xAxisRendererInfo.X;
+            cri.plotAreaRendererInfo.Y = cri.yAxisRendererInfo.InnerRect.Y;
+            cri.plotAreaRendererInfo.Width = cri.xAxisRendererInfo.Width;
+            cri.plotAreaRendererInfo.Height = cri.yAxisRendererInfo.InnerRect.Height;
+        }
     }
 }

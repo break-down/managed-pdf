@@ -14,36 +14,37 @@ using System;
 using BreakDown.ManagedPdf.Core.Drawing;
 using BreakDown.ManagedPdf.Html.Adapters;
 
-namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters;
-
-/// <summary>
-/// Adapter for WinForms brushes objects for core.
-/// </summary>
-internal sealed class BrushAdapter : RBrush
+namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
 {
     /// <summary>
-    /// The actual BreakDown.ManagedPdf.Core brush instance.<br/>
-    /// Should be <see cref="XBrush"/> but there is some fucking issue inheriting from it =/
+    /// Adapter for WinForms brushes objects for core.
     /// </summary>
-    private readonly Object _brush;
-
-    /// <summary>
-    /// Init.
-    /// </summary>
-    public BrushAdapter(Object brush)
+    internal sealed class BrushAdapter : RBrush
     {
-        _brush = brush;
-    }
+        /// <summary>
+        /// The actual BreakDown.ManagedPdf.Core brush instance.<br/>
+        /// Should be <see cref="XBrush"/> but there is some fucking issue inheriting from it =/
+        /// </summary>
+        private readonly Object _brush;
 
-    /// <summary>
-    /// The actual WinForms brush instance.
-    /// </summary>
-    public Object Brush
-    {
-        get { return _brush; }
-    }
+        /// <summary>
+        /// Init.
+        /// </summary>
+        public BrushAdapter(Object brush)
+        {
+            _brush = brush;
+        }
 
-    public override void Dispose()
-    {
+        /// <summary>
+        /// The actual WinForms brush instance.
+        /// </summary>
+        public Object Brush
+        {
+            get { return _brush; }
+        }
+
+        public override void Dispose()
+        {
+        }
     }
 }

@@ -29,20 +29,21 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Drawing.Pdf.enums;
-
-/// <summary>
-/// Indicates whether we are within a BT/ET block.
-/// </summary>
-enum StreamMode
+namespace BreakDown.ManagedPdf.Core.Drawing.Pdf.enums
 {
     /// <summary>
-    /// Graphic mode. This is default.
+    /// Indicates whether we are within a BT/ET block.
     /// </summary>
-    Graphic,
+    enum StreamMode
+    {
+        /// <summary>
+        /// Graphic mode. This is default.
+        /// </summary>
+        Graphic,
 
-    /// <summary>
-    /// Text mode.
-    /// </summary>
-    Text,
+        /// <summary>
+        /// Text mode.
+        /// </summary>
+        Text,
+    }
 }

@@ -32,54 +32,55 @@
 using System;
 using BreakDown.ManagedPdf.Core.Fonts.OpenType.enums;
 
-namespace BreakDown.ManagedPdf.Core.Fonts.OpenType;
-
-/// <summary>
-/// Represents an indirect reference to an existing font table in a font image.
-/// Used to create binary copies of an existing font table that is not modified.
-/// </summary>
+namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
+{
+    /// <summary>
+    /// Represents an indirect reference to an existing font table in a font image.
+    /// Used to create binary copies of an existing font table that is not modified.
+    /// </summary>
 
 // ReSharper disable once InconsistentNaming - "I" stands for "indirect", not "interface".
-internal class IRefFontTable : OpenTypeFontTable
-{
-    public IRefFontTable(OpenTypeFontface fontData, OpenTypeFontTable fontTable)
-        : base(null, fontTable.DirectoryEntry.Tag)
+    internal class IRefFontTable : OpenTypeFontTable
     {
-        _fontData = fontData;
-        _irefDirectoryEntry = fontTable.DirectoryEntry;
-    }
+        public IRefFontTable(OpenTypeFontface fontData, OpenTypeFontTable fontTable)
+            : base(null, fontTable.DirectoryEntry.Tag)
+        {
+            _fontData = fontData;
+            _irefDirectoryEntry = fontTable.DirectoryEntry;
+        }
 
-    readonly TableDirectoryEntry _irefDirectoryEntry;
+        readonly TableDirectoryEntry _irefDirectoryEntry;
 
-    /// <summary>
-    /// Prepares the font table to be compiled into its binary representation.
-    /// </summary>
-    public override void PrepareForCompilation()
-    {
-        base.PrepareForCompilation();
-        DirectoryEntry.Length = _irefDirectoryEntry.Length;
-        DirectoryEntry.CheckSum = _irefDirectoryEntry.CheckSum;
+        /// <summary>
+        /// Prepares the font table to be compiled into its binary representation.
+        /// </summary>
+        public override void PrepareForCompilation()
+        {
+            base.PrepareForCompilation();
+            DirectoryEntry.Length = _irefDirectoryEntry.Length;
+            DirectoryEntry.CheckSum = _irefDirectoryEntry.CheckSum;
 #if DEBUG
 
-        // Check the checksum algorithm
-        if (DirectoryEntry.Tag != TableTagNames.Head)
-        {
-            var bytes = new byte[DirectoryEntry.PaddedLength];
-            Buffer.BlockCopy(_irefDirectoryEntry.FontTable._fontData.FontSource.Bytes, _irefDirectoryEntry.Offset, bytes, 0, DirectoryEntry.PaddedLength);
-            var checkSum1 = DirectoryEntry.CheckSum;
-            var checkSum2 = CalcChecksum(bytes);
+            // Check the checksum algorithm
+            if (DirectoryEntry.Tag != TableTagNames.Head)
+            {
+                var bytes = new byte[DirectoryEntry.PaddedLength];
+                Buffer.BlockCopy(_irefDirectoryEntry.FontTable._fontData.FontSource.Bytes, _irefDirectoryEntry.Offset, bytes, 0, DirectoryEntry.PaddedLength);
+                var checkSum1 = DirectoryEntry.CheckSum;
+                var checkSum2 = CalcChecksum(bytes);
 
-            // TODO: Sometimes this Assert fails,
-            //Debug.Assert(checkSum1 == checkSum2, "Bug in checksum algorithm.");
-        }
+                // TODO: Sometimes this Assert fails,
+                //Debug.Assert(checkSum1 == checkSum2, "Bug in checksum algorithm.");
+            }
 #endif
-    }
+        }
 
-    /// <summary>
-    /// Converts the font into its binary representation.
-    /// </summary>
-    public override void Write(OpenTypeFontWriter writer)
-    {
-        writer.Write(_irefDirectoryEntry.FontTable._fontData.FontSource.Bytes, _irefDirectoryEntry.Offset, _irefDirectoryEntry.PaddedLength);
+        /// <summary>
+        /// Converts the font into its binary representation.
+        /// </summary>
+        public override void Write(OpenTypeFontWriter writer)
+        {
+            writer.Write(_irefDirectoryEntry.FontTable._fontData.FontSource.Bytes, _irefDirectoryEntry.Offset, _irefDirectoryEntry.PaddedLength);
+        }
     }
 }

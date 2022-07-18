@@ -34,118 +34,119 @@ using BreakDown.ManagedPdf.Charting.Charting.enums;
 using BreakDown.ManagedPdf.Core.Drawing;
 using BreakDown.ManagedPdf.Core.Drawing.enums;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents the renderer for a legend entry.
-/// </summary>
-internal class LegendEntryRenderer : Renderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the LegendEntryRenderer class with the specified renderer
-    /// parameters.
+    /// Represents the renderer for a legend entry.
     /// </summary>
-    internal LegendEntryRenderer(RendererParameters parms)
-        : base(parms)
+    internal class LegendEntryRenderer : Renderer
     {
-    }
-
-    /// <summary>
-    /// Calculates the space used by the legend entry.
-    /// </summary>
-    internal override void Format()
-    {
-        var gfx = _rendererParms.Graphics;
-        var leri = (LegendEntryRendererInfo)_rendererParms.RendererInfo;
-
-        // Initialize
-        leri.MarkerArea.Width = MaxLegendMarkerWidth;
-        leri.MarkerArea.Height = MaxLegendMarkerHeight;
-        leri.MarkerSize = new XSize();
-        leri.MarkerSize.Width = leri.MarkerArea.Width;
-        leri.MarkerSize.Height = leri.MarkerArea.Height;
-        if (leri._seriesRendererInfo._series._chartType == ChartType.Line)
+        /// <summary>
+        /// Initializes a new instance of the LegendEntryRenderer class with the specified renderer
+        /// parameters.
+        /// </summary>
+        internal LegendEntryRenderer(RendererParameters parms)
+            : base(parms)
         {
-            leri.MarkerArea.Width *= 3;
         }
 
-        leri.Width = leri.MarkerArea.Width;
-        leri.Height = leri.MarkerArea.Height;
-
-        if (leri.EntryText != "")
+        /// <summary>
+        /// Calculates the space used by the legend entry.
+        /// </summary>
+        internal override void Format()
         {
-            leri.TextSize = gfx.MeasureString(leri.EntryText, leri._legendRendererInfo.Font);
+            var gfx = _rendererParms.Graphics;
+            var leri = (LegendEntryRendererInfo)_rendererParms.RendererInfo;
+
+            // Initialize
+            leri.MarkerArea.Width = MaxLegendMarkerWidth;
+            leri.MarkerArea.Height = MaxLegendMarkerHeight;
+            leri.MarkerSize = new XSize();
+            leri.MarkerSize.Width = leri.MarkerArea.Width;
+            leri.MarkerSize.Height = leri.MarkerArea.Height;
             if (leri._seriesRendererInfo._series._chartType == ChartType.Line)
             {
-                leri.MarkerSize.Width = leri._seriesRendererInfo._markerRendererInfo.MarkerSize.Value;
-                leri.MarkerArea.Width = Math.Max(3 * leri.MarkerSize.Width, leri.MarkerArea.Width);
+                leri.MarkerArea.Width *= 3;
             }
 
-            leri.MarkerArea.Height = Math.Min(leri.MarkerArea.Height, leri.TextSize.Height);
-            leri.MarkerSize.Height = Math.Min(leri.MarkerSize.Height, leri.TextSize.Height);
-            leri.Width = leri.TextSize.Width + leri.MarkerArea.Width + SpacingBetweenMarkerAndText;
-            leri.Height = leri.TextSize.Height;
+            leri.Width = leri.MarkerArea.Width;
+            leri.Height = leri.MarkerArea.Height;
+
+            if (leri.EntryText != "")
+            {
+                leri.TextSize = gfx.MeasureString(leri.EntryText, leri._legendRendererInfo.Font);
+                if (leri._seriesRendererInfo._series._chartType == ChartType.Line)
+                {
+                    leri.MarkerSize.Width = leri._seriesRendererInfo._markerRendererInfo.MarkerSize.Value;
+                    leri.MarkerArea.Width = Math.Max(3 * leri.MarkerSize.Width, leri.MarkerArea.Width);
+                }
+
+                leri.MarkerArea.Height = Math.Min(leri.MarkerArea.Height, leri.TextSize.Height);
+                leri.MarkerSize.Height = Math.Min(leri.MarkerSize.Height, leri.TextSize.Height);
+                leri.Width = leri.TextSize.Width + leri.MarkerArea.Width + SpacingBetweenMarkerAndText;
+                leri.Height = leri.TextSize.Height;
+            }
         }
+
+        /// <summary>
+        /// Draws one legend entry.
+        /// </summary>
+        internal override void Draw()
+        {
+            var gfx = _rendererParms.Graphics;
+            var leri = (LegendEntryRendererInfo)_rendererParms.RendererInfo;
+
+            XRect rect;
+            if (leri._seriesRendererInfo._series._chartType == ChartType.Line)
+            {
+                // Draw line.
+                var posLineStart = new XPoint(leri.X, leri.Y + leri.Height / 2);
+                var posLineEnd = new XPoint(leri.X + leri.MarkerArea.Width, leri.Y + leri.Height / 2);
+                gfx.DrawLine(new XPen(((XSolidBrush)leri.MarkerBrush).Color), posLineStart, posLineEnd);
+
+                // Draw marker.
+                var x = leri.X + leri.MarkerArea.Width / 2;
+                var posMarker = new XPoint(x, leri.Y + leri.Height / 2);
+                MarkerRenderer.Draw(gfx, posMarker, leri._seriesRendererInfo._markerRendererInfo);
+            }
+            else
+            {
+                // Draw series rectangle for column, bar or pie charts.
+                rect = new XRect(leri.X, leri.Y, leri.MarkerArea.Width, leri.MarkerArea.Height);
+                rect.Y += (leri.Height - leri.MarkerArea.Height) / 2;
+                gfx.DrawRectangle(leri.MarkerPen, leri.MarkerBrush, rect);
+            }
+
+            // Draw text
+            if (leri.EntryText.Length > 0)
+            {
+                rect = leri.Rect;
+                rect.X += leri.MarkerArea.Width + LegendEntryRenderer.SpacingBetweenMarkerAndText;
+                var format = new XStringFormat();
+                format.LineAlignment = XLineAlignment.Near;
+                gfx.DrawString(leri.EntryText, leri._legendRendererInfo.Font,
+                               leri._legendRendererInfo.FontColor, rect, format);
+            }
+        }
+
+        /// <summary>
+        /// Absolute width for markers (including line) in point.
+        /// </summary>
+        private const double MarkerWidth = 4.3; // 1.5 mm
+
+        /// <summary>
+        /// Maximum legend marker width in point.
+        /// </summary>
+        private const double MaxLegendMarkerWidth = 7; // 2.5 mm
+
+        /// <summary>
+        /// Maximum legend marker height in point.
+        /// </summary>
+        private const double MaxLegendMarkerHeight = 7; // 2.5 mm
+
+        /// <summary>
+        /// Insert spacing between marker and text in point.
+        /// </summary>
+        private const double SpacingBetweenMarkerAndText = 4.3; // 1.5 mm
     }
-
-    /// <summary>
-    /// Draws one legend entry.
-    /// </summary>
-    internal override void Draw()
-    {
-        var gfx = _rendererParms.Graphics;
-        var leri = (LegendEntryRendererInfo)_rendererParms.RendererInfo;
-
-        XRect rect;
-        if (leri._seriesRendererInfo._series._chartType == ChartType.Line)
-        {
-            // Draw line.
-            var posLineStart = new XPoint(leri.X, leri.Y + leri.Height / 2);
-            var posLineEnd = new XPoint(leri.X + leri.MarkerArea.Width, leri.Y + leri.Height / 2);
-            gfx.DrawLine(new XPen(((XSolidBrush)leri.MarkerBrush).Color), posLineStart, posLineEnd);
-
-            // Draw marker.
-            var x = leri.X + leri.MarkerArea.Width / 2;
-            var posMarker = new XPoint(x, leri.Y + leri.Height / 2);
-            MarkerRenderer.Draw(gfx, posMarker, leri._seriesRendererInfo._markerRendererInfo);
-        }
-        else
-        {
-            // Draw series rectangle for column, bar or pie charts.
-            rect = new XRect(leri.X, leri.Y, leri.MarkerArea.Width, leri.MarkerArea.Height);
-            rect.Y += (leri.Height - leri.MarkerArea.Height) / 2;
-            gfx.DrawRectangle(leri.MarkerPen, leri.MarkerBrush, rect);
-        }
-
-        // Draw text
-        if (leri.EntryText.Length > 0)
-        {
-            rect = leri.Rect;
-            rect.X += leri.MarkerArea.Width + LegendEntryRenderer.SpacingBetweenMarkerAndText;
-            var format = new XStringFormat();
-            format.LineAlignment = XLineAlignment.Near;
-            gfx.DrawString(leri.EntryText, leri._legendRendererInfo.Font,
-                           leri._legendRendererInfo.FontColor, rect, format);
-        }
-    }
-
-    /// <summary>
-    /// Absolute width for markers (including line) in point.
-    /// </summary>
-    private const double MarkerWidth = 4.3; // 1.5 mm
-
-    /// <summary>
-    /// Maximum legend marker width in point.
-    /// </summary>
-    private const double MaxLegendMarkerWidth = 7; // 2.5 mm
-
-    /// <summary>
-    /// Maximum legend marker height in point.
-    /// </summary>
-    private const double MaxLegendMarkerHeight = 7; // 2.5 mm
-
-    /// <summary>
-    /// Insert spacing between marker and text in point.
-    /// </summary>
-    private const double SpacingBetweenMarkerAndText = 4.3; // 1.5 mm
 }

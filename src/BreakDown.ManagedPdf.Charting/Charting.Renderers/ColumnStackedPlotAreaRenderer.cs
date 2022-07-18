@@ -32,102 +32,103 @@
 using System;
 using BreakDown.ManagedPdf.Core.Drawing;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a plot area renderer of stacked columns, i. e. all columns are drawn one on another.
-/// </summary>
-internal class ColumnStackedPlotAreaRenderer : ColumnPlotAreaRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the ColumnStackedPlotAreaRenderer class with the
-    /// specified renderer parameters.
+    /// Represents a plot area renderer of stacked columns, i. e. all columns are drawn one on another.
     /// </summary>
-    internal ColumnStackedPlotAreaRenderer(RendererParameters parms)
-        : base(parms)
+    internal class ColumnStackedPlotAreaRenderer : ColumnPlotAreaRenderer
     {
-    }
-
-    /// <summary>
-    /// Calculates the position, width and height of each column of all series.
-    /// </summary>
-    protected override void CalcColumns()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        if (cri.seriesRendererInfos.Length == 0)
+        /// <summary>
+        /// Initializes a new instance of the ColumnStackedPlotAreaRenderer class with the
+        /// specified renderer parameters.
+        /// </summary>
+        internal ColumnStackedPlotAreaRenderer(RendererParameters parms)
+            : base(parms)
         {
-            return;
         }
 
-        var xMin = cri.xAxisRendererInfo.MinimumScale;
-        var xMajorTick = cri.xAxisRendererInfo.MajorTick;
-
-        var maxPoints = 0;
-        foreach (var sri in cri.seriesRendererInfos)
+        /// <summary>
+        /// Calculates the position, width and height of each column of all series.
+        /// </summary>
+        protected override void CalcColumns()
         {
-            maxPoints = Math.Max(maxPoints, sri._series._seriesElements.Count);
-        }
-
-        var x = xMin + xMajorTick / 2;
-
-        // Space used by one column.
-        var columnWidth = xMajorTick * 0.75 / 2;
-
-        var points = new XPoint[2];
-        for (var pointIdx = 0; pointIdx < maxPoints; ++pointIdx)
-        {
-            // Set x to first clustered column for each series.
-            double yMin = 0, yMax = 0, y0 = 0, y1 = 0;
-            var x0 = x - columnWidth;
-            var x1 = x + columnWidth;
-
-            foreach (var sri in cri.seriesRendererInfos)
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            if (cri.seriesRendererInfos.Length == 0)
             {
-                if (sri._pointRendererInfos.Length <= pointIdx)
-                {
-                    break;
-                }
-
-                var column = (ColumnRendererInfo)sri._pointRendererInfos[pointIdx];
-                if (column.Point != null && !double.IsNaN(column.Point._value))
-                {
-                    var y = column.Point._value;
-                    if (y < 0)
-                    {
-                        y0 = yMin + y;
-                        y1 = yMin;
-                        yMin += y;
-                    }
-                    else
-                    {
-                        y0 = yMax;
-                        y1 = yMax + y;
-                        yMax += y;
-                    }
-
-                    points[0].X = x0; // upper left
-                    points[0].Y = y1;
-                    points[1].X = x1; // lower right
-                    points[1].Y = y0;
-
-                    cri.plotAreaRendererInfo._matrix.TransformPoints(points);
-
-                    column.Rect = new XRect(points[0].X,
-                                            points[0].Y,
-                                            points[1].X - points[0].X,
-                                            points[1].Y - points[0].Y);
-                }
+                return;
             }
 
-            x++; // Next stacked column.
-        }
-    }
+            var xMin = cri.xAxisRendererInfo.MinimumScale;
+            var xMajorTick = cri.xAxisRendererInfo.MajorTick;
 
-    /// <summary>
-    /// Stacked columns are always inside.
-    /// </summary>
-    protected override bool IsDataInside(double yMin, double yMax, double yValue)
-    {
-        return true;
+            var maxPoints = 0;
+            foreach (var sri in cri.seriesRendererInfos)
+            {
+                maxPoints = Math.Max(maxPoints, sri._series._seriesElements.Count);
+            }
+
+            var x = xMin + xMajorTick / 2;
+
+            // Space used by one column.
+            var columnWidth = xMajorTick * 0.75 / 2;
+
+            var points = new XPoint[2];
+            for (var pointIdx = 0; pointIdx < maxPoints; ++pointIdx)
+            {
+                // Set x to first clustered column for each series.
+                double yMin = 0, yMax = 0, y0 = 0, y1 = 0;
+                var x0 = x - columnWidth;
+                var x1 = x + columnWidth;
+
+                foreach (var sri in cri.seriesRendererInfos)
+                {
+                    if (sri._pointRendererInfos.Length <= pointIdx)
+                    {
+                        break;
+                    }
+
+                    var column = (ColumnRendererInfo)sri._pointRendererInfos[pointIdx];
+                    if (column.Point != null && !double.IsNaN(column.Point._value))
+                    {
+                        var y = column.Point._value;
+                        if (y < 0)
+                        {
+                            y0 = yMin + y;
+                            y1 = yMin;
+                            yMin += y;
+                        }
+                        else
+                        {
+                            y0 = yMax;
+                            y1 = yMax + y;
+                            yMax += y;
+                        }
+
+                        points[0].X = x0; // upper left
+                        points[0].Y = y1;
+                        points[1].X = x1; // lower right
+                        points[1].Y = y0;
+
+                        cri.plotAreaRendererInfo._matrix.TransformPoints(points);
+
+                        column.Rect = new XRect(points[0].X,
+                                                points[0].Y,
+                                                points[1].X - points[0].X,
+                                                points[1].Y - points[0].Y);
+                    }
+                }
+
+                x++; // Next stacked column.
+            }
+        }
+
+        /// <summary>
+        /// Stacked columns are always inside.
+        /// </summary>
+        protected override bool IsDataInside(double yMin, double yMax, double yValue)
+        {
+            return true;
+        }
     }
 }

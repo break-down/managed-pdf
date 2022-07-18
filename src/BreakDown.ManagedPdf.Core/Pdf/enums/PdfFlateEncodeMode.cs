@@ -29,25 +29,26 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Pdf.enums;
-
-/// <summary>
-/// Sets the mode for the Deflater (FlateEncoder).
-/// </summary>
-public enum PdfFlateEncodeMode
+namespace BreakDown.ManagedPdf.Core.Pdf.enums
 {
     /// <summary>
-    /// The default mode.
+    /// Sets the mode for the Deflater (FlateEncoder).
     /// </summary>
-    Default,
+    public enum PdfFlateEncodeMode
+    {
+        /// <summary>
+        /// The default mode.
+        /// </summary>
+        Default,
 
-    /// <summary>
-    /// Fast encoding, but larger PDF files.
-    /// </summary>
-    BestSpeed,
+        /// <summary>
+        /// Fast encoding, but larger PDF files.
+        /// </summary>
+        BestSpeed,
 
-    /// <summary>
-    /// Best compression, but takes more time.
-    /// </summary>
-    BestCompression,
+        /// <summary>
+        /// Best compression, but takes more time.
+        /// </summary>
+        BestCompression,
+    }
 }

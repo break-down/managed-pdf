@@ -35,250 +35,254 @@ using System.Text;
 using BreakDown.ManagedPdf.Core.Pdf.Internal;
 using BreakDown.ManagedPdf.Core.Pdf.IO;
 
-namespace BreakDown.ManagedPdf.Core.Pdf;
-// TODO: Make code more readeable with PDF 1.7 strings: text string, ASCII string, byte string etc.
-
-/// <summary>
-/// Represents a direct text string value.
-/// </summary>
-[DebuggerDisplay("({Value})")]
-public sealed class PdfString : PdfItem
+namespace BreakDown.ManagedPdf.Core.Pdf
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PdfString"/> class.
-    /// </summary>
-    public PdfString()
-    {
-        // Redundant assignment.
-        //_flags = PdfStringFlags.RawEncoding;
-    }
+    // TODO: Make code more readeable with PDF 1.7 strings: text string, ASCII string, byte string etc.
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PdfString"/> class.
+    /// Represents a direct text string value.
     /// </summary>
-    /// <param name="value">The value.</param>
-    public PdfString(string value)
+    [DebuggerDisplay("({Value})")]
+    public sealed class PdfString : PdfItem
     {
-#if true
-        if (!IsRawEncoding(value))
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PdfString"/> class.
+        /// </summary>
+        public PdfString()
         {
-            _flags = PdfStringFlags.Unicode;
+            // Redundant assignment.
+            //_flags = PdfStringFlags.RawEncoding;
         }
 
-        _value = value;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PdfString"/> class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public PdfString(string value)
+        {
+#if true
+            if (!IsRawEncoding(value))
+            {
+                _flags = PdfStringFlags.Unicode;
+            }
+
+            _value = value;
 #else
             CheckRawEncoding(value);
             _value = value;
             //_flags = PdfStringFlags.RawEncoding;
 #endif
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PdfString"/> class.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <param name="encoding">The encoding.</param>
-    public PdfString(string value, PdfStringEncoding encoding)
-    {
-        switch (encoding)
-        {
-            case PdfStringEncoding.RawEncoding:
-                CheckRawEncoding(value);
-                break;
-
-            case PdfStringEncoding.StandardEncoding:
-                break;
-
-            case PdfStringEncoding.PDFDocEncoding:
-                break;
-
-            case PdfStringEncoding.WinAnsiEncoding:
-                CheckRawEncoding(value);
-                break;
-
-            case PdfStringEncoding.MacRomanEncoding:
-                break;
-
-            case PdfStringEncoding.Unicode:
-                break;
-
-            default:
-                throw new ArgumentOutOfRangeException("encoding");
         }
 
-        _value = value;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PdfString"/> class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="encoding">The encoding.</param>
+        public PdfString(string value, PdfStringEncoding encoding)
+        {
+            switch (encoding)
+            {
+                case PdfStringEncoding.RawEncoding:
+                    CheckRawEncoding(value);
+                    break;
 
-        //if ((flags & PdfStringFlags.EncodingMask) == 0)
-        //  flags |= PdfStringFlags.PDFDocEncoding;
-        _flags = (PdfStringFlags)encoding;
-    }
+                case PdfStringEncoding.StandardEncoding:
+                    break;
 
-    internal PdfString(string value, PdfStringFlags flags)
-    {
-        _value = value;
-        _flags = flags;
-    }
+                case PdfStringEncoding.PDFDocEncoding:
+                    break;
 
-    /// <summary>
-    /// Gets the number of characters in this string.
-    /// </summary>
-    public int Length
-    {
-        get { return _value == null ? 0 : _value.Length; }
-    }
+                case PdfStringEncoding.WinAnsiEncoding:
+                    CheckRawEncoding(value);
+                    break;
 
-    /// <summary>
-    /// Gets the encoding.
-    /// </summary>
-    public PdfStringEncoding Encoding
-    {
-        get { return (PdfStringEncoding)(_flags & PdfStringFlags.EncodingMask); }
-    }
+                case PdfStringEncoding.MacRomanEncoding:
+                    break;
 
-    /// <summary>
-    /// Gets a value indicating whether the string is a hexadecimal literal.
-    /// </summary>
-    public bool HexLiteral
-    {
-        get { return (_flags & PdfStringFlags.HexLiteral) != 0; }
-    }
+                case PdfStringEncoding.Unicode:
+                    break;
 
-    internal PdfStringFlags Flags
-    {
-        get { return _flags; }
-    }
+                default:
+                    throw new ArgumentOutOfRangeException("encoding");
+            }
 
-    readonly PdfStringFlags _flags;
+            _value = value;
 
-    /// <summary>
-    /// Gets the string value.
-    /// </summary>
-    public string Value
-    {
-        // This class must behave like a value type. Therefore it cannot be changed (like System.String).
-        get { return _value ?? ""; }
-    }
+            //if ((flags & PdfStringFlags.EncodingMask) == 0)
+            //  flags |= PdfStringFlags.PDFDocEncoding;
+            _flags = (PdfStringFlags)encoding;
+        }
 
-    string _value;
+        internal PdfString(string value, PdfStringFlags flags)
+        {
+            _value = value;
+            _flags = flags;
+        }
 
-    /// <summary>
-    /// Gets or sets the string value for encryption purposes.
-    /// </summary>
-    internal byte[] EncryptionValue
-    {
-        // TODO: Unicode case is not handled!
-        get { return _value == null ? new byte[0] : PdfEncoders.RawEncoding.GetBytes(_value); }
+        /// <summary>
+        /// Gets the number of characters in this string.
+        /// </summary>
+        public int Length
+        {
+            get { return _value == null ? 0 : _value.Length; }
+        }
 
-        // BUG: May lead to trouble with the value semantics of PdfString
-        set { _value = PdfEncoders.RawEncoding.GetString(value, 0, value.Length); }
-    }
+        /// <summary>
+        /// Gets the encoding.
+        /// </summary>
+        public PdfStringEncoding Encoding
+        {
+            get { return (PdfStringEncoding)(_flags & PdfStringFlags.EncodingMask); }
+        }
 
-    /// <summary>
-    /// Returns the string.
-    /// </summary>
-    public override string ToString()
-    {
+        /// <summary>
+        /// Gets a value indicating whether the string is a hexadecimal literal.
+        /// </summary>
+        public bool HexLiteral
+        {
+            get { return (_flags & PdfStringFlags.HexLiteral) != 0; }
+        }
+
+        internal PdfStringFlags Flags
+        {
+            get { return _flags; }
+        }
+
+        readonly PdfStringFlags _flags;
+
+        /// <summary>
+        /// Gets the string value.
+        /// </summary>
+        public string Value
+        {
+            // This class must behave like a value type. Therefore it cannot be changed (like System.String).
+            get { return _value ?? ""; }
+        }
+
+        string _value;
+
+        /// <summary>
+        /// Gets or sets the string value for encryption purposes.
+        /// </summary>
+        internal byte[] EncryptionValue
+        {
+            // TODO: Unicode case is not handled!
+            get { return _value == null ? new byte[0] : PdfEncoders.RawEncoding.GetBytes(_value); }
+
+            // BUG: May lead to trouble with the value semantics of PdfString
+            set { _value = PdfEncoders.RawEncoding.GetString(value, 0, value.Length); }
+        }
+
+        /// <summary>
+        /// Returns the string.
+        /// </summary>
+        public override string ToString()
+        {
 #if true
-        var encoding = (PdfStringEncoding)(_flags & PdfStringFlags.EncodingMask);
-        var pdf = (_flags & PdfStringFlags.HexLiteral) == 0
-            ? PdfEncoders.ToStringLiteral(_value, encoding, null)
-            : PdfEncoders.ToHexStringLiteral(_value, encoding, null);
-        return pdf;
+            var encoding = (PdfStringEncoding)(_flags & PdfStringFlags.EncodingMask);
+            var pdf = (_flags & PdfStringFlags.HexLiteral) == 0
+                ? PdfEncoders.ToStringLiteral(_value, encoding, null)
+                : PdfEncoders.ToHexStringLiteral(_value, encoding, null);
+            return pdf;
 #else
             return _value;
 #endif
-    }
+        }
 
-    /// <summary>
-    /// Hack for document encoded bookmarks.
-    /// </summary>
-    public string ToStringFromPdfDocEncoded()
-    {
-        var length = _value.Length;
-        var bytes = new char[length];
-        for (var idx = 0; idx < length; idx++)
+        /// <summary>
+        /// Hack for document encoded bookmarks.
+        /// </summary>
+        public string ToStringFromPdfDocEncoded()
         {
-            var ch = _value[idx];
-            if (ch <= 255)
+            var length = _value.Length;
+            var bytes = new char[length];
+            for (var idx = 0; idx < length; idx++)
             {
-                bytes[idx] = Encode[ch];
+                var ch = _value[idx];
+                if (ch <= 255)
+                {
+                    bytes[idx] = Encode[ch];
+                }
+                else
+                {
+                    //Debug-Break.Break();
+                    throw new InvalidOperationException("DocEncoded string contains char greater 255.");
+                }
             }
-            else
+
+            var sb = new StringBuilder(length);
+            for (var idx = 0; idx < length; idx++)
             {
-                //Debug-Break.Break();
-                throw new InvalidOperationException("DocEncoded string contains char greater 255.");
+                sb.Append((char)bytes[idx]);
+            }
+
+            return sb.ToString();
+        }
+
+        static readonly char[] Encode =
+        {
+            '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x07', '\x08', '\x09', '\x0A', '\x0B', '\x0C', '\x0D', '\x0E', '\x0F',
+            '\x10', '\x11', '\x12', '\x13', '\x14', '\x15', '\x16', '\x17', '\x18', '\x19', '\x1A', '\x1B', '\x1C', '\x1D', '\x1E', '\x1F',
+            '\x20', '\x21', '\x22', '\x23', '\x24', '\x25', '\x26', '\x27', '\x28', '\x29', '\x2A', '\x2B', '\x2C', '\x2D', '\x2E', '\x2F',
+            '\x30', '\x31', '\x32', '\x33', '\x34', '\x35', '\x36', '\x37', '\x38', '\x39', '\x3A', '\x3B', '\x3C', '\x3D', '\x3E', '\x3F',
+            '\x40', '\x41', '\x42', '\x43', '\x44', '\x45', '\x46', '\x47', '\x48', '\x49', '\x4A', '\x4B', '\x4C', '\x4D', '\x4E', '\x4F',
+            '\x50', '\x51', '\x52', '\x53', '\x54', '\x55', '\x56', '\x57', '\x58', '\x59', '\x5A', '\x5B', '\x5C', '\x5D', '\x5E', '\x5F',
+            '\x60', '\x61', '\x62', '\x63', '\x64', '\x65', '\x66', '\x67', '\x68', '\x69', '\x6A', '\x6B', '\x6C', '\x6D', '\x6E', '\x6F',
+            '\x70', '\x71', '\x72', '\x73', '\x74', '\x75', '\x76', '\x77', '\x78', '\x79', '\x7A', '\x7B', '\x7C', '\x7D', '\x7E', '\x7F',
+            '\x2022', '\x2020', '\x2021', '\x2026', '\x2014', '\x2013', '\x0192', '\x2044', '\x2039', '\x203A', '\x2212', '\x2030', '\x201E', '\x201C',
+            '\x201D',
+            '\x2018',
+            '\x2019', '\x201A', '\x2122', '\xFB01', '\xFB02', '\x0141', '\x0152', '\x0160', '\x0178', '\x017D', '\x0131', '\x0142', '\x0153', '\x0161',
+            '\x017E',
+            '\xFFFD',
+            '\x20AC', '\xA1', '\xA2', '\xA3', '\xA4', '\xA5', '\xA6', '\xA7', '\xA8', '\xA9', '\xAA', '\xAB', '\xAC', '\xAD', '\xAE', '\xAF',
+            '\xB0', '\xB1', '\xB2', '\xB3', '\xB4', '\xB5', '\xB6', '\xB7', '\xB8', '\xB9', '\xBA', '\xBB', '\xBC', '\xBD', '\xBE', '\xBF',
+            '\xC0', '\xC1', '\xC2', '\xC3', '\xC4', '\xC5', '\xC6', '\xC7', '\xC8', '\xC9', '\xCA', '\xCB', '\xCC', '\xCD', '\xCE', '\xCF',
+            '\xD0', '\xD1', '\xD2', '\xD3', '\xD4', '\xD5', '\xD6', '\xD7', '\xD8', '\xD9', '\xDA', '\xDB', '\xDC', '\xDD', '\xDE', '\xDF',
+            '\xE0', '\xE1', '\xE2', '\xE3', '\xE4', '\xE5', '\xE6', '\xE7', '\xE8', '\xE9', '\xEA', '\xEB', '\xEC', '\xED', '\xEE', '\xEF',
+            '\xF0', '\xF1', '\xF2', '\xF3', '\xF4', '\xF5', '\xF6', '\xF7', '\xF8', '\xF9', '\xFA', '\xFB', '\xFC', '\xFD', '\xFE', '\xFF',
+        };
+
+        static void CheckRawEncoding(string s)
+        {
+            if (String.IsNullOrEmpty(s))
+            {
+                return;
+            }
+
+            var length = s.Length;
+            for (var idx = 0; idx < length; idx++)
+            {
+                Debug.Assert(s[idx] < 256, "RawString contains invalid character.");
             }
         }
 
-        var sb = new StringBuilder(length);
-        for (var idx = 0; idx < length; idx++)
+        static bool IsRawEncoding(string s)
         {
-            sb.Append((char)bytes[idx]);
-        }
+            if (String.IsNullOrEmpty(s))
+            {
+                return true;
+            }
 
-        return sb.ToString();
-    }
+            var length = s.Length;
+            for (var idx = 0; idx < length; idx++)
+            {
+                if (!(s[idx] < 256))
+                {
+                    return false;
+                }
+            }
 
-    static readonly char[] Encode =
-    {
-        '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x07', '\x08', '\x09', '\x0A', '\x0B', '\x0C', '\x0D', '\x0E', '\x0F',
-        '\x10', '\x11', '\x12', '\x13', '\x14', '\x15', '\x16', '\x17', '\x18', '\x19', '\x1A', '\x1B', '\x1C', '\x1D', '\x1E', '\x1F',
-        '\x20', '\x21', '\x22', '\x23', '\x24', '\x25', '\x26', '\x27', '\x28', '\x29', '\x2A', '\x2B', '\x2C', '\x2D', '\x2E', '\x2F',
-        '\x30', '\x31', '\x32', '\x33', '\x34', '\x35', '\x36', '\x37', '\x38', '\x39', '\x3A', '\x3B', '\x3C', '\x3D', '\x3E', '\x3F',
-        '\x40', '\x41', '\x42', '\x43', '\x44', '\x45', '\x46', '\x47', '\x48', '\x49', '\x4A', '\x4B', '\x4C', '\x4D', '\x4E', '\x4F',
-        '\x50', '\x51', '\x52', '\x53', '\x54', '\x55', '\x56', '\x57', '\x58', '\x59', '\x5A', '\x5B', '\x5C', '\x5D', '\x5E', '\x5F',
-        '\x60', '\x61', '\x62', '\x63', '\x64', '\x65', '\x66', '\x67', '\x68', '\x69', '\x6A', '\x6B', '\x6C', '\x6D', '\x6E', '\x6F',
-        '\x70', '\x71', '\x72', '\x73', '\x74', '\x75', '\x76', '\x77', '\x78', '\x79', '\x7A', '\x7B', '\x7C', '\x7D', '\x7E', '\x7F',
-        '\x2022', '\x2020', '\x2021', '\x2026', '\x2014', '\x2013', '\x0192', '\x2044', '\x2039', '\x203A', '\x2212', '\x2030', '\x201E', '\x201C', '\x201D',
-        '\x2018',
-        '\x2019', '\x201A', '\x2122', '\xFB01', '\xFB02', '\x0141', '\x0152', '\x0160', '\x0178', '\x017D', '\x0131', '\x0142', '\x0153', '\x0161', '\x017E',
-        '\xFFFD',
-        '\x20AC', '\xA1', '\xA2', '\xA3', '\xA4', '\xA5', '\xA6', '\xA7', '\xA8', '\xA9', '\xAA', '\xAB', '\xAC', '\xAD', '\xAE', '\xAF',
-        '\xB0', '\xB1', '\xB2', '\xB3', '\xB4', '\xB5', '\xB6', '\xB7', '\xB8', '\xB9', '\xBA', '\xBB', '\xBC', '\xBD', '\xBE', '\xBF',
-        '\xC0', '\xC1', '\xC2', '\xC3', '\xC4', '\xC5', '\xC6', '\xC7', '\xC8', '\xC9', '\xCA', '\xCB', '\xCC', '\xCD', '\xCE', '\xCF',
-        '\xD0', '\xD1', '\xD2', '\xD3', '\xD4', '\xD5', '\xD6', '\xD7', '\xD8', '\xD9', '\xDA', '\xDB', '\xDC', '\xDD', '\xDE', '\xDF',
-        '\xE0', '\xE1', '\xE2', '\xE3', '\xE4', '\xE5', '\xE6', '\xE7', '\xE8', '\xE9', '\xEA', '\xEB', '\xEC', '\xED', '\xEE', '\xEF',
-        '\xF0', '\xF1', '\xF2', '\xF3', '\xF4', '\xF5', '\xF6', '\xF7', '\xF8', '\xF9', '\xFA', '\xFB', '\xFC', '\xFD', '\xFE', '\xFF',
-    };
-
-    static void CheckRawEncoding(string s)
-    {
-        if (String.IsNullOrEmpty(s))
-        {
-            return;
-        }
-
-        var length = s.Length;
-        for (var idx = 0; idx < length; idx++)
-        {
-            Debug.Assert(s[idx] < 256, "RawString contains invalid character.");
-        }
-    }
-
-    static bool IsRawEncoding(string s)
-    {
-        if (String.IsNullOrEmpty(s))
-        {
             return true;
         }
 
-        var length = s.Length;
-        for (var idx = 0; idx < length; idx++)
+        /// <summary>
+        /// Writes the string DocEncoded.
+        /// </summary>
+        internal override void WriteObject(PdfWriter writer)
         {
-            if (!(s[idx] < 256))
-            {
-                return false;
-            }
+            writer.Write(this);
         }
-
-        return true;
-    }
-
-    /// <summary>
-    /// Writes the string DocEncoded.
-    /// </summary>
-    internal override void WriteObject(PdfWriter writer)
-    {
-        writer.Write(this);
     }
 }

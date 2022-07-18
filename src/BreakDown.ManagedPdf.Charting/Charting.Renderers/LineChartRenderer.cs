@@ -33,185 +33,186 @@ using BreakDown.ManagedPdf.Charting.Charting.enums;
 using BreakDown.ManagedPdf.Core.Drawing;
 using BreakDown.ManagedPdf.Core.Drawing.enums;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a line chart renderer.
-/// </summary>
-internal class LineChartRenderer : ColumnLikeChartRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the LineChartRenderer class with the specified renderer parameters.
+    /// Represents a line chart renderer.
     /// </summary>
-    internal LineChartRenderer(RendererParameters parms)
-        : base(parms)
+    internal class LineChartRenderer : ColumnLikeChartRenderer
     {
-    }
-
-    /// <summary>
-    /// Returns an initialized and renderer specific rendererInfo.
-    /// </summary>
-    internal override RendererInfo Init()
-    {
-        var cri = new ChartRendererInfo();
-        cri._chart = (Chart)_rendererParms.DrawingItem;
-        _rendererParms.RendererInfo = cri;
-
-        InitSeriesRendererInfo();
-
-        LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
-        cri.legendRendererInfo = (LegendRendererInfo)lr.Init();
-
-        AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
-        cri.xAxisRendererInfo = (AxisRendererInfo)xar.Init();
-
-        AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
-        cri.yAxisRendererInfo = (AxisRendererInfo)yar.Init();
-
-        var plotArea = cri._chart.PlotArea;
-        var lpar = new LinePlotAreaRenderer(_rendererParms);
-        cri.plotAreaRendererInfo = (PlotAreaRendererInfo)lpar.Init();
-
-        return cri;
-    }
-
-    /// <summary>
-    /// Layouts and calculates the space used by the line chart.
-    /// </summary>
-    internal override void Format()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-
-        LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
-        lr.Format();
-
-        // axes
-        AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
-        xar.Format();
-
-        AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
-        yar.Format();
-
-        // Calculate rects and positions.
-        CalcLayout();
-
-        // Calculated remaining plot area, now it's safe to format.
-        var lpar = new LinePlotAreaRenderer(_rendererParms);
-        lpar.Format();
-    }
-
-    /// <summary>
-    /// Draws the line chart.
-    /// </summary>
-    internal override void Draw()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-
-        LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
-        lr.Draw();
-
-        // Draw wall.
-        var wr = new WallRenderer(_rendererParms);
-        wr.Draw();
-
-        // Draw gridlines.
-        GridlinesRenderer glr = new ColumnLikeGridlinesRenderer(_rendererParms);
-        glr.Draw();
-
-        var pabr = new PlotAreaBorderRenderer(_rendererParms);
-        pabr.Draw();
-
-        // Draw line chart's plot area.
-        var lpar = new LinePlotAreaRenderer(_rendererParms);
-        lpar.Draw();
-
-        // Draw x- and y-axis.
-        if (cri.xAxisRendererInfo._axis != null)
+        /// <summary>
+        /// Initializes a new instance of the LineChartRenderer class with the specified renderer parameters.
+        /// </summary>
+        internal LineChartRenderer(RendererParameters parms)
+            : base(parms)
         {
+        }
+
+        /// <summary>
+        /// Returns an initialized and renderer specific rendererInfo.
+        /// </summary>
+        internal override RendererInfo Init()
+        {
+            var cri = new ChartRendererInfo();
+            cri._chart = (Chart)_rendererParms.DrawingItem;
+            _rendererParms.RendererInfo = cri;
+
+            InitSeriesRendererInfo();
+
+            LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
+            cri.legendRendererInfo = (LegendRendererInfo)lr.Init();
+
             AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
-            xar.Draw();
-        }
+            cri.xAxisRendererInfo = (AxisRendererInfo)xar.Init();
 
-        if (cri.yAxisRendererInfo._axis != null)
-        {
             AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
-            yar.Draw();
-        }
-    }
+            cri.yAxisRendererInfo = (AxisRendererInfo)yar.Init();
 
-    /// <summary>
-    /// Initializes all necessary data to draw a series for a line chart.
-    /// </summary>
-    private void InitSeriesRendererInfo()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            var plotArea = cri._chart.PlotArea;
+            var lpar = new LinePlotAreaRenderer(_rendererParms);
+            cri.plotAreaRendererInfo = (PlotAreaRendererInfo)lpar.Init();
 
-        var seriesColl = cri._chart.SeriesCollection;
-        cri.seriesRendererInfos = new SeriesRendererInfo[seriesColl.Count];
-        for (var idx = 0; idx < seriesColl.Count; ++idx)
-        {
-            var sri = new SeriesRendererInfo();
-            sri._series = seriesColl[idx];
-            cri.seriesRendererInfos[idx] = sri;
+            return cri;
         }
 
-        InitSeries();
-    }
-
-    /// <summary>
-    /// Initializes all necessary data to draw a series for a line chart.
-    /// </summary>
-    internal void InitSeries()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-
-        var seriesIndex = 0;
-        foreach (var sri in cri.seriesRendererInfos)
+        /// <summary>
+        /// Layouts and calculates the space used by the line chart.
+        /// </summary>
+        internal override void Format()
         {
-            if (sri._series._markerBackgroundColor.IsEmpty)
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+
+            LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
+            lr.Format();
+
+            // axes
+            AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
+            xar.Format();
+
+            AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
+            yar.Format();
+
+            // Calculate rects and positions.
+            CalcLayout();
+
+            // Calculated remaining plot area, now it's safe to format.
+            var lpar = new LinePlotAreaRenderer(_rendererParms);
+            lpar.Format();
+        }
+
+        /// <summary>
+        /// Draws the line chart.
+        /// </summary>
+        internal override void Draw()
+        {
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+
+            LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
+            lr.Draw();
+
+            // Draw wall.
+            var wr = new WallRenderer(_rendererParms);
+            wr.Draw();
+
+            // Draw gridlines.
+            GridlinesRenderer glr = new ColumnLikeGridlinesRenderer(_rendererParms);
+            glr.Draw();
+
+            var pabr = new PlotAreaBorderRenderer(_rendererParms);
+            pabr.Draw();
+
+            // Draw line chart's plot area.
+            var lpar = new LinePlotAreaRenderer(_rendererParms);
+            lpar.Draw();
+
+            // Draw x- and y-axis.
+            if (cri.xAxisRendererInfo._axis != null)
             {
-                sri.LineFormat = Converter.ToXPen(sri._series._lineFormat, LineColors.Item(seriesIndex), ChartRenderer.DefaultSeriesLineWidth);
+                AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
+                xar.Draw();
             }
-            else
+
+            if (cri.yAxisRendererInfo._axis != null)
             {
-                sri.LineFormat = Converter.ToXPen(sri._series._lineFormat, sri._series._markerBackgroundColor, ChartRenderer.DefaultSeriesLineWidth);
+                AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
+                yar.Draw();
             }
+        }
 
-            sri.LineFormat.LineJoin = XLineJoin.Bevel;
+        /// <summary>
+        /// Initializes all necessary data to draw a series for a line chart.
+        /// </summary>
+        private void InitSeriesRendererInfo()
+        {
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
 
-            var mri = new MarkerRendererInfo();
-            sri._markerRendererInfo = mri;
-
-            mri.MarkerForegroundColor = sri._series._markerForegroundColor;
-            if (mri.MarkerForegroundColor.IsEmpty)
+            var seriesColl = cri._chart.SeriesCollection;
+            cri.seriesRendererInfos = new SeriesRendererInfo[seriesColl.Count];
+            for (var idx = 0; idx < seriesColl.Count; ++idx)
             {
-                mri.MarkerForegroundColor = XColors.Black;
+                var sri = new SeriesRendererInfo();
+                sri._series = seriesColl[idx];
+                cri.seriesRendererInfos[idx] = sri;
             }
 
-            mri.MarkerBackgroundColor = sri._series._markerBackgroundColor;
-            if (mri.MarkerBackgroundColor.IsEmpty)
+            InitSeries();
+        }
+
+        /// <summary>
+        /// Initializes all necessary data to draw a series for a line chart.
+        /// </summary>
+        internal void InitSeries()
+        {
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+
+            var seriesIndex = 0;
+            foreach (var sri in cri.seriesRendererInfos)
             {
-                mri.MarkerBackgroundColor = sri.LineFormat.Color;
-            }
+                if (sri._series._markerBackgroundColor.IsEmpty)
+                {
+                    sri.LineFormat = Converter.ToXPen(sri._series._lineFormat, LineColors.Item(seriesIndex), ChartRenderer.DefaultSeriesLineWidth);
+                }
+                else
+                {
+                    sri.LineFormat = Converter.ToXPen(sri._series._lineFormat, sri._series._markerBackgroundColor, ChartRenderer.DefaultSeriesLineWidth);
+                }
 
-            mri.MarkerSize = sri._series._markerSize;
-            if (mri.MarkerSize == 0)
-            {
-                mri.MarkerSize = 7;
-            }
+                sri.LineFormat.LineJoin = XLineJoin.Bevel;
 
-            if (!sri._series._markerStyleInitialized)
+                var mri = new MarkerRendererInfo();
+                sri._markerRendererInfo = mri;
 
-                //mri.MarkerStyle = (MarkerStyle)(seriesIndex % (Enum.GetNames(typeof(MarkerStyle)).Length - 1) + 1);
-            {
-                mri.MarkerStyle = (MarkerStyle)(seriesIndex % (10 - 1) + 1);
-            }
-            else
-            {
-                mri.MarkerStyle = sri._series._markerStyle;
-            }
+                mri.MarkerForegroundColor = sri._series._markerForegroundColor;
+                if (mri.MarkerForegroundColor.IsEmpty)
+                {
+                    mri.MarkerForegroundColor = XColors.Black;
+                }
 
-            ++seriesIndex;
+                mri.MarkerBackgroundColor = sri._series._markerBackgroundColor;
+                if (mri.MarkerBackgroundColor.IsEmpty)
+                {
+                    mri.MarkerBackgroundColor = sri.LineFormat.Color;
+                }
+
+                mri.MarkerSize = sri._series._markerSize;
+                if (mri.MarkerSize == 0)
+                {
+                    mri.MarkerSize = 7;
+                }
+
+                if (!sri._series._markerStyleInitialized)
+
+                    //mri.MarkerStyle = (MarkerStyle)(seriesIndex % (Enum.GetNames(typeof(MarkerStyle)).Length - 1) + 1);
+                {
+                    mri.MarkerStyle = (MarkerStyle)(seriesIndex % (10 - 1) + 1);
+                }
+                else
+                {
+                    mri.MarkerStyle = sri._series._markerStyle;
+                }
+
+                ++seriesIndex;
+            }
         }
     }
 }

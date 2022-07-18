@@ -31,38 +31,39 @@
 
 using BreakDown.ManagedPdf.Core.Pdf.IO;
 
-namespace BreakDown.ManagedPdf.Core.Pdf;
-
-/// <summary>
-/// Represents a indirect reference that is not in the cross reference table.
-/// </summary>
-public sealed class PdfNull : PdfItem
+namespace BreakDown.ManagedPdf.Core.Pdf
 {
-    // Reference: 3.2.8  Null Object / Page 63
-
-    PdfNull()
-    {
-    }
-
     /// <summary>
-    /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+    /// Represents a indirect reference that is not in the cross reference table.
     /// </summary>
-    /// <returns>
-    /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
-    /// </returns>
-    public override string ToString()
+    public sealed class PdfNull : PdfItem
     {
-        return "null";
-    }
+        // Reference: 3.2.8  Null Object / Page 63
 
-    internal override void WriteObject(PdfWriter writer)
-    {
-        // Implementet because it must be overridden.
-        writer.WriteRaw(" null ");
-    }
+        PdfNull()
+        {
+        }
 
-    /// <summary>
-    /// The only instance of this class.
-    /// </summary>
-    public static readonly PdfNull Value = new PdfNull();
+        /// <summary>
+        /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
+        /// </returns>
+        public override string ToString()
+        {
+            return "null";
+        }
+
+        internal override void WriteObject(PdfWriter writer)
+        {
+            // Implementet because it must be overridden.
+            writer.WriteRaw(" null ");
+        }
+
+        /// <summary>
+        /// The only instance of this class.
+        /// </summary>
+        public static readonly PdfNull Value = new PdfNull();
+    }
 }

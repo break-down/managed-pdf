@@ -31,31 +31,32 @@
 
 using System;
 
-namespace BreakDown.ManagedPdf.Core.Drawing.enums;
-
-/// <summary>
-/// Describes the simulation style of a font.
-/// </summary>
-[Flags]
-public enum XStyleSimulations // Identical to WpfStyleSimulations.
+namespace BreakDown.ManagedPdf.Core.Drawing.enums
 {
     /// <summary>
-    /// No font style simulation.
+    /// Describes the simulation style of a font.
     /// </summary>
-    None = 0,
+    [Flags]
+    public enum XStyleSimulations // Identical to WpfStyleSimulations.
+    {
+        /// <summary>
+        /// No font style simulation.
+        /// </summary>
+        None = 0,
 
-    /// <summary>
-    /// Bold style simulation.
-    /// </summary>
-    BoldSimulation = 1,
+        /// <summary>
+        /// Bold style simulation.
+        /// </summary>
+        BoldSimulation = 1,
 
-    /// <summary>
-    /// Italic style simulation.
-    /// </summary>
-    ItalicSimulation = 2,
+        /// <summary>
+        /// Italic style simulation.
+        /// </summary>
+        ItalicSimulation = 2,
 
-    /// <summary>
-    /// Bold and Italic style simulation.
-    /// </summary>
-    BoldItalicSimulation = ItalicSimulation | BoldSimulation,
+        /// <summary>
+        /// Bold and Italic style simulation.
+        /// </summary>
+        BoldItalicSimulation = ItalicSimulation | BoldSimulation,
+    }
 }

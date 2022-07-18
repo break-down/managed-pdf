@@ -29,18 +29,19 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Base class for all renderers used to draw gridlines.
-/// </summary>
-internal abstract class GridlinesRenderer : Renderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the GridlinesRenderer class with the specified renderer parameters.
+    /// Base class for all renderers used to draw gridlines.
     /// </summary>
-    internal GridlinesRenderer(RendererParameters parms)
-        : base(parms)
+    internal abstract class GridlinesRenderer : Renderer
     {
+        /// <summary>
+        /// Initializes a new instance of the GridlinesRenderer class with the specified renderer parameters.
+        /// </summary>
+        internal GridlinesRenderer(RendererParameters parms)
+            : base(parms)
+        {
+        }
     }
 }

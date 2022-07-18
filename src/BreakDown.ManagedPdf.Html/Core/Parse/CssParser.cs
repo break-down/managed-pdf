@@ -19,1143 +19,1144 @@ using BreakDown.ManagedPdf.Html.Adapters.Entities;
 using BreakDown.ManagedPdf.Html.Core.Entities;
 using BreakDown.ManagedPdf.Html.Core.Utils;
 
-namespace BreakDown.ManagedPdf.Html.Core.Parse;
-
-/// <summary>
-/// Parser to parse CSS stylesheet source string into CSS objects.
-/// </summary>
-internal sealed class CssParser
+namespace BreakDown.ManagedPdf.Html.Core.Parse
 {
-    #region Fields and Consts
-
     /// <summary>
-    /// split CSS rule
+    /// Parser to parse CSS stylesheet source string into CSS objects.
     /// </summary>
-    private static readonly char[] _cssBlockSplitters = new[] { '}', ';' };
-
-    /// <summary>
-    /// 
-    /// </summary>
-    private readonly RAdapter _adapter;
-
-    /// <summary>
-    /// Utility for value parsing.
-    /// </summary>
-    private readonly CssValueParser _valueParser;
-
-    /// <summary>
-    /// The chars to trim the css class name by
-    /// </summary>
-    private static readonly char[] _cssClassTrimChars = new[] { '\r', '\n', '\t', ' ', '-', '!', '<', '>' };
-
-    #endregion
-
-    /// <summary>
-    /// Init.
-    /// </summary>
-    public CssParser(RAdapter adapter)
+    internal sealed class CssParser
     {
-        ArgChecker.AssertArgNotNull(adapter, "global");
+        #region Fields and Consts
 
-        _valueParser = new CssValueParser(adapter);
-        _adapter = adapter;
-    }
+        /// <summary>
+        /// split CSS rule
+        /// </summary>
+        private static readonly char[] _cssBlockSplitters = new[] { '}', ';' };
 
-    /// <summary>
-    /// Parse the given stylesheet source to CSS blocks dictionary.<br/>
-    /// The CSS blocks are organized into two level buckets of media type and class name.<br/>
-    /// Root media type are found under 'all' bucket.<br/>
-    /// If <paramref name="combineWithDefault"/> is true the parsed css blocks are added to the 
-    /// default css data (as defined by W3), merged if class name already exists. If false only the data in the given stylesheet is returned.
-    /// </summary>
-    /// <seealso cref="http://www.w3.org/TR/CSS21/sample.html"/>
-    /// <param name="stylesheet">raw css stylesheet to parse</param>
-    /// <param name="combineWithDefault">true - combine the parsed css data with default css data, false - return only the parsed css data</param>
-    /// <returns>the CSS data with parsed CSS objects (never null)</returns>
-    public CssData ParseStyleSheet(string stylesheet, bool combineWithDefault)
-    {
-        var cssData = combineWithDefault ? _adapter.DefaultCssData.Clone() : new CssData();
-        if (!string.IsNullOrEmpty(stylesheet))
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly RAdapter _adapter;
+
+        /// <summary>
+        /// Utility for value parsing.
+        /// </summary>
+        private readonly CssValueParser _valueParser;
+
+        /// <summary>
+        /// The chars to trim the css class name by
+        /// </summary>
+        private static readonly char[] _cssClassTrimChars = new[] { '\r', '\n', '\t', ' ', '-', '!', '<', '>' };
+
+        #endregion
+
+        /// <summary>
+        /// Init.
+        /// </summary>
+        public CssParser(RAdapter adapter)
         {
-            ParseStyleSheet(cssData, stylesheet);
+            ArgChecker.AssertArgNotNull(adapter, "global");
+
+            _valueParser = new CssValueParser(adapter);
+            _adapter = adapter;
         }
 
-        return cssData;
-    }
-
-    /// <summary>
-    /// Parse the given stylesheet source to CSS blocks dictionary.<br/>
-    /// The CSS blocks are organized into two level buckets of media type and class name.<br/>
-    /// Root media type are found under 'all' bucket.<br/>
-    /// The parsed css blocks are added to the given css data, merged if class name already exists.
-    /// </summary>
-    /// <param name="cssData">the CSS data to fill with parsed CSS objects</param>
-    /// <param name="stylesheet">raw css stylesheet to parse</param>
-    public void ParseStyleSheet(CssData cssData, string stylesheet)
-    {
-        if (!String.IsNullOrEmpty(stylesheet))
+        /// <summary>
+        /// Parse the given stylesheet source to CSS blocks dictionary.<br/>
+        /// The CSS blocks are organized into two level buckets of media type and class name.<br/>
+        /// Root media type are found under 'all' bucket.<br/>
+        /// If <paramref name="combineWithDefault"/> is true the parsed css blocks are added to the 
+        /// default css data (as defined by W3), merged if class name already exists. If false only the data in the given stylesheet is returned.
+        /// </summary>
+        /// <seealso cref="http://www.w3.org/TR/CSS21/sample.html"/>
+        /// <param name="stylesheet">raw css stylesheet to parse</param>
+        /// <param name="combineWithDefault">true - combine the parsed css data with default css data, false - return only the parsed css data</param>
+        /// <returns>the CSS data with parsed CSS objects (never null)</returns>
+        public CssData ParseStyleSheet(string stylesheet, bool combineWithDefault)
         {
-            stylesheet = RemoveStylesheetComments(stylesheet);
-
-            ParseStyleBlocks(cssData, stylesheet);
-
-            ParseMediaStyleBlocks(cssData, stylesheet);
-        }
-    }
-
-    /// <summary>
-    /// Parse single CSS block source into CSS block instance.
-    /// </summary>
-    /// <param name="className">the name of the css class of the block</param>
-    /// <param name="blockSource">the CSS block to parse</param>
-    /// <returns>the created CSS block instance</returns>
-    public CssBlock ParseCssBlock(string className, string blockSource)
-    {
-        return ParseCssBlockImp(className, blockSource);
-    }
-
-    /// <summary>
-    /// Parse a complex font family css property to check if it contains multiple fonts and if the font exists.<br/>
-    /// returns the font family name to use or 'inherit' if failed.
-    /// </summary>
-    /// <param name="value">the font-family value to parse</param>
-    /// <returns>parsed font-family value</returns>
-    public string ParseFontFamily(string value)
-    {
-        return ParseFontFamilyProperty(value);
-    }
-
-    /// <summary>
-    /// Parses a color value in CSS style; e.g. #ff0000, red, rgb(255,0,0), rgb(100%, 0, 0) 
-    /// </summary>
-    /// <param name="colorStr">color string value to parse</param>
-    /// <returns>color value</returns>
-    public RColor ParseColor(string colorStr)
-    {
-        return _valueParser.GetActualColor(colorStr);
-    }
-
-    #region Private methods
-
-    /// <summary>
-    /// Remove comments from the given stylesheet.
-    /// </summary>
-    /// <param name="stylesheet">the stylesheet to remove comments from</param>
-    /// <returns>stylesheet without comments</returns>
-    private static string RemoveStylesheetComments(string stylesheet)
-    {
-        StringBuilder sb = null;
-
-        int prevIdx = 0, startIdx = 0;
-        while (startIdx > -1 && startIdx < stylesheet.Length)
-        {
-            startIdx = stylesheet.IndexOf("/*", startIdx);
-            if (startIdx > -1)
+            var cssData = combineWithDefault ? _adapter.DefaultCssData.Clone() : new CssData();
+            if (!string.IsNullOrEmpty(stylesheet))
             {
-                if (sb == null)
-                {
-                    sb = new StringBuilder(stylesheet.Length);
-                }
-
-                sb.Append(stylesheet.Substring(prevIdx, startIdx - prevIdx));
-
-                var endIdx = stylesheet.IndexOf("*/", startIdx + 2);
-                if (endIdx < 0)
-                {
-                    endIdx = stylesheet.Length;
-                }
-
-                prevIdx = startIdx = endIdx + 2;
+                ParseStyleSheet(cssData, stylesheet);
             }
-            else if (sb != null)
+
+            return cssData;
+        }
+
+        /// <summary>
+        /// Parse the given stylesheet source to CSS blocks dictionary.<br/>
+        /// The CSS blocks are organized into two level buckets of media type and class name.<br/>
+        /// Root media type are found under 'all' bucket.<br/>
+        /// The parsed css blocks are added to the given css data, merged if class name already exists.
+        /// </summary>
+        /// <param name="cssData">the CSS data to fill with parsed CSS objects</param>
+        /// <param name="stylesheet">raw css stylesheet to parse</param>
+        public void ParseStyleSheet(CssData cssData, string stylesheet)
+        {
+            if (!String.IsNullOrEmpty(stylesheet))
             {
-                sb.Append(stylesheet.Substring(prevIdx));
+                stylesheet = RemoveStylesheetComments(stylesheet);
+
+                ParseStyleBlocks(cssData, stylesheet);
+
+                ParseMediaStyleBlocks(cssData, stylesheet);
             }
         }
 
-        return sb != null ? sb.ToString() : stylesheet;
-    }
-
-    /// <summary>
-    /// Parse given stylesheet for CSS blocks<br/>
-    /// This blocks are added under the "all" keyword.
-    /// </summary>
-    /// <param name="cssData">the CSS data to fill with parsed CSS objects</param>
-    /// <param name="stylesheet">the stylesheet to parse</param>
-    private void ParseStyleBlocks(CssData cssData, string stylesheet)
-    {
-        var startIdx = 0;
-        var endIdx = 0;
-        while (startIdx < stylesheet.Length && endIdx > -1)
+        /// <summary>
+        /// Parse single CSS block source into CSS block instance.
+        /// </summary>
+        /// <param name="className">the name of the css class of the block</param>
+        /// <param name="blockSource">the CSS block to parse</param>
+        /// <returns>the created CSS block instance</returns>
+        public CssBlock ParseCssBlock(string className, string blockSource)
         {
-            endIdx = startIdx;
-            while (endIdx + 1 < stylesheet.Length)
-            {
-                endIdx++;
-                if (stylesheet[endIdx] == '}')
-                {
-                    startIdx = endIdx + 1;
-                }
+            return ParseCssBlockImp(className, blockSource);
+        }
 
-                if (stylesheet[endIdx] == '{')
-                {
-                    break;
-                }
-            }
+        /// <summary>
+        /// Parse a complex font family css property to check if it contains multiple fonts and if the font exists.<br/>
+        /// returns the font family name to use or 'inherit' if failed.
+        /// </summary>
+        /// <param name="value">the font-family value to parse</param>
+        /// <returns>parsed font-family value</returns>
+        public string ParseFontFamily(string value)
+        {
+            return ParseFontFamilyProperty(value);
+        }
 
-            var midIdx = endIdx + 1;
-            if (endIdx > -1)
+        /// <summary>
+        /// Parses a color value in CSS style; e.g. #ff0000, red, rgb(255,0,0), rgb(100%, 0, 0) 
+        /// </summary>
+        /// <param name="colorStr">color string value to parse</param>
+        /// <returns>color value</returns>
+        public RColor ParseColor(string colorStr)
+        {
+            return _valueParser.GetActualColor(colorStr);
+        }
+
+        #region Private methods
+
+        /// <summary>
+        /// Remove comments from the given stylesheet.
+        /// </summary>
+        /// <param name="stylesheet">the stylesheet to remove comments from</param>
+        /// <returns>stylesheet without comments</returns>
+        private static string RemoveStylesheetComments(string stylesheet)
+        {
+            StringBuilder sb = null;
+
+            int prevIdx = 0, startIdx = 0;
+            while (startIdx > -1 && startIdx < stylesheet.Length)
             {
-                endIdx++;
-                while (endIdx < stylesheet.Length)
+                startIdx = stylesheet.IndexOf("/*", startIdx);
+                if (startIdx > -1)
                 {
-                    if (stylesheet[endIdx] == '{')
+                    if (sb == null)
                     {
-                        startIdx = midIdx + 1;
+                        sb = new StringBuilder(stylesheet.Length);
                     }
 
+                    sb.Append(stylesheet.Substring(prevIdx, startIdx - prevIdx));
+
+                    var endIdx = stylesheet.IndexOf("*/", startIdx + 2);
+                    if (endIdx < 0)
+                    {
+                        endIdx = stylesheet.Length;
+                    }
+
+                    prevIdx = startIdx = endIdx + 2;
+                }
+                else if (sb != null)
+                {
+                    sb.Append(stylesheet.Substring(prevIdx));
+                }
+            }
+
+            return sb != null ? sb.ToString() : stylesheet;
+        }
+
+        /// <summary>
+        /// Parse given stylesheet for CSS blocks<br/>
+        /// This blocks are added under the "all" keyword.
+        /// </summary>
+        /// <param name="cssData">the CSS data to fill with parsed CSS objects</param>
+        /// <param name="stylesheet">the stylesheet to parse</param>
+        private void ParseStyleBlocks(CssData cssData, string stylesheet)
+        {
+            var startIdx = 0;
+            var endIdx = 0;
+            while (startIdx < stylesheet.Length && endIdx > -1)
+            {
+                endIdx = startIdx;
+                while (endIdx + 1 < stylesheet.Length)
+                {
+                    endIdx++;
                     if (stylesheet[endIdx] == '}')
+                    {
+                        startIdx = endIdx + 1;
+                    }
+
+                    if (stylesheet[endIdx] == '{')
                     {
                         break;
                     }
-
-                    endIdx++;
                 }
 
-                if (endIdx < stylesheet.Length)
+                var midIdx = endIdx + 1;
+                if (endIdx > -1)
                 {
-                    while (Char.IsWhiteSpace(stylesheet[startIdx]))
+                    endIdx++;
+                    while (endIdx < stylesheet.Length)
                     {
-                        startIdx++;
+                        if (stylesheet[endIdx] == '{')
+                        {
+                            startIdx = midIdx + 1;
+                        }
+
+                        if (stylesheet[endIdx] == '}')
+                        {
+                            break;
+                        }
+
+                        endIdx++;
                     }
 
-                    var substring = stylesheet.Substring(startIdx, endIdx - startIdx + 1);
-                    FeedStyleBlock(cssData, substring);
-                }
+                    if (endIdx < stylesheet.Length)
+                    {
+                        while (Char.IsWhiteSpace(stylesheet[startIdx]))
+                        {
+                            startIdx++;
+                        }
 
-                startIdx = endIdx + 1;
+                        var substring = stylesheet.Substring(startIdx, endIdx - startIdx + 1);
+                        FeedStyleBlock(cssData, substring);
+                    }
+
+                    startIdx = endIdx + 1;
+                }
             }
         }
-    }
 
-    /// <summary>
-    /// Parse given stylesheet for media CSS blocks<br/>
-    /// This blocks are added under the specific media block they are found.
-    /// </summary>
-    /// <param name="cssData">the CSS data to fill with parsed CSS objects</param>
-    /// <param name="stylesheet">the stylesheet to parse</param>
-    private void ParseMediaStyleBlocks(CssData cssData, string stylesheet)
-    {
-        var startIdx = 0;
-        string atrule;
-        while ((atrule = RegexParserUtils.GetCssAtRules(stylesheet, ref startIdx)) != null)
+        /// <summary>
+        /// Parse given stylesheet for media CSS blocks<br/>
+        /// This blocks are added under the specific media block they are found.
+        /// </summary>
+        /// <param name="cssData">the CSS data to fill with parsed CSS objects</param>
+        /// <param name="stylesheet">the stylesheet to parse</param>
+        private void ParseMediaStyleBlocks(CssData cssData, string stylesheet)
         {
-            //Just process @media rules
-            if (!atrule.StartsWith("@media", StringComparison.InvariantCultureIgnoreCase))
+            var startIdx = 0;
+            string atrule;
+            while ((atrule = RegexParserUtils.GetCssAtRules(stylesheet, ref startIdx)) != null)
             {
-                continue;
-            }
-
-            //Extract specified media types
-            var types = RegexParserUtils.Match(RegexParserUtils.CssMediaTypes, atrule);
-
-            if (types.Count == 1)
-            {
-                var line = types[0].Value;
-
-                if (line.StartsWith("@media", StringComparison.InvariantCultureIgnoreCase) && line.EndsWith("{"))
+                //Just process @media rules
+                if (!atrule.StartsWith("@media", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    //Get specified media types in the at-rule
-                    var media = line.Substring(6, line.Length - 7).Split(' ');
+                    continue;
+                }
 
-                    //Scan media types
-                    foreach (var t in media)
+                //Extract specified media types
+                var types = RegexParserUtils.Match(RegexParserUtils.CssMediaTypes, atrule);
+
+                if (types.Count == 1)
+                {
+                    var line = types[0].Value;
+
+                    if (line.StartsWith("@media", StringComparison.InvariantCultureIgnoreCase) && line.EndsWith("{"))
                     {
-                        if (!String.IsNullOrEmpty(t.Trim()))
-                        {
-                            //Get blocks inside the at-rule
-                            var insideBlocks = RegexParserUtils.Match(RegexParserUtils.CssBlocks, atrule);
+                        //Get specified media types in the at-rule
+                        var media = line.Substring(6, line.Length - 7).Split(' ');
 
-                            //Scan blocks and feed them to the style sheet
-                            foreach (Match insideBlock in insideBlocks)
+                        //Scan media types
+                        foreach (var t in media)
+                        {
+                            if (!String.IsNullOrEmpty(t.Trim()))
                             {
-                                FeedStyleBlock(cssData, insideBlock.Value, t.Trim());
+                                //Get blocks inside the at-rule
+                                var insideBlocks = RegexParserUtils.Match(RegexParserUtils.CssBlocks, atrule);
+
+                                //Scan blocks and feed them to the style sheet
+                                foreach (Match insideBlock in insideBlocks)
+                                {
+                                    FeedStyleBlock(cssData, insideBlock.Value, t.Trim());
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
 
-    /// <summary>
-    /// Feeds the style with a block about the specific media.<br/>
-    /// When no media is specified, "all" will be used.
-    /// </summary>
-    /// <param name="cssData"> </param>
-    /// <param name="block">the CSS block to handle</param>
-    /// <param name="media">optional: the media (default - all)</param>
-    private void FeedStyleBlock(CssData cssData, string block, string media = "all")
-    {
-        var startIdx = block.IndexOf("{", StringComparison.Ordinal);
-        var endIdx = startIdx > -1 ? block.IndexOf("}", startIdx) : -1;
-        if (startIdx > -1 && endIdx > -1)
+        /// <summary>
+        /// Feeds the style with a block about the specific media.<br/>
+        /// When no media is specified, "all" will be used.
+        /// </summary>
+        /// <param name="cssData"> </param>
+        /// <param name="block">the CSS block to handle</param>
+        /// <param name="media">optional: the media (default - all)</param>
+        private void FeedStyleBlock(CssData cssData, string block, string media = "all")
         {
-            var blockSource = block.Substring(startIdx + 1, endIdx - startIdx - 1);
-            var classes = block.Substring(0, startIdx).Split(',');
-
-            foreach (var cls in classes)
+            var startIdx = block.IndexOf("{", StringComparison.Ordinal);
+            var endIdx = startIdx > -1 ? block.IndexOf("}", startIdx) : -1;
+            if (startIdx > -1 && endIdx > -1)
             {
-                var className = cls.Trim(_cssClassTrimChars);
-                if (!String.IsNullOrEmpty(className))
+                var blockSource = block.Substring(startIdx + 1, endIdx - startIdx - 1);
+                var classes = block.Substring(0, startIdx).Split(',');
+
+                foreach (var cls in classes)
                 {
-                    var newblock = ParseCssBlockImp(className, blockSource);
-                    if (newblock != null)
+                    var className = cls.Trim(_cssClassTrimChars);
+                    if (!String.IsNullOrEmpty(className))
                     {
-                        cssData.AddCssBlock(media, newblock);
+                        var newblock = ParseCssBlockImp(className, blockSource);
+                        if (newblock != null)
+                        {
+                            cssData.AddCssBlock(media, newblock);
+                        }
                     }
                 }
             }
         }
-    }
 
-    /// <summary>
-    /// Parse single CSS block source into CSS block instance.
-    /// </summary>
-    /// <param name="className">the name of the css class of the block</param>
-    /// <param name="blockSource">the CSS block to parse</param>
-    /// <returns>the created CSS block instance</returns>
-    private CssBlock ParseCssBlockImp(string className, string blockSource)
-    {
-        className = className.ToLower();
-        string psedoClass = null;
-        var colonIdx = className.IndexOf(":", StringComparison.Ordinal);
-        if (colonIdx > -1 && !className.StartsWith("::"))
+        /// <summary>
+        /// Parse single CSS block source into CSS block instance.
+        /// </summary>
+        /// <param name="className">the name of the css class of the block</param>
+        /// <param name="blockSource">the CSS block to parse</param>
+        /// <returns>the created CSS block instance</returns>
+        private CssBlock ParseCssBlockImp(string className, string blockSource)
         {
-            psedoClass = colonIdx < className.Length - 1 ? className.Substring(colonIdx + 1).Trim() : null;
-            className = className.Substring(0, colonIdx).Trim();
-        }
-
-        if (!string.IsNullOrEmpty(className) && (psedoClass == null || psedoClass == "link" || psedoClass == "hover"))
-        {
-            var selectors = ParseCssBlockSelector(className, out var firstClass);
-
-            var properties = ParseCssBlockProperties(blockSource);
-
-            return new CssBlock(firstClass, properties, selectors, psedoClass == "hover");
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// Parse css block selector to support hierarchical selector (p class1 > class2).
-    /// </summary>
-    /// <param name="className">the class selector to parse</param>
-    /// <param name="firstClass">return the main class the css block is on</param>
-    /// <returns>returns the hierarchy of classes or null if single class selector</returns>
-    private static List<CssBlockSelectorItem> ParseCssBlockSelector(string className, out string firstClass)
-    {
-        List<CssBlockSelectorItem> selectors = null;
-
-        firstClass = null;
-        var endIdx = className.Length - 1;
-        while (endIdx > -1)
-        {
-            var directParent = false;
-            while (char.IsWhiteSpace(className[endIdx]) || className[endIdx] == '>')
+            className = className.ToLower();
+            string psedoClass = null;
+            var colonIdx = className.IndexOf(":", StringComparison.Ordinal);
+            if (colonIdx > -1 && !className.StartsWith("::"))
             {
-                directParent = directParent || className[endIdx] == '>';
-                endIdx--;
+                psedoClass = colonIdx < className.Length - 1 ? className.Substring(colonIdx + 1).Trim() : null;
+                className = className.Substring(0, colonIdx).Trim();
             }
 
-            var startIdx = endIdx;
-            while (startIdx > -1 && !char.IsWhiteSpace(className[startIdx]) && className[startIdx] != '>')
+            if (!string.IsNullOrEmpty(className) && (psedoClass == null || psedoClass == "link" || psedoClass == "hover"))
             {
-                startIdx--;
+                var selectors = ParseCssBlockSelector(className, out var firstClass);
+
+                var properties = ParseCssBlockProperties(blockSource);
+
+                return new CssBlock(firstClass, properties, selectors, psedoClass == "hover");
             }
 
-            if (startIdx > -1)
+            return null;
+        }
+
+        /// <summary>
+        /// Parse css block selector to support hierarchical selector (p class1 > class2).
+        /// </summary>
+        /// <param name="className">the class selector to parse</param>
+        /// <param name="firstClass">return the main class the css block is on</param>
+        /// <returns>returns the hierarchy of classes or null if single class selector</returns>
+        private static List<CssBlockSelectorItem> ParseCssBlockSelector(string className, out string firstClass)
+        {
+            List<CssBlockSelectorItem> selectors = null;
+
+            firstClass = null;
+            var endIdx = className.Length - 1;
+            while (endIdx > -1)
             {
-                if (selectors == null)
+                var directParent = false;
+                while (char.IsWhiteSpace(className[endIdx]) || className[endIdx] == '>')
                 {
-                    selectors = new List<CssBlockSelectorItem>();
-                }
-
-                var subclass = className.Substring(startIdx + 1, endIdx - startIdx);
-
-                if (firstClass == null)
-                {
-                    firstClass = subclass;
-                }
-                else
-                {
-                    while (char.IsWhiteSpace(className[startIdx]) || className[startIdx] == '>')
-                    {
-                        startIdx--;
-                    }
-
-                    selectors.Add(new CssBlockSelectorItem(subclass, directParent));
-                }
-            }
-            else if (firstClass != null)
-            {
-                selectors.Add(new CssBlockSelectorItem(className.Substring(0, endIdx + 1), directParent));
-            }
-
-            endIdx = startIdx;
-        }
-
-        firstClass = firstClass ?? className;
-        return selectors;
-    }
-
-    /// <summary>
-    /// Parse the properties of the given css block into a key-value dictionary.
-    /// </summary>
-    /// <param name="blockSource">the raw css block to parse</param>
-    /// <returns>dictionary with parsed css block properties</returns>
-    private Dictionary<string, string> ParseCssBlockProperties(string blockSource)
-    {
-        var properties = new Dictionary<string, string>();
-        var startIdx = 0;
-        while (startIdx < blockSource.Length)
-        {
-            var endIdx = blockSource.IndexOfAny(_cssBlockSplitters, startIdx);
-
-            // If blockSource contains "data:image" then skip first semicolon since it is a part of image definition
-            // example: "url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA......"
-            if (startIdx >= 0 && endIdx - startIdx >= 10 && blockSource.Length - startIdx >= 10 &&
-                blockSource.IndexOf("data:image", startIdx, endIdx - startIdx) >= 0)
-            {
-                endIdx = blockSource.IndexOfAny(_cssBlockSplitters, endIdx + 1);
-            }
-
-            if (endIdx < 0)
-            {
-                endIdx = blockSource.Length - 1;
-            }
-
-            var splitIdx = blockSource.IndexOf(':', startIdx, endIdx - startIdx);
-            if (splitIdx > -1)
-            {
-                //Extract property name and value
-                startIdx = startIdx + (blockSource[startIdx] == ' ' ? 1 : 0);
-                var adjEndIdx = endIdx - (blockSource[endIdx] == ' ' || blockSource[endIdx] == ';' ? 1 : 0);
-                var propName = blockSource.Substring(startIdx, splitIdx - startIdx).Trim().ToLower();
-                splitIdx = splitIdx + (blockSource[splitIdx + 1] == ' ' ? 2 : 1);
-                if (adjEndIdx >= splitIdx)
-                {
-                    var propValue = blockSource.Substring(splitIdx, adjEndIdx - splitIdx + 1).Trim();
-                    if (!propValue.StartsWith("url", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        propValue = propValue.ToLower();
-                    }
-
-                    AddProperty(propName, propValue, properties);
-                }
-            }
-
-            startIdx = endIdx + 1;
-        }
-
-        return properties;
-    }
-
-    /// <summary>
-    /// Add the given property to the given properties collection, if the property is complex containing
-    /// multiple css properties then parse them and add the inner properties.
-    /// </summary>
-    /// <param name="propName">the name of the css property to add</param>
-    /// <param name="propValue">the value of the css property to add</param>
-    /// <param name="properties">the properties collection to add to</param>
-    private void AddProperty(string propName, string propValue, Dictionary<string, string> properties)
-    {
-        // remove !important css crap
-        propValue = propValue.Replace("!important", string.Empty).Trim();
-
-        if (propName == "width" || propName == "height" || propName == "lineheight")
-        {
-            ParseLengthProperty(propName, propValue, properties);
-        }
-        else if (propName == "color" || propName == "backgroundcolor" || propName == "bordertopcolor" || propName == "borderbottomcolor" ||
-                 propName == "borderleftcolor" || propName == "borderrightcolor")
-        {
-            ParseColorProperty(propName, propValue, properties);
-        }
-        else if (propName == "font")
-        {
-            ParseFontProperty(propValue, properties);
-        }
-        else if (propName == "border")
-        {
-            ParseBorderProperty(propValue, null, properties);
-        }
-        else if (propName == "border-left")
-        {
-            ParseBorderProperty(propValue, "-left", properties);
-        }
-        else if (propName == "border-top")
-        {
-            ParseBorderProperty(propValue, "-top", properties);
-        }
-        else if (propName == "border-right")
-        {
-            ParseBorderProperty(propValue, "-right", properties);
-        }
-        else if (propName == "border-bottom")
-        {
-            ParseBorderProperty(propValue, "-bottom", properties);
-        }
-        else if (propName == "margin")
-        {
-            ParseMarginProperty(propValue, properties);
-        }
-        else if (propName == "border-style")
-        {
-            ParseBorderStyleProperty(propValue, properties);
-        }
-        else if (propName == "border-width")
-        {
-            ParseBorderWidthProperty(propValue, properties);
-        }
-        else if (propName == "border-color")
-        {
-            ParseBorderColorProperty(propValue, properties);
-        }
-        else if (propName == "padding")
-        {
-            ParsePaddingProperty(propValue, properties);
-        }
-        else if (propName == "background-image")
-        {
-            properties["background-image"] = ParseImageProperty(propValue);
-        }
-        else if (propName == "content")
-        {
-            properties["content"] = ParseImageProperty(propValue);
-        }
-        else if (propName == "font-family")
-        {
-            properties["font-family"] = ParseFontFamilyProperty(propValue);
-        }
-        else
-        {
-            properties[propName] = propValue;
-        }
-    }
-
-    /// <summary>
-    /// Parse length property to add only valid lengths.
-    /// </summary>
-    /// <param name="propName">the name of the css property to add</param>
-    /// <param name="propValue">the value of the css property to add</param>
-    /// <param name="properties">the properties collection to add to</param>
-    private static void ParseLengthProperty(string propName, string propValue, Dictionary<string, string> properties)
-    {
-        if (CssValueParser.IsValidLength(propValue) || propValue.Equals(CssConstants.Auto, StringComparison.OrdinalIgnoreCase))
-        {
-            properties[propName] = propValue;
-        }
-    }
-
-    /// <summary>
-    /// Parse color property to add only valid color.
-    /// </summary>
-    /// <param name="propName">the name of the css property to add</param>
-    /// <param name="propValue">the value of the css property to add</param>
-    /// <param name="properties">the properties collection to add to</param>
-    private void ParseColorProperty(string propName, string propValue, Dictionary<string, string> properties)
-    {
-        if (_valueParser.IsColorValid(propValue))
-        {
-            properties[propName] = propValue;
-        }
-    }
-
-    /// <summary>
-    /// Parse a complex font property value that contains multiple css properties into specific css properties.
-    /// </summary>
-    /// <param name="propValue">the value of the property to parse to specific values</param>
-    /// <param name="properties">the properties collection to add the specific properties to</param>
-    private void ParseFontProperty(string propValue, Dictionary<string, string> properties)
-    {
-        var mustBe = RegexParserUtils.Search(RegexParserUtils.CssFontSizeAndLineHeight, propValue, out var mustBePos);
-
-        if (!string.IsNullOrEmpty(mustBe))
-        {
-            mustBe = mustBe.Trim();
-
-            //Check for style||variant||weight on the left
-            var leftSide = propValue.Substring(0, mustBePos);
-            var fontStyle = RegexParserUtils.Search(RegexParserUtils.CssFontStyle, leftSide);
-            var fontVariant = RegexParserUtils.Search(RegexParserUtils.CssFontVariant, leftSide);
-            var fontWeight = RegexParserUtils.Search(RegexParserUtils.CssFontWeight, leftSide);
-
-            //Check for family on the right
-            var rightSide = propValue.Substring(mustBePos + mustBe.Length);
-            var fontFamily = rightSide.Trim(); //Parser.Search(Parser.CssFontFamily, rightSide); //TODO: Would this be right?
-
-            //Check for font-size and line-height
-            var fontSize = mustBe;
-            var lineHeight = string.Empty;
-
-            if (mustBe.Contains("/") && mustBe.Length > mustBe.IndexOf("/", StringComparison.Ordinal) + 1)
-            {
-                var slashPos = mustBe.IndexOf("/", StringComparison.Ordinal);
-                fontSize = mustBe.Substring(0, slashPos);
-                lineHeight = mustBe.Substring(slashPos + 1);
-            }
-
-            if (!string.IsNullOrEmpty(fontFamily))
-            {
-                properties["font-family"] = ParseFontFamilyProperty(fontFamily);
-            }
-
-            if (!string.IsNullOrEmpty(fontStyle))
-            {
-                properties["font-style"] = fontStyle;
-            }
-
-            if (!string.IsNullOrEmpty(fontVariant))
-            {
-                properties["font-variant"] = fontVariant;
-            }
-
-            if (!string.IsNullOrEmpty(fontWeight))
-            {
-                properties["font-weight"] = fontWeight;
-            }
-
-            if (!string.IsNullOrEmpty(fontSize))
-            {
-                properties["font-size"] = fontSize;
-            }
-
-            if (!string.IsNullOrEmpty(lineHeight))
-            {
-                properties["line-height"] = lineHeight;
-            }
-        }
-        else
-        {
-            // Check for: caption | icon | menu | message-box | small-caption | status-bar
-            //TODO: Interpret font values of: caption | icon | menu | message-box | small-caption | status-bar
-        }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="propValue">the value of the property to parse</param>
-    /// <returns>parsed value</returns>
-    private static string ParseImageProperty(string propValue)
-    {
-        var startIdx = propValue.IndexOf("url(", StringComparison.InvariantCultureIgnoreCase);
-        if (startIdx > -1)
-        {
-            startIdx += 4;
-            var endIdx = propValue.IndexOf(')', startIdx);
-            if (endIdx > -1)
-            {
-                endIdx -= 1;
-                while (startIdx < endIdx && (char.IsWhiteSpace(propValue[startIdx]) || propValue[startIdx] == '\'' || propValue[startIdx] == '"'))
-                {
-                    startIdx++;
-                }
-
-                while (startIdx < endIdx && (char.IsWhiteSpace(propValue[endIdx]) || propValue[endIdx] == '\'' || propValue[endIdx] == '"'))
-                {
+                    directParent = directParent || className[endIdx] == '>';
                     endIdx--;
                 }
 
-                if (startIdx <= endIdx)
+                var startIdx = endIdx;
+                while (startIdx > -1 && !char.IsWhiteSpace(className[startIdx]) && className[startIdx] != '>')
                 {
-                    return propValue.Substring(startIdx, endIdx - startIdx + 1);
+                    startIdx--;
+                }
+
+                if (startIdx > -1)
+                {
+                    if (selectors == null)
+                    {
+                        selectors = new List<CssBlockSelectorItem>();
+                    }
+
+                    var subclass = className.Substring(startIdx + 1, endIdx - startIdx);
+
+                    if (firstClass == null)
+                    {
+                        firstClass = subclass;
+                    }
+                    else
+                    {
+                        while (char.IsWhiteSpace(className[startIdx]) || className[startIdx] == '>')
+                        {
+                            startIdx--;
+                        }
+
+                        selectors.Add(new CssBlockSelectorItem(subclass, directParent));
+                    }
+                }
+                else if (firstClass != null)
+                {
+                    selectors.Add(new CssBlockSelectorItem(className.Substring(0, endIdx + 1), directParent));
+                }
+
+                endIdx = startIdx;
+            }
+
+            firstClass = firstClass ?? className;
+            return selectors;
+        }
+
+        /// <summary>
+        /// Parse the properties of the given css block into a key-value dictionary.
+        /// </summary>
+        /// <param name="blockSource">the raw css block to parse</param>
+        /// <returns>dictionary with parsed css block properties</returns>
+        private Dictionary<string, string> ParseCssBlockProperties(string blockSource)
+        {
+            var properties = new Dictionary<string, string>();
+            var startIdx = 0;
+            while (startIdx < blockSource.Length)
+            {
+                var endIdx = blockSource.IndexOfAny(_cssBlockSplitters, startIdx);
+
+                // If blockSource contains "data:image" then skip first semicolon since it is a part of image definition
+                // example: "url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA......"
+                if (startIdx >= 0 && endIdx - startIdx >= 10 && blockSource.Length - startIdx >= 10 &&
+                    blockSource.IndexOf("data:image", startIdx, endIdx - startIdx) >= 0)
+                {
+                    endIdx = blockSource.IndexOfAny(_cssBlockSplitters, endIdx + 1);
+                }
+
+                if (endIdx < 0)
+                {
+                    endIdx = blockSource.Length - 1;
+                }
+
+                var splitIdx = blockSource.IndexOf(':', startIdx, endIdx - startIdx);
+                if (splitIdx > -1)
+                {
+                    //Extract property name and value
+                    startIdx = startIdx + (blockSource[startIdx] == ' ' ? 1 : 0);
+                    var adjEndIdx = endIdx - (blockSource[endIdx] == ' ' || blockSource[endIdx] == ';' ? 1 : 0);
+                    var propName = blockSource.Substring(startIdx, splitIdx - startIdx).Trim().ToLower();
+                    splitIdx = splitIdx + (blockSource[splitIdx + 1] == ' ' ? 2 : 1);
+                    if (adjEndIdx >= splitIdx)
+                    {
+                        var propValue = blockSource.Substring(splitIdx, adjEndIdx - splitIdx + 1).Trim();
+                        if (!propValue.StartsWith("url", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            propValue = propValue.ToLower();
+                        }
+
+                        AddProperty(propName, propValue, properties);
+                    }
+                }
+
+                startIdx = endIdx + 1;
+            }
+
+            return properties;
+        }
+
+        /// <summary>
+        /// Add the given property to the given properties collection, if the property is complex containing
+        /// multiple css properties then parse them and add the inner properties.
+        /// </summary>
+        /// <param name="propName">the name of the css property to add</param>
+        /// <param name="propValue">the value of the css property to add</param>
+        /// <param name="properties">the properties collection to add to</param>
+        private void AddProperty(string propName, string propValue, Dictionary<string, string> properties)
+        {
+            // remove !important css crap
+            propValue = propValue.Replace("!important", string.Empty).Trim();
+
+            if (propName == "width" || propName == "height" || propName == "lineheight")
+            {
+                ParseLengthProperty(propName, propValue, properties);
+            }
+            else if (propName == "color" || propName == "backgroundcolor" || propName == "bordertopcolor" || propName == "borderbottomcolor" ||
+                     propName == "borderleftcolor" || propName == "borderrightcolor")
+            {
+                ParseColorProperty(propName, propValue, properties);
+            }
+            else if (propName == "font")
+            {
+                ParseFontProperty(propValue, properties);
+            }
+            else if (propName == "border")
+            {
+                ParseBorderProperty(propValue, null, properties);
+            }
+            else if (propName == "border-left")
+            {
+                ParseBorderProperty(propValue, "-left", properties);
+            }
+            else if (propName == "border-top")
+            {
+                ParseBorderProperty(propValue, "-top", properties);
+            }
+            else if (propName == "border-right")
+            {
+                ParseBorderProperty(propValue, "-right", properties);
+            }
+            else if (propName == "border-bottom")
+            {
+                ParseBorderProperty(propValue, "-bottom", properties);
+            }
+            else if (propName == "margin")
+            {
+                ParseMarginProperty(propValue, properties);
+            }
+            else if (propName == "border-style")
+            {
+                ParseBorderStyleProperty(propValue, properties);
+            }
+            else if (propName == "border-width")
+            {
+                ParseBorderWidthProperty(propValue, properties);
+            }
+            else if (propName == "border-color")
+            {
+                ParseBorderColorProperty(propValue, properties);
+            }
+            else if (propName == "padding")
+            {
+                ParsePaddingProperty(propValue, properties);
+            }
+            else if (propName == "background-image")
+            {
+                properties["background-image"] = ParseImageProperty(propValue);
+            }
+            else if (propName == "content")
+            {
+                properties["content"] = ParseImageProperty(propValue);
+            }
+            else if (propName == "font-family")
+            {
+                properties["font-family"] = ParseFontFamilyProperty(propValue);
+            }
+            else
+            {
+                properties[propName] = propValue;
+            }
+        }
+
+        /// <summary>
+        /// Parse length property to add only valid lengths.
+        /// </summary>
+        /// <param name="propName">the name of the css property to add</param>
+        /// <param name="propValue">the value of the css property to add</param>
+        /// <param name="properties">the properties collection to add to</param>
+        private static void ParseLengthProperty(string propName, string propValue, Dictionary<string, string> properties)
+        {
+            if (CssValueParser.IsValidLength(propValue) || propValue.Equals(CssConstants.Auto, StringComparison.OrdinalIgnoreCase))
+            {
+                properties[propName] = propValue;
+            }
+        }
+
+        /// <summary>
+        /// Parse color property to add only valid color.
+        /// </summary>
+        /// <param name="propName">the name of the css property to add</param>
+        /// <param name="propValue">the value of the css property to add</param>
+        /// <param name="properties">the properties collection to add to</param>
+        private void ParseColorProperty(string propName, string propValue, Dictionary<string, string> properties)
+        {
+            if (_valueParser.IsColorValid(propValue))
+            {
+                properties[propName] = propValue;
+            }
+        }
+
+        /// <summary>
+        /// Parse a complex font property value that contains multiple css properties into specific css properties.
+        /// </summary>
+        /// <param name="propValue">the value of the property to parse to specific values</param>
+        /// <param name="properties">the properties collection to add the specific properties to</param>
+        private void ParseFontProperty(string propValue, Dictionary<string, string> properties)
+        {
+            var mustBe = RegexParserUtils.Search(RegexParserUtils.CssFontSizeAndLineHeight, propValue, out var mustBePos);
+
+            if (!string.IsNullOrEmpty(mustBe))
+            {
+                mustBe = mustBe.Trim();
+
+                //Check for style||variant||weight on the left
+                var leftSide = propValue.Substring(0, mustBePos);
+                var fontStyle = RegexParserUtils.Search(RegexParserUtils.CssFontStyle, leftSide);
+                var fontVariant = RegexParserUtils.Search(RegexParserUtils.CssFontVariant, leftSide);
+                var fontWeight = RegexParserUtils.Search(RegexParserUtils.CssFontWeight, leftSide);
+
+                //Check for family on the right
+                var rightSide = propValue.Substring(mustBePos + mustBe.Length);
+                var fontFamily = rightSide.Trim(); //Parser.Search(Parser.CssFontFamily, rightSide); //TODO: Would this be right?
+
+                //Check for font-size and line-height
+                var fontSize = mustBe;
+                var lineHeight = string.Empty;
+
+                if (mustBe.Contains("/") && mustBe.Length > mustBe.IndexOf("/", StringComparison.Ordinal) + 1)
+                {
+                    var slashPos = mustBe.IndexOf("/", StringComparison.Ordinal);
+                    fontSize = mustBe.Substring(0, slashPos);
+                    lineHeight = mustBe.Substring(slashPos + 1);
+                }
+
+                if (!string.IsNullOrEmpty(fontFamily))
+                {
+                    properties["font-family"] = ParseFontFamilyProperty(fontFamily);
+                }
+
+                if (!string.IsNullOrEmpty(fontStyle))
+                {
+                    properties["font-style"] = fontStyle;
+                }
+
+                if (!string.IsNullOrEmpty(fontVariant))
+                {
+                    properties["font-variant"] = fontVariant;
+                }
+
+                if (!string.IsNullOrEmpty(fontWeight))
+                {
+                    properties["font-weight"] = fontWeight;
+                }
+
+                if (!string.IsNullOrEmpty(fontSize))
+                {
+                    properties["font-size"] = fontSize;
+                }
+
+                if (!string.IsNullOrEmpty(lineHeight))
+                {
+                    properties["line-height"] = lineHeight;
+                }
+            }
+            else
+            {
+                // Check for: caption | icon | menu | message-box | small-caption | status-bar
+                //TODO: Interpret font values of: caption | icon | menu | message-box | small-caption | status-bar
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="propValue">the value of the property to parse</param>
+        /// <returns>parsed value</returns>
+        private static string ParseImageProperty(string propValue)
+        {
+            var startIdx = propValue.IndexOf("url(", StringComparison.InvariantCultureIgnoreCase);
+            if (startIdx > -1)
+            {
+                startIdx += 4;
+                var endIdx = propValue.IndexOf(')', startIdx);
+                if (endIdx > -1)
+                {
+                    endIdx -= 1;
+                    while (startIdx < endIdx && (char.IsWhiteSpace(propValue[startIdx]) || propValue[startIdx] == '\'' || propValue[startIdx] == '"'))
+                    {
+                        startIdx++;
+                    }
+
+                    while (startIdx < endIdx && (char.IsWhiteSpace(propValue[endIdx]) || propValue[endIdx] == '\'' || propValue[endIdx] == '"'))
+                    {
+                        endIdx--;
+                    }
+
+                    if (startIdx <= endIdx)
+                    {
+                        return propValue.Substring(startIdx, endIdx - startIdx + 1);
+                    }
+                }
+            }
+
+            return propValue;
+        }
+
+        /// <summary>
+        /// Parse a complex font family css property to check if it contains multiple fonts and if the font exists.<br/>
+        /// returns the font family name to use or 'inherit' if failed.
+        /// </summary>
+        /// <param name="propValue">the value of the property to parse</param>
+        /// <returns>parsed font-family value</returns>
+        private string ParseFontFamilyProperty(string propValue)
+        {
+            var start = 0;
+            while (start > -1 && start < propValue.Length)
+            {
+                while (char.IsWhiteSpace(propValue[start]) || propValue[start] == ',' || propValue[start] == '\'' || propValue[start] == '"')
+                {
+                    start++;
+                }
+
+                var end = propValue.IndexOf(',', start);
+                if (end < 0)
+                {
+                    end = propValue.Length;
+                }
+
+                var adjEnd = end - 1;
+                while (char.IsWhiteSpace(propValue[adjEnd]) || propValue[adjEnd] == '\'' || propValue[adjEnd] == '"')
+                {
+                    adjEnd--;
+                }
+
+                var font = propValue.Substring(start, adjEnd - start + 1);
+
+                if (_adapter.IsFontExists(font))
+                {
+                    return font;
+                }
+
+                start = end;
+            }
+
+            return CssConstants.Inherit;
+        }
+
+        /// <summary>
+        /// Parse a complex border property value that contains multiple css properties into specific css properties.
+        /// </summary>
+        /// <param name="propValue">the value of the property to parse to specific values</param>
+        /// <param name="direction">the left, top, right or bottom direction of the border to parse</param>
+        /// <param name="properties">the properties collection to add the specific properties to</param>
+        private void ParseBorderProperty(string propValue, string direction, Dictionary<string, string> properties)
+        {
+            ParseBorder(propValue, out var borderWidth, out var borderStyle, out var borderColor);
+
+            if (direction != null)
+            {
+                if (borderWidth != null)
+                {
+                    properties["border" + direction + "-width"] = borderWidth;
+                }
+
+                if (borderStyle != null)
+                {
+                    properties["border" + direction + "-style"] = borderStyle;
+                }
+
+                if (borderColor != null)
+                {
+                    properties["border" + direction + "-color"] = borderColor;
+                }
+            }
+            else
+            {
+                if (borderWidth != null)
+                {
+                    ParseBorderWidthProperty(borderWidth, properties);
+                }
+
+                if (borderStyle != null)
+                {
+                    ParseBorderStyleProperty(borderStyle, properties);
+                }
+
+                if (borderColor != null)
+                {
+                    ParseBorderColorProperty(borderColor, properties);
                 }
             }
         }
 
-        return propValue;
-    }
-
-    /// <summary>
-    /// Parse a complex font family css property to check if it contains multiple fonts and if the font exists.<br/>
-    /// returns the font family name to use or 'inherit' if failed.
-    /// </summary>
-    /// <param name="propValue">the value of the property to parse</param>
-    /// <returns>parsed font-family value</returns>
-    private string ParseFontFamilyProperty(string propValue)
-    {
-        var start = 0;
-        while (start > -1 && start < propValue.Length)
+        /// <summary>
+        /// Parse a complex margin property value that contains multiple css properties into specific css properties.
+        /// </summary>
+        /// <param name="propValue">the value of the property to parse to specific values</param>
+        /// <param name="properties">the properties collection to add the specific properties to</param>
+        private static void ParseMarginProperty(string propValue, Dictionary<string, string> properties)
         {
-            while (char.IsWhiteSpace(propValue[start]) || propValue[start] == ',' || propValue[start] == '\'' || propValue[start] == '"')
+            SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
+
+            if (left != null)
             {
-                start++;
+                properties["margin-left"] = left;
             }
 
-            var end = propValue.IndexOf(',', start);
-            if (end < 0)
+            if (top != null)
             {
-                end = propValue.Length;
+                properties["margin-top"] = top;
             }
 
-            var adjEnd = end - 1;
-            while (char.IsWhiteSpace(propValue[adjEnd]) || propValue[adjEnd] == '\'' || propValue[adjEnd] == '"')
+            if (right != null)
             {
-                adjEnd--;
+                properties["margin-right"] = right;
             }
 
-            var font = propValue.Substring(start, adjEnd - start + 1);
-
-            if (_adapter.IsFontExists(font))
+            if (bottom != null)
             {
-                return font;
-            }
-
-            start = end;
-        }
-
-        return CssConstants.Inherit;
-    }
-
-    /// <summary>
-    /// Parse a complex border property value that contains multiple css properties into specific css properties.
-    /// </summary>
-    /// <param name="propValue">the value of the property to parse to specific values</param>
-    /// <param name="direction">the left, top, right or bottom direction of the border to parse</param>
-    /// <param name="properties">the properties collection to add the specific properties to</param>
-    private void ParseBorderProperty(string propValue, string direction, Dictionary<string, string> properties)
-    {
-        ParseBorder(propValue, out var borderWidth, out var borderStyle, out var borderColor);
-
-        if (direction != null)
-        {
-            if (borderWidth != null)
-            {
-                properties["border" + direction + "-width"] = borderWidth;
-            }
-
-            if (borderStyle != null)
-            {
-                properties["border" + direction + "-style"] = borderStyle;
-            }
-
-            if (borderColor != null)
-            {
-                properties["border" + direction + "-color"] = borderColor;
+                properties["margin-bottom"] = bottom;
             }
         }
-        else
+
+        /// <summary>
+        /// Parse a complex border style property value that contains multiple css properties into specific css properties.
+        /// </summary>
+        /// <param name="propValue">the value of the property to parse to specific values</param>
+        /// <param name="properties">the properties collection to add the specific properties to</param>
+        private static void ParseBorderStyleProperty(string propValue, Dictionary<string, string> properties)
         {
-            if (borderWidth != null)
+            SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
+
+            if (left != null)
             {
-                ParseBorderWidthProperty(borderWidth, properties);
+                properties["border-left-style"] = left;
             }
 
-            if (borderStyle != null)
+            if (top != null)
             {
-                ParseBorderStyleProperty(borderStyle, properties);
+                properties["border-top-style"] = top;
             }
 
-            if (borderColor != null)
+            if (right != null)
             {
-                ParseBorderColorProperty(borderColor, properties);
+                properties["border-right-style"] = right;
+            }
+
+            if (bottom != null)
+            {
+                properties["border-bottom-style"] = bottom;
             }
         }
-    }
 
-    /// <summary>
-    /// Parse a complex margin property value that contains multiple css properties into specific css properties.
-    /// </summary>
-    /// <param name="propValue">the value of the property to parse to specific values</param>
-    /// <param name="properties">the properties collection to add the specific properties to</param>
-    private static void ParseMarginProperty(string propValue, Dictionary<string, string> properties)
-    {
-        SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
-
-        if (left != null)
+        /// <summary>
+        /// Parse a complex border width property value that contains multiple css properties into specific css properties.
+        /// </summary>
+        /// <param name="propValue">the value of the property to parse to specific values</param>
+        /// <param name="properties">the properties collection to add the specific properties to</param>
+        private static void ParseBorderWidthProperty(string propValue, Dictionary<string, string> properties)
         {
-            properties["margin-left"] = left;
-        }
+            SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
 
-        if (top != null)
-        {
-            properties["margin-top"] = top;
-        }
-
-        if (right != null)
-        {
-            properties["margin-right"] = right;
-        }
-
-        if (bottom != null)
-        {
-            properties["margin-bottom"] = bottom;
-        }
-    }
-
-    /// <summary>
-    /// Parse a complex border style property value that contains multiple css properties into specific css properties.
-    /// </summary>
-    /// <param name="propValue">the value of the property to parse to specific values</param>
-    /// <param name="properties">the properties collection to add the specific properties to</param>
-    private static void ParseBorderStyleProperty(string propValue, Dictionary<string, string> properties)
-    {
-        SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
-
-        if (left != null)
-        {
-            properties["border-left-style"] = left;
-        }
-
-        if (top != null)
-        {
-            properties["border-top-style"] = top;
-        }
-
-        if (right != null)
-        {
-            properties["border-right-style"] = right;
-        }
-
-        if (bottom != null)
-        {
-            properties["border-bottom-style"] = bottom;
-        }
-    }
-
-    /// <summary>
-    /// Parse a complex border width property value that contains multiple css properties into specific css properties.
-    /// </summary>
-    /// <param name="propValue">the value of the property to parse to specific values</param>
-    /// <param name="properties">the properties collection to add the specific properties to</param>
-    private static void ParseBorderWidthProperty(string propValue, Dictionary<string, string> properties)
-    {
-        SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
-
-        if (left != null)
-        {
-            properties["border-left-width"] = left;
-        }
-
-        if (top != null)
-        {
-            properties["border-top-width"] = top;
-        }
-
-        if (right != null)
-        {
-            properties["border-right-width"] = right;
-        }
-
-        if (bottom != null)
-        {
-            properties["border-bottom-width"] = bottom;
-        }
-    }
-
-    /// <summary>
-    /// Parse a complex border color property value that contains multiple css properties into specific css properties.
-    /// </summary>
-    /// <param name="propValue">the value of the property to parse to specific values</param>
-    /// <param name="properties">the properties collection to add the specific properties to</param>
-    private static void ParseBorderColorProperty(string propValue, Dictionary<string, string> properties)
-    {
-        SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
-
-        if (left != null)
-        {
-            properties["border-left-color"] = left;
-        }
-
-        if (top != null)
-        {
-            properties["border-top-color"] = top;
-        }
-
-        if (right != null)
-        {
-            properties["border-right-color"] = right;
-        }
-
-        if (bottom != null)
-        {
-            properties["border-bottom-color"] = bottom;
-        }
-    }
-
-    /// <summary>
-    /// Parse a complex padding property value that contains multiple css properties into specific css properties.
-    /// </summary>
-    /// <param name="propValue">the value of the property to parse to specific values</param>
-    /// <param name="properties">the properties collection to add the specific properties to</param>
-    private static void ParsePaddingProperty(string propValue, Dictionary<string, string> properties)
-    {
-        SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
-
-        if (left != null)
-        {
-            properties["padding-left"] = left;
-        }
-
-        if (top != null)
-        {
-            properties["padding-top"] = top;
-        }
-
-        if (right != null)
-        {
-            properties["padding-right"] = right;
-        }
-
-        if (bottom != null)
-        {
-            properties["padding-bottom"] = bottom;
-        }
-    }
-
-    /// <summary>
-    /// Split multi direction value into the proper direction values (left, top, right, bottom).
-    /// </summary>
-    private static void SplitMultiDirectionValues(string propValue, out string left, out string top, out string right, out string bottom)
-    {
-        top = null;
-        left = null;
-        right = null;
-        bottom = null;
-        var values = SplitValues(propValue);
-        switch (values.Length)
-        {
-            case 1:
-                top = left = right = bottom = values[0];
-                break;
-            case 2:
-                top = bottom = values[0];
-                left = right = values[1];
-                break;
-            case 3:
-                top = values[0];
-                left = right = values[1];
-                bottom = values[2];
-                break;
-            case 4:
-                top = values[0];
-                right = values[1];
-                bottom = values[2];
-                left = values[3];
-                break;
-        }
-    }
-
-    /// <summary>
-    /// Split the value by the specified separator; e.g. Useful in values like 'padding:5 4 3 inherit'
-    /// </summary>
-    /// <param name="value">Value to be splitted</param>
-    /// <param name="separator"> </param>
-    /// <returns>Splitted and trimmed values</returns>
-    private static string[] SplitValues(string value, char separator = ' ')
-    {
-        //TODO: CRITICAL! Don't split values on parenthesis (like rgb(0, 0, 0)) or quotes ("strings")
-
-        if (!string.IsNullOrEmpty(value))
-        {
-            var values = value.Split(separator);
-            var result = new List<string>();
-
-            foreach (var t in values)
+            if (left != null)
             {
-                var val = t.Trim();
+                properties["border-left-width"] = left;
+            }
 
-                if (!string.IsNullOrEmpty(val))
+            if (top != null)
+            {
+                properties["border-top-width"] = top;
+            }
+
+            if (right != null)
+            {
+                properties["border-right-width"] = right;
+            }
+
+            if (bottom != null)
+            {
+                properties["border-bottom-width"] = bottom;
+            }
+        }
+
+        /// <summary>
+        /// Parse a complex border color property value that contains multiple css properties into specific css properties.
+        /// </summary>
+        /// <param name="propValue">the value of the property to parse to specific values</param>
+        /// <param name="properties">the properties collection to add the specific properties to</param>
+        private static void ParseBorderColorProperty(string propValue, Dictionary<string, string> properties)
+        {
+            SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
+
+            if (left != null)
+            {
+                properties["border-left-color"] = left;
+            }
+
+            if (top != null)
+            {
+                properties["border-top-color"] = top;
+            }
+
+            if (right != null)
+            {
+                properties["border-right-color"] = right;
+            }
+
+            if (bottom != null)
+            {
+                properties["border-bottom-color"] = bottom;
+            }
+        }
+
+        /// <summary>
+        /// Parse a complex padding property value that contains multiple css properties into specific css properties.
+        /// </summary>
+        /// <param name="propValue">the value of the property to parse to specific values</param>
+        /// <param name="properties">the properties collection to add the specific properties to</param>
+        private static void ParsePaddingProperty(string propValue, Dictionary<string, string> properties)
+        {
+            SplitMultiDirectionValues(propValue, out var left, out var top, out var right, out var bottom);
+
+            if (left != null)
+            {
+                properties["padding-left"] = left;
+            }
+
+            if (top != null)
+            {
+                properties["padding-top"] = top;
+            }
+
+            if (right != null)
+            {
+                properties["padding-right"] = right;
+            }
+
+            if (bottom != null)
+            {
+                properties["padding-bottom"] = bottom;
+            }
+        }
+
+        /// <summary>
+        /// Split multi direction value into the proper direction values (left, top, right, bottom).
+        /// </summary>
+        private static void SplitMultiDirectionValues(string propValue, out string left, out string top, out string right, out string bottom)
+        {
+            top = null;
+            left = null;
+            right = null;
+            bottom = null;
+            var values = SplitValues(propValue);
+            switch (values.Length)
+            {
+                case 1:
+                    top = left = right = bottom = values[0];
+                    break;
+                case 2:
+                    top = bottom = values[0];
+                    left = right = values[1];
+                    break;
+                case 3:
+                    top = values[0];
+                    left = right = values[1];
+                    bottom = values[2];
+                    break;
+                case 4:
+                    top = values[0];
+                    right = values[1];
+                    bottom = values[2];
+                    left = values[3];
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Split the value by the specified separator; e.g. Useful in values like 'padding:5 4 3 inherit'
+        /// </summary>
+        /// <param name="value">Value to be splitted</param>
+        /// <param name="separator"> </param>
+        /// <returns>Splitted and trimmed values</returns>
+        private static string[] SplitValues(string value, char separator = ' ')
+        {
+            //TODO: CRITICAL! Don't split values on parenthesis (like rgb(0, 0, 0)) or quotes ("strings")
+
+            if (!string.IsNullOrEmpty(value))
+            {
+                var values = value.Split(separator);
+                var result = new List<string>();
+
+                foreach (var t in values)
                 {
-                    result.Add(val);
-                }
-            }
+                    var val = t.Trim();
 
-            return result.ToArray();
-        }
-
-        return new string[0];
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="value"></param>
-    /// <param name="width"> </param>
-    /// <param name="style"></param>
-    /// <param name="color"></param>
-    public void ParseBorder(string value, out string width, out string style, out string color)
-    {
-        width = style = color = null;
-        if (!string.IsNullOrEmpty(value))
-        {
-            var idx = 0;
-            while ((idx = CommonUtils.GetNextSubString(value, idx, out var length)) > -1)
-            {
-                if (width == null)
-                {
-                    width = ParseBorderWidth(value, idx, length);
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        result.Add(val);
+                    }
                 }
 
-                if (style == null)
-                {
-                    style = ParseBorderStyle(value, idx, length);
-                }
-
-                if (color == null)
-                {
-                    color = ParseBorderColor(value, idx, length);
-                }
-
-                idx = idx + length + 1;
+                return result.ToArray();
             }
+
+            return new string[0];
         }
-    }
 
-    /// <summary>
-    /// Parse the given substring to extract border width substring.
-    /// Assume given substring is not empty and all indexes are valid!<br/>
-    /// </summary>
-    /// <returns>found border width value or null</returns>
-    private static string ParseBorderWidth(string str, int idx, int length)
-    {
-        if ((length > 2 && char.IsDigit(str[idx])) || (length > 3 && str[idx] == '.'))
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="width"> </param>
+        /// <param name="style"></param>
+        /// <param name="color"></param>
+        public void ParseBorder(string value, out string width, out string style, out string color)
         {
-            string unit = null;
-            if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Px))
+            width = style = color = null;
+            if (!string.IsNullOrEmpty(value))
             {
-                unit = CssConstants.Px;
-            }
-            else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Pt))
-            {
-                unit = CssConstants.Pt;
-            }
-            else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Em))
-            {
-                unit = CssConstants.Em;
-            }
-            else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Ex))
-            {
-                unit = CssConstants.Ex;
-            }
-            else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.In))
-            {
-                unit = CssConstants.In;
-            }
-            else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Cm))
-            {
-                unit = CssConstants.Cm;
-            }
-            else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Mm))
-            {
-                unit = CssConstants.Mm;
-            }
-            else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Pc))
-            {
-                unit = CssConstants.Pc;
-            }
-
-            if (unit != null)
-            {
-                if (CssValueParser.IsFloat(str, idx, length - 2))
+                var idx = 0;
+                while ((idx = CommonUtils.GetNextSubString(value, idx, out var length)) > -1)
                 {
-                    return str.Substring(idx, length);
+                    if (width == null)
+                    {
+                        width = ParseBorderWidth(value, idx, length);
+                    }
+
+                    if (style == null)
+                    {
+                        style = ParseBorderStyle(value, idx, length);
+                    }
+
+                    if (color == null)
+                    {
+                        color = ParseBorderColor(value, idx, length);
+                    }
+
+                    idx = idx + length + 1;
                 }
             }
         }
-        else
+
+        /// <summary>
+        /// Parse the given substring to extract border width substring.
+        /// Assume given substring is not empty and all indexes are valid!<br/>
+        /// </summary>
+        /// <returns>found border width value or null</returns>
+        private static string ParseBorderWidth(string str, int idx, int length)
         {
-            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Thin))
+            if ((length > 2 && char.IsDigit(str[idx])) || (length > 3 && str[idx] == '.'))
             {
-                return CssConstants.Thin;
+                string unit = null;
+                if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Px))
+                {
+                    unit = CssConstants.Px;
+                }
+                else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Pt))
+                {
+                    unit = CssConstants.Pt;
+                }
+                else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Em))
+                {
+                    unit = CssConstants.Em;
+                }
+                else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Ex))
+                {
+                    unit = CssConstants.Ex;
+                }
+                else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.In))
+                {
+                    unit = CssConstants.In;
+                }
+                else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Cm))
+                {
+                    unit = CssConstants.Cm;
+                }
+                else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Mm))
+                {
+                    unit = CssConstants.Mm;
+                }
+                else if (CommonUtils.SubStringEquals(str, idx + length - 2, 2, CssConstants.Pc))
+                {
+                    unit = CssConstants.Pc;
+                }
+
+                if (unit != null)
+                {
+                    if (CssValueParser.IsFloat(str, idx, length - 2))
+                    {
+                        return str.Substring(idx, length);
+                    }
+                }
+            }
+            else
+            {
+                if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Thin))
+                {
+                    return CssConstants.Thin;
+                }
+
+                if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Medium))
+                {
+                    return CssConstants.Medium;
+                }
+
+                if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Thick))
+                {
+                    return CssConstants.Thick;
+                }
             }
 
-            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Medium))
+            return null;
+        }
+
+        /// <summary>
+        /// Parse the given substring to extract border style substring.<br/>
+        /// Assume given substring is not empty and all indexes are valid!<br/>
+        /// </summary>
+        /// <returns>found border width value or null</returns>
+        private static string ParseBorderStyle(string str, int idx, int length)
+        {
+            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.None))
             {
-                return CssConstants.Medium;
+                return CssConstants.None;
             }
 
-            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Thick))
+            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Solid))
             {
-                return CssConstants.Thick;
+                return CssConstants.Solid;
             }
+
+            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Hidden))
+            {
+                return CssConstants.Hidden;
+            }
+
+            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Dotted))
+            {
+                return CssConstants.Dotted;
+            }
+
+            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Dashed))
+            {
+                return CssConstants.Dashed;
+            }
+
+            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Double))
+            {
+                return CssConstants.Double;
+            }
+
+            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Groove))
+            {
+                return CssConstants.Groove;
+            }
+
+            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Ridge))
+            {
+                return CssConstants.Ridge;
+            }
+
+            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Inset))
+            {
+                return CssConstants.Inset;
+            }
+
+            if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Outset))
+            {
+                return CssConstants.Outset;
+            }
+
+            return null;
         }
 
-        return null;
+        /// <summary>
+        /// Parse the given substring to extract border style substring.<br/>
+        /// Assume given substring is not empty and all indexes are valid!<br/>
+        /// </summary>
+        /// <returns>found border width value or null</returns>
+        private string ParseBorderColor(string str, int idx, int length)
+        {
+            return _valueParser.TryGetColor(str, idx, length, out var color) ? str.Substring(idx, length) : null;
+        }
+
+        #endregion
     }
-
-    /// <summary>
-    /// Parse the given substring to extract border style substring.<br/>
-    /// Assume given substring is not empty and all indexes are valid!<br/>
-    /// </summary>
-    /// <returns>found border width value or null</returns>
-    private static string ParseBorderStyle(string str, int idx, int length)
-    {
-        if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.None))
-        {
-            return CssConstants.None;
-        }
-
-        if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Solid))
-        {
-            return CssConstants.Solid;
-        }
-
-        if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Hidden))
-        {
-            return CssConstants.Hidden;
-        }
-
-        if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Dotted))
-        {
-            return CssConstants.Dotted;
-        }
-
-        if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Dashed))
-        {
-            return CssConstants.Dashed;
-        }
-
-        if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Double))
-        {
-            return CssConstants.Double;
-        }
-
-        if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Groove))
-        {
-            return CssConstants.Groove;
-        }
-
-        if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Ridge))
-        {
-            return CssConstants.Ridge;
-        }
-
-        if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Inset))
-        {
-            return CssConstants.Inset;
-        }
-
-        if (CommonUtils.SubStringEquals(str, idx, length, CssConstants.Outset))
-        {
-            return CssConstants.Outset;
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// Parse the given substring to extract border style substring.<br/>
-    /// Assume given substring is not empty and all indexes are valid!<br/>
-    /// </summary>
-    /// <returns>found border width value or null</returns>
-    private string ParseBorderColor(string str, int idx, int length)
-    {
-        return _valueParser.TryGetColor(str, idx, length, out var color) ? str.Substring(idx, length) : null;
-    }
-
-    #endregion
 }

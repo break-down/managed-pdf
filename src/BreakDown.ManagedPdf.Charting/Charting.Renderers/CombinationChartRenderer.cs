@@ -33,277 +33,278 @@ using System;
 using System.Collections.Generic;
 using BreakDown.ManagedPdf.Charting.Charting.enums;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a renderer for combinations of charts.
-/// </summary>
-internal class CombinationChartRenderer : ChartRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the CombinationChartRenderer class with the
-    /// specified renderer parameters.
+    /// Represents a renderer for combinations of charts.
     /// </summary>
-    internal CombinationChartRenderer(RendererParameters parms)
-        : base(parms)
+    internal class CombinationChartRenderer : ChartRenderer
     {
-    }
-
-    /// <summary>
-    /// Returns an initialized and renderer specific rendererInfo.
-    /// </summary>
-    internal override RendererInfo Init()
-    {
-        var cri = new CombinationRendererInfo();
-        cri._chart = (Chart)_rendererParms.DrawingItem;
-        _rendererParms.RendererInfo = cri;
-
-        InitSeriesRendererInfo();
-        DistributeSeries();
-
-        if (cri._areaSeriesRendererInfos != null)
+        /// <summary>
+        /// Initializes a new instance of the CombinationChartRenderer class with the
+        /// specified renderer parameters.
+        /// </summary>
+        internal CombinationChartRenderer(RendererParameters parms)
+            : base(parms)
         {
-            cri.seriesRendererInfos = cri._areaSeriesRendererInfos;
-            var renderer = new AreaChartRenderer(_rendererParms);
-            renderer.InitSeries();
         }
 
-        if (cri._columnSeriesRendererInfos != null)
+        /// <summary>
+        /// Returns an initialized and renderer specific rendererInfo.
+        /// </summary>
+        internal override RendererInfo Init()
         {
-            cri.seriesRendererInfos = cri._columnSeriesRendererInfos;
-            var renderer = new ColumnChartRenderer(_rendererParms);
-            renderer.InitSeries();
-        }
+            var cri = new CombinationRendererInfo();
+            cri._chart = (Chart)_rendererParms.DrawingItem;
+            _rendererParms.RendererInfo = cri;
 
-        if (cri._lineSeriesRendererInfos != null)
-        {
-            cri.seriesRendererInfos = cri._lineSeriesRendererInfos;
-            var renderer = new LineChartRenderer(_rendererParms);
-            renderer.InitSeries();
-        }
+            InitSeriesRendererInfo();
+            DistributeSeries();
 
-        cri.seriesRendererInfos = cri._commonSeriesRendererInfos;
-
-        LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
-        cri.legendRendererInfo = (LegendRendererInfo)lr.Init();
-
-        AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
-        cri.xAxisRendererInfo = (AxisRendererInfo)xar.Init();
-
-        AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
-        cri.yAxisRendererInfo = (AxisRendererInfo)yar.Init();
-
-        var plotArea = cri._chart.PlotArea;
-        PlotAreaRenderer apar = new AreaPlotAreaRenderer(_rendererParms);
-        cri.plotAreaRendererInfo = (PlotAreaRendererInfo)apar.Init();
-
-        // Draw data labels.
-        if (cri._columnSeriesRendererInfos != null)
-        {
-            cri.seriesRendererInfos = cri._columnSeriesRendererInfos;
-            DataLabelRenderer dlr = new ColumnDataLabelRenderer(_rendererParms);
-            dlr.Init();
-        }
-
-        return cri;
-    }
-
-    /// <summary>
-    /// Layouts and calculates the space used by the combination chart.
-    /// </summary>
-    internal override void Format()
-    {
-        var cri = (CombinationRendererInfo)_rendererParms.RendererInfo;
-        cri.seriesRendererInfos = cri._commonSeriesRendererInfos;
-
-        LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
-        lr.Format();
-
-        // axes
-        AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
-        xar.Format();
-
-        AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
-        yar.Format();
-
-        // Calculate rects and positions.
-        var chartRect = LayoutLegend();
-        cri.xAxisRendererInfo.X = chartRect.Left + cri.yAxisRendererInfo.Width;
-        cri.xAxisRendererInfo.Y = chartRect.Bottom - cri.xAxisRendererInfo.Height;
-        cri.xAxisRendererInfo.Width = chartRect.Width - cri.yAxisRendererInfo.Width;
-        cri.yAxisRendererInfo.X = chartRect.Left;
-        cri.yAxisRendererInfo.Y = chartRect.Top;
-        cri.yAxisRendererInfo.Height = chartRect.Height - cri.xAxisRendererInfo.Height;
-        cri.plotAreaRendererInfo.X = cri.xAxisRendererInfo.X;
-        cri.plotAreaRendererInfo.Y = cri.yAxisRendererInfo.InnerRect.Y;
-        cri.plotAreaRendererInfo.Width = cri.xAxisRendererInfo.Width;
-        cri.plotAreaRendererInfo.Height = cri.yAxisRendererInfo.InnerRect.Height;
-
-        // Calculated remaining plot area, now it's safe to format.
-        PlotAreaRenderer renderer;
-        if (cri._areaSeriesRendererInfos != null)
-        {
-            cri.seriesRendererInfos = cri._areaSeriesRendererInfos;
-            renderer = new AreaPlotAreaRenderer(_rendererParms);
-            renderer.Format();
-        }
-
-        if (cri._columnSeriesRendererInfos != null)
-        {
-            cri.seriesRendererInfos = cri._columnSeriesRendererInfos;
-
-            //TODO Check for Clustered- or StackedPlotAreaRenderer
-            renderer = new ColumnClusteredPlotAreaRenderer(_rendererParms);
-            renderer.Format();
-        }
-
-        if (cri._lineSeriesRendererInfos != null)
-        {
-            cri.seriesRendererInfos = cri._lineSeriesRendererInfos;
-            renderer = new LinePlotAreaRenderer(_rendererParms);
-            renderer.Format();
-        }
-
-        // Draw data labels.
-        if (cri._columnSeriesRendererInfos != null)
-        {
-            cri.seriesRendererInfos = cri._columnSeriesRendererInfos;
-            DataLabelRenderer dlr = new ColumnDataLabelRenderer(_rendererParms);
-            dlr.Format();
-        }
-    }
-
-    /// <summary>
-    /// Draws the column chart.
-    /// </summary>
-    internal override void Draw()
-    {
-        var cri = (CombinationRendererInfo)_rendererParms.RendererInfo;
-        cri.seriesRendererInfos = cri._commonSeriesRendererInfos;
-
-        LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
-        lr.Draw();
-
-        var wr = new WallRenderer(_rendererParms);
-        wr.Draw();
-
-        GridlinesRenderer glr = new ColumnLikeGridlinesRenderer(_rendererParms);
-        glr.Draw();
-
-        var pabr = new PlotAreaBorderRenderer(_rendererParms);
-        pabr.Draw();
-
-        PlotAreaRenderer renderer;
-        if (cri._areaSeriesRendererInfos != null)
-        {
-            cri.seriesRendererInfos = cri._areaSeriesRendererInfos;
-            renderer = new AreaPlotAreaRenderer(_rendererParms);
-            renderer.Draw();
-        }
-
-        if (cri._columnSeriesRendererInfos != null)
-        {
-            cri.seriesRendererInfos = cri._columnSeriesRendererInfos;
-
-            //TODO Check for Clustered- or StackedPlotAreaRenderer
-            renderer = new ColumnClusteredPlotAreaRenderer(_rendererParms);
-            renderer.Draw();
-        }
-
-        if (cri._lineSeriesRendererInfos != null)
-        {
-            cri.seriesRendererInfos = cri._lineSeriesRendererInfos;
-            renderer = new LinePlotAreaRenderer(_rendererParms);
-            renderer.Draw();
-        }
-
-        // Draw data labels.
-        if (cri._columnSeriesRendererInfos != null)
-        {
-            cri.seriesRendererInfos = cri._columnSeriesRendererInfos;
-            DataLabelRenderer dlr = new ColumnDataLabelRenderer(_rendererParms);
-            dlr.Draw();
-        }
-
-        // Draw axes.
-        cri.seriesRendererInfos = cri._commonSeriesRendererInfos;
-        if (cri.xAxisRendererInfo._axis != null)
-        {
-            AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
-            xar.Draw();
-        }
-
-        if (cri.yAxisRendererInfo._axis != null)
-        {
-            AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
-            yar.Draw();
-        }
-    }
-
-    /// <summary>
-    /// Initializes all necessary data to draw series for a combination chart.
-    /// </summary>
-    private void InitSeriesRendererInfo()
-    {
-        var cri = (CombinationRendererInfo)_rendererParms.RendererInfo;
-        var seriesColl = cri._chart.SeriesCollection;
-        cri.seriesRendererInfos = new SeriesRendererInfo[seriesColl.Count];
-        for (var idx = 0; idx < seriesColl.Count; ++idx)
-        {
-            var sri = new SeriesRendererInfo();
-            sri._series = seriesColl[idx];
-            cri.seriesRendererInfos[idx] = sri;
-        }
-    }
-
-    /// <summary>
-    /// Sort all series renderer info dependent on their chart type.
-    /// </summary>
-    private void DistributeSeries()
-    {
-        var cri = (CombinationRendererInfo)_rendererParms.RendererInfo;
-
-        var areaSeries = new List<SeriesRendererInfo>();
-        var columnSeries = new List<SeriesRendererInfo>();
-        var lineSeries = new List<SeriesRendererInfo>();
-        foreach (var sri in cri.seriesRendererInfos)
-        {
-            switch (sri._series._chartType)
+            if (cri._areaSeriesRendererInfos != null)
             {
-                case ChartType.Area2D:
-                    areaSeries.Add(sri);
-                    break;
+                cri.seriesRendererInfos = cri._areaSeriesRendererInfos;
+                var renderer = new AreaChartRenderer(_rendererParms);
+                renderer.InitSeries();
+            }
 
-                case ChartType.Column2D:
-                    columnSeries.Add(sri);
-                    break;
+            if (cri._columnSeriesRendererInfos != null)
+            {
+                cri.seriesRendererInfos = cri._columnSeriesRendererInfos;
+                var renderer = new ColumnChartRenderer(_rendererParms);
+                renderer.InitSeries();
+            }
 
-                case ChartType.Line:
-                    lineSeries.Add(sri);
-                    break;
+            if (cri._lineSeriesRendererInfos != null)
+            {
+                cri.seriesRendererInfos = cri._lineSeriesRendererInfos;
+                var renderer = new LineChartRenderer(_rendererParms);
+                renderer.InitSeries();
+            }
 
-                default:
-                    throw new InvalidOperationException(PSCSR.InvalidChartTypeForCombination(sri._series._chartType));
+            cri.seriesRendererInfos = cri._commonSeriesRendererInfos;
+
+            LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
+            cri.legendRendererInfo = (LegendRendererInfo)lr.Init();
+
+            AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
+            cri.xAxisRendererInfo = (AxisRendererInfo)xar.Init();
+
+            AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
+            cri.yAxisRendererInfo = (AxisRendererInfo)yar.Init();
+
+            var plotArea = cri._chart.PlotArea;
+            PlotAreaRenderer apar = new AreaPlotAreaRenderer(_rendererParms);
+            cri.plotAreaRendererInfo = (PlotAreaRendererInfo)apar.Init();
+
+            // Draw data labels.
+            if (cri._columnSeriesRendererInfos != null)
+            {
+                cri.seriesRendererInfos = cri._columnSeriesRendererInfos;
+                DataLabelRenderer dlr = new ColumnDataLabelRenderer(_rendererParms);
+                dlr.Init();
+            }
+
+            return cri;
+        }
+
+        /// <summary>
+        /// Layouts and calculates the space used by the combination chart.
+        /// </summary>
+        internal override void Format()
+        {
+            var cri = (CombinationRendererInfo)_rendererParms.RendererInfo;
+            cri.seriesRendererInfos = cri._commonSeriesRendererInfos;
+
+            LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
+            lr.Format();
+
+            // axes
+            AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
+            xar.Format();
+
+            AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
+            yar.Format();
+
+            // Calculate rects and positions.
+            var chartRect = LayoutLegend();
+            cri.xAxisRendererInfo.X = chartRect.Left + cri.yAxisRendererInfo.Width;
+            cri.xAxisRendererInfo.Y = chartRect.Bottom - cri.xAxisRendererInfo.Height;
+            cri.xAxisRendererInfo.Width = chartRect.Width - cri.yAxisRendererInfo.Width;
+            cri.yAxisRendererInfo.X = chartRect.Left;
+            cri.yAxisRendererInfo.Y = chartRect.Top;
+            cri.yAxisRendererInfo.Height = chartRect.Height - cri.xAxisRendererInfo.Height;
+            cri.plotAreaRendererInfo.X = cri.xAxisRendererInfo.X;
+            cri.plotAreaRendererInfo.Y = cri.yAxisRendererInfo.InnerRect.Y;
+            cri.plotAreaRendererInfo.Width = cri.xAxisRendererInfo.Width;
+            cri.plotAreaRendererInfo.Height = cri.yAxisRendererInfo.InnerRect.Height;
+
+            // Calculated remaining plot area, now it's safe to format.
+            PlotAreaRenderer renderer;
+            if (cri._areaSeriesRendererInfos != null)
+            {
+                cri.seriesRendererInfos = cri._areaSeriesRendererInfos;
+                renderer = new AreaPlotAreaRenderer(_rendererParms);
+                renderer.Format();
+            }
+
+            if (cri._columnSeriesRendererInfos != null)
+            {
+                cri.seriesRendererInfos = cri._columnSeriesRendererInfos;
+
+                //TODO Check for Clustered- or StackedPlotAreaRenderer
+                renderer = new ColumnClusteredPlotAreaRenderer(_rendererParms);
+                renderer.Format();
+            }
+
+            if (cri._lineSeriesRendererInfos != null)
+            {
+                cri.seriesRendererInfos = cri._lineSeriesRendererInfos;
+                renderer = new LinePlotAreaRenderer(_rendererParms);
+                renderer.Format();
+            }
+
+            // Draw data labels.
+            if (cri._columnSeriesRendererInfos != null)
+            {
+                cri.seriesRendererInfos = cri._columnSeriesRendererInfos;
+                DataLabelRenderer dlr = new ColumnDataLabelRenderer(_rendererParms);
+                dlr.Format();
             }
         }
 
-        cri._commonSeriesRendererInfos = cri.seriesRendererInfos;
-        if (areaSeries.Count > 0)
+        /// <summary>
+        /// Draws the column chart.
+        /// </summary>
+        internal override void Draw()
         {
-            cri._areaSeriesRendererInfos = new SeriesRendererInfo[areaSeries.Count];
-            areaSeries.CopyTo(cri._areaSeriesRendererInfos);
+            var cri = (CombinationRendererInfo)_rendererParms.RendererInfo;
+            cri.seriesRendererInfos = cri._commonSeriesRendererInfos;
+
+            LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
+            lr.Draw();
+
+            var wr = new WallRenderer(_rendererParms);
+            wr.Draw();
+
+            GridlinesRenderer glr = new ColumnLikeGridlinesRenderer(_rendererParms);
+            glr.Draw();
+
+            var pabr = new PlotAreaBorderRenderer(_rendererParms);
+            pabr.Draw();
+
+            PlotAreaRenderer renderer;
+            if (cri._areaSeriesRendererInfos != null)
+            {
+                cri.seriesRendererInfos = cri._areaSeriesRendererInfos;
+                renderer = new AreaPlotAreaRenderer(_rendererParms);
+                renderer.Draw();
+            }
+
+            if (cri._columnSeriesRendererInfos != null)
+            {
+                cri.seriesRendererInfos = cri._columnSeriesRendererInfos;
+
+                //TODO Check for Clustered- or StackedPlotAreaRenderer
+                renderer = new ColumnClusteredPlotAreaRenderer(_rendererParms);
+                renderer.Draw();
+            }
+
+            if (cri._lineSeriesRendererInfos != null)
+            {
+                cri.seriesRendererInfos = cri._lineSeriesRendererInfos;
+                renderer = new LinePlotAreaRenderer(_rendererParms);
+                renderer.Draw();
+            }
+
+            // Draw data labels.
+            if (cri._columnSeriesRendererInfos != null)
+            {
+                cri.seriesRendererInfos = cri._columnSeriesRendererInfos;
+                DataLabelRenderer dlr = new ColumnDataLabelRenderer(_rendererParms);
+                dlr.Draw();
+            }
+
+            // Draw axes.
+            cri.seriesRendererInfos = cri._commonSeriesRendererInfos;
+            if (cri.xAxisRendererInfo._axis != null)
+            {
+                AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
+                xar.Draw();
+            }
+
+            if (cri.yAxisRendererInfo._axis != null)
+            {
+                AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
+                yar.Draw();
+            }
         }
 
-        if (columnSeries.Count > 0)
+        /// <summary>
+        /// Initializes all necessary data to draw series for a combination chart.
+        /// </summary>
+        private void InitSeriesRendererInfo()
         {
-            cri._columnSeriesRendererInfos = new SeriesRendererInfo[columnSeries.Count];
-            columnSeries.CopyTo(cri._columnSeriesRendererInfos);
+            var cri = (CombinationRendererInfo)_rendererParms.RendererInfo;
+            var seriesColl = cri._chart.SeriesCollection;
+            cri.seriesRendererInfos = new SeriesRendererInfo[seriesColl.Count];
+            for (var idx = 0; idx < seriesColl.Count; ++idx)
+            {
+                var sri = new SeriesRendererInfo();
+                sri._series = seriesColl[idx];
+                cri.seriesRendererInfos[idx] = sri;
+            }
         }
 
-        if (lineSeries.Count > 0)
+        /// <summary>
+        /// Sort all series renderer info dependent on their chart type.
+        /// </summary>
+        private void DistributeSeries()
         {
-            cri._lineSeriesRendererInfos = new SeriesRendererInfo[lineSeries.Count];
-            lineSeries.CopyTo(cri._lineSeriesRendererInfos);
+            var cri = (CombinationRendererInfo)_rendererParms.RendererInfo;
+
+            var areaSeries = new List<SeriesRendererInfo>();
+            var columnSeries = new List<SeriesRendererInfo>();
+            var lineSeries = new List<SeriesRendererInfo>();
+            foreach (var sri in cri.seriesRendererInfos)
+            {
+                switch (sri._series._chartType)
+                {
+                    case ChartType.Area2D:
+                        areaSeries.Add(sri);
+                        break;
+
+                    case ChartType.Column2D:
+                        columnSeries.Add(sri);
+                        break;
+
+                    case ChartType.Line:
+                        lineSeries.Add(sri);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException(PSCSR.InvalidChartTypeForCombination(sri._series._chartType));
+                }
+            }
+
+            cri._commonSeriesRendererInfos = cri.seriesRendererInfos;
+            if (areaSeries.Count > 0)
+            {
+                cri._areaSeriesRendererInfos = new SeriesRendererInfo[areaSeries.Count];
+                areaSeries.CopyTo(cri._areaSeriesRendererInfos);
+            }
+
+            if (columnSeries.Count > 0)
+            {
+                cri._columnSeriesRendererInfos = new SeriesRendererInfo[columnSeries.Count];
+                columnSeries.CopyTo(cri._columnSeriesRendererInfos);
+            }
+
+            if (lineSeries.Count > 0)
+            {
+                cri._lineSeriesRendererInfos = new SeriesRendererInfo[lineSeries.Count];
+                lineSeries.CopyTo(cri._lineSeriesRendererInfos);
+            }
         }
     }
 }

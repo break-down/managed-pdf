@@ -32,100 +32,101 @@
 using System;
 using BreakDown.ManagedPdf.Core.Drawing;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a plot area renderer of stacked bars, i. e. all bars are drawn one on another.
-/// </summary>
-internal class BarStackedPlotAreaRenderer : BarPlotAreaRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the BarStackedPlotAreaRenderer class with the
-    /// specified renderer parameters.
+    /// Represents a plot area renderer of stacked bars, i. e. all bars are drawn one on another.
     /// </summary>
-    internal BarStackedPlotAreaRenderer(RendererParameters parms)
-        : base(parms)
+    internal class BarStackedPlotAreaRenderer : BarPlotAreaRenderer
     {
-    }
-
-    /// <summary>
-    /// Calculates the position, width and height of each bar of all series.
-    /// </summary>
-    protected override void CalcBars()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        if (cri.seriesRendererInfos.Length == 0)
+        /// <summary>
+        /// Initializes a new instance of the BarStackedPlotAreaRenderer class with the
+        /// specified renderer parameters.
+        /// </summary>
+        internal BarStackedPlotAreaRenderer(RendererParameters parms)
+            : base(parms)
         {
-            return;
         }
 
-        var xMax = cri.xAxisRendererInfo.MaximumScale;
-        var xMajorTick = cri.xAxisRendererInfo.MajorTick;
-
-        var maxPoints = 0;
-        foreach (var sri in cri.seriesRendererInfos)
+        /// <summary>
+        /// Calculates the position, width and height of each bar of all series.
+        /// </summary>
+        protected override void CalcBars()
         {
-            maxPoints = Math.Max(maxPoints, sri._series._seriesElements.Count);
-        }
-
-        // Space used by one bar.
-        var x = xMax - xMajorTick / 2;
-        var columnWidth = xMajorTick * 0.75 / 2;
-
-        var points = new XPoint[2];
-        for (var pointIdx = 0; pointIdx < maxPoints; ++pointIdx)
-        {
-            double yMin = 0, yMax = 0, y0 = 0, y1 = 0;
-            var x0 = x - columnWidth;
-            var x1 = x + columnWidth;
-
-            foreach (var sri in cri.seriesRendererInfos)
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            if (cri.seriesRendererInfos.Length == 0)
             {
-                if (sri._pointRendererInfos.Length <= pointIdx)
-                {
-                    break;
-                }
-
-                var column = (ColumnRendererInfo)sri._pointRendererInfos[pointIdx];
-                if (column.Point != null && !double.IsNaN(column.Point._value))
-                {
-                    var y = column.Point._value;
-                    if (y < 0)
-                    {
-                        y0 = yMin + y;
-                        y1 = yMin;
-                        yMin += y;
-                    }
-                    else
-                    {
-                        y0 = yMax;
-                        y1 = yMax + y;
-                        yMax += y;
-                    }
-
-                    points[0].Y = x0; // oben links
-                    points[0].X = y0;
-                    points[1].Y = x1; // unten rechts
-                    points[1].X = y1;
-
-                    cri.plotAreaRendererInfo._matrix.TransformPoints(points);
-
-                    column.Rect = new XRect(points[0].X,
-                                            points[0].Y,
-                                            points[1].X - points[0].X,
-                                            points[1].Y - points[0].Y);
-                }
+                return;
             }
 
-            x--; // Next stacked column.
-        }
-    }
+            var xMax = cri.xAxisRendererInfo.MaximumScale;
+            var xMajorTick = cri.xAxisRendererInfo.MajorTick;
 
-    /// <summary>
-    /// If yValue is within the range from yMin to yMax returns true, otherwise false.
-    /// </summary>
-    protected override bool IsDataInside(double yMin, double yMax, double yValue)
-    {
-        return yValue <= yMax && yValue >= yMin;
+            var maxPoints = 0;
+            foreach (var sri in cri.seriesRendererInfos)
+            {
+                maxPoints = Math.Max(maxPoints, sri._series._seriesElements.Count);
+            }
+
+            // Space used by one bar.
+            var x = xMax - xMajorTick / 2;
+            var columnWidth = xMajorTick * 0.75 / 2;
+
+            var points = new XPoint[2];
+            for (var pointIdx = 0; pointIdx < maxPoints; ++pointIdx)
+            {
+                double yMin = 0, yMax = 0, y0 = 0, y1 = 0;
+                var x0 = x - columnWidth;
+                var x1 = x + columnWidth;
+
+                foreach (var sri in cri.seriesRendererInfos)
+                {
+                    if (sri._pointRendererInfos.Length <= pointIdx)
+                    {
+                        break;
+                    }
+
+                    var column = (ColumnRendererInfo)sri._pointRendererInfos[pointIdx];
+                    if (column.Point != null && !double.IsNaN(column.Point._value))
+                    {
+                        var y = column.Point._value;
+                        if (y < 0)
+                        {
+                            y0 = yMin + y;
+                            y1 = yMin;
+                            yMin += y;
+                        }
+                        else
+                        {
+                            y0 = yMax;
+                            y1 = yMax + y;
+                            yMax += y;
+                        }
+
+                        points[0].Y = x0; // oben links
+                        points[0].X = y0;
+                        points[1].Y = x1; // unten rechts
+                        points[1].X = y1;
+
+                        cri.plotAreaRendererInfo._matrix.TransformPoints(points);
+
+                        column.Rect = new XRect(points[0].X,
+                                                points[0].Y,
+                                                points[1].X - points[0].X,
+                                                points[1].Y - points[0].Y);
+                    }
+                }
+
+                x--; // Next stacked column.
+            }
+        }
+
+        /// <summary>
+        /// If yValue is within the range from yMin to yMax returns true, otherwise false.
+        /// </summary>
+        protected override bool IsDataInside(double yMin, double yMax, double yValue)
+        {
+            return yValue <= yMax && yValue >= yMin;
+        }
     }
 }

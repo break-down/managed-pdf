@@ -31,59 +31,60 @@
 
 using BreakDown.ManagedPdf.Core.Pdf.Content.Objects.@enum;
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Content.Objects;
-
-/// <summary>
-/// Represents a PDF content stream operator description.
-/// </summary>
-public sealed class OpCode
+namespace BreakDown.ManagedPdf.Core.Pdf.Content.Objects
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="OpCode"/> class.
+    /// Represents a PDF content stream operator description.
     /// </summary>
-    /// <param name="name">The name.</param>
-    /// <param name="opcodeName">The enum value of the operator.</param>
-    /// <param name="operands">The number of operands.</param>
-    /// <param name="postscript">The postscript equivalent, or null, if no such operation exists.</param>
-    /// <param name="flags">The flags.</param>
-    /// <param name="description">The description from Adobe PDF Reference.</param>
-    internal OpCode(string name, OpCodeName opcodeName, int operands, string postscript, OpCodeFlags flags, string description)
+    public sealed class OpCode
     {
-        Name = name;
-        OpCodeName = opcodeName;
-        Operands = operands;
-        Postscript = postscript;
-        Flags = flags;
-        Description = description;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpCode"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="opcodeName">The enum value of the operator.</param>
+        /// <param name="operands">The number of operands.</param>
+        /// <param name="postscript">The postscript equivalent, or null, if no such operation exists.</param>
+        /// <param name="flags">The flags.</param>
+        /// <param name="description">The description from Adobe PDF Reference.</param>
+        internal OpCode(string name, OpCodeName opcodeName, int operands, string postscript, OpCodeFlags flags, string description)
+        {
+            Name = name;
+            OpCodeName = opcodeName;
+            Operands = operands;
+            Postscript = postscript;
+            Flags = flags;
+            Description = description;
+        }
+
+        /// <summary>
+        /// The name of the operator.
+        /// </summary>
+        public readonly string Name;
+
+        /// <summary>
+        /// The enum value of the operator.
+        /// </summary>
+        public readonly OpCodeName OpCodeName;
+
+        /// <summary>
+        /// The number of operands. -1 indicates a variable number of operands.
+        /// </summary>
+        public readonly int Operands;
+
+        /// <summary>
+        /// The flags.
+        /// </summary>
+        public readonly OpCodeFlags Flags;
+
+        /// <summary>
+        /// The postscript equivalent, or null, if no such operation exists.
+        /// </summary>
+        public readonly string Postscript;
+
+        /// <summary>
+        /// The description from Adobe PDF Reference.
+        /// </summary>
+        public readonly string Description;
     }
-
-    /// <summary>
-    /// The name of the operator.
-    /// </summary>
-    public readonly string Name;
-
-    /// <summary>
-    /// The enum value of the operator.
-    /// </summary>
-    public readonly OpCodeName OpCodeName;
-
-    /// <summary>
-    /// The number of operands. -1 indicates a variable number of operands.
-    /// </summary>
-    public readonly int Operands;
-
-    /// <summary>
-    /// The flags.
-    /// </summary>
-    public readonly OpCodeFlags Flags;
-
-    /// <summary>
-    /// The postscript equivalent, or null, if no such operation exists.
-    /// </summary>
-    public readonly string Postscript;
-
-    /// <summary>
-    /// The description from Adobe PDF Reference.
-    /// </summary>
-    public readonly string Description;
 }

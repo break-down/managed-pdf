@@ -29,12 +29,13 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Pdf;
-
-/// <summary>
-/// Base class for direct number values (not yet used, maybe superfluous).
-/// </summary>
-public abstract class PdfNumber : PdfItem
+namespace BreakDown.ManagedPdf.Core.Pdf
 {
-    // No code in base class.
+    /// <summary>
+    /// Base class for direct number values (not yet used, maybe superfluous).
+    /// </summary>
+    public abstract class PdfNumber : PdfItem
+    {
+        // No code in base class.
+    }
 }

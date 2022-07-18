@@ -33,110 +33,111 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using BreakDown.ManagedPdf.Core.Drawing;
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Advanced;
-
-/// <summary>
-/// Contains all used fonts of a document.
-/// </summary>
-internal sealed class PdfFontTable : PdfResourceTable
+namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
 {
     /// <summary>
-    /// Initializes a new instance of this class, which is a singleton for each document.
+    /// Contains all used fonts of a document.
     /// </summary>
-    public PdfFontTable(PdfDocument document)
-        : base(document)
+    internal sealed class PdfFontTable : PdfResourceTable
     {
-    }
-
-    /// <summary>
-    /// Gets a PdfFont from an XFont. If no PdfFont already exists, a new one is created.
-    /// </summary>
-    public PdfFont GetFont(XFont font)
-    {
-        var selector = font.Selector;
-        if (selector == null)
+        /// <summary>
+        /// Initializes a new instance of this class, which is a singleton for each document.
+        /// </summary>
+        public PdfFontTable(PdfDocument document)
+            : base(document)
         {
-            selector = ComputeKey(font); //new FontSelector(font);
-            font.Selector = selector;
         }
 
-        if (!_fonts.TryGetValue(selector, out var pdfFont))
+        /// <summary>
+        /// Gets a PdfFont from an XFont. If no PdfFont already exists, a new one is created.
+        /// </summary>
+        public PdfFont GetFont(XFont font)
         {
-            if (font.Unicode)
+            var selector = font.Selector;
+            if (selector == null)
             {
-                pdfFont = new PdfType0Font(Owner, font, font.IsVertical);
-            }
-            else
-            {
-                pdfFont = new PdfTrueTypeFont(Owner, font);
+                selector = ComputeKey(font); //new FontSelector(font);
+                font.Selector = selector;
             }
 
-            //pdfFont.Document = _document;
-            Debug.Assert(pdfFont.Owner == Owner);
-            _fonts[selector] = pdfFont;
+            if (!_fonts.TryGetValue(selector, out var pdfFont))
+            {
+                if (font.Unicode)
+                {
+                    pdfFont = new PdfType0Font(Owner, font, font.IsVertical);
+                }
+                else
+                {
+                    pdfFont = new PdfTrueTypeFont(Owner, font);
+                }
+
+                //pdfFont.Document = _document;
+                Debug.Assert(pdfFont.Owner == Owner);
+                _fonts[selector] = pdfFont;
+            }
+
+            return pdfFont;
         }
-
-        return pdfFont;
-    }
 
 #if true
-    /// <summary>
-    /// Gets a PdfFont from a font program. If no PdfFont already exists, a new one is created.
-    /// </summary>
-    public PdfFont GetFont(string idName, byte[] fontData)
-    {
-        Debug.Assert(false);
-
-        //FontSelector selector = new FontSelector(idName);
-        string selector = null; // ComputeKey(font); //new FontSelector(font);
-        if (!_fonts.TryGetValue(selector, out var pdfFont))
+        /// <summary>
+        /// Gets a PdfFont from a font program. If no PdfFont already exists, a new one is created.
+        /// </summary>
+        public PdfFont GetFont(string idName, byte[] fontData)
         {
-            //if (font.Unicode)
-            pdfFont = new PdfType0Font(Owner, idName, fontData, false);
+            Debug.Assert(false);
 
-            //else
-            //  pdfFont = new PdfTrueTypeFont(_owner, font);
-            //pdfFont.Document = _document;
-            Debug.Assert(pdfFont.Owner == Owner);
-            _fonts[selector] = pdfFont;
+            //FontSelector selector = new FontSelector(idName);
+            string selector = null; // ComputeKey(font); //new FontSelector(font);
+            if (!_fonts.TryGetValue(selector, out var pdfFont))
+            {
+                //if (font.Unicode)
+                pdfFont = new PdfType0Font(Owner, idName, fontData, false);
+
+                //else
+                //  pdfFont = new PdfTrueTypeFont(_owner, font);
+                //pdfFont.Document = _document;
+                Debug.Assert(pdfFont.Owner == Owner);
+                _fonts[selector] = pdfFont;
+            }
+
+            return pdfFont;
         }
-
-        return pdfFont;
-    }
 #endif
 
-    /// <summary>
-    /// Tries to gets a PdfFont from the font dictionary.
-    /// Returns null if no such PdfFont exists.
-    /// </summary>
-    public PdfFont TryGetFont(string idName)
-    {
-        Debug.Assert(false);
-
-        //FontSelector selector = new FontSelector(idName);
-        string selector = null;
-        _fonts.TryGetValue(selector, out var pdfFont);
-        return pdfFont;
-    }
-
-    internal static string ComputeKey(XFont font)
-    {
-        var glyphTypeface = font.GlyphTypeface;
-        var key = glyphTypeface.Fontface.FullFaceName.ToLowerInvariant() +
-                  (glyphTypeface.IsBold ? "/b" : "") + (glyphTypeface.IsItalic ? "/i" : "") + font.Unicode;
-        return key;
-    }
-
-    /// <summary>
-    /// Map from PdfFontSelector to PdfFont.
-    /// </summary>
-    readonly Dictionary<string, PdfFont> _fonts = new Dictionary<string, PdfFont>();
-
-    public void PrepareForSave()
-    {
-        foreach (var font in _fonts.Values)
+        /// <summary>
+        /// Tries to gets a PdfFont from the font dictionary.
+        /// Returns null if no such PdfFont exists.
+        /// </summary>
+        public PdfFont TryGetFont(string idName)
         {
-            font.PrepareForSave();
+            Debug.Assert(false);
+
+            //FontSelector selector = new FontSelector(idName);
+            string selector = null;
+            _fonts.TryGetValue(selector, out var pdfFont);
+            return pdfFont;
+        }
+
+        internal static string ComputeKey(XFont font)
+        {
+            var glyphTypeface = font.GlyphTypeface;
+            var key = glyphTypeface.Fontface.FullFaceName.ToLowerInvariant() +
+                      (glyphTypeface.IsBold ? "/b" : "") + (glyphTypeface.IsItalic ? "/i" : "") + font.Unicode;
+            return key;
+        }
+
+        /// <summary>
+        /// Map from PdfFontSelector to PdfFont.
+        /// </summary>
+        readonly Dictionary<string, PdfFont> _fonts = new Dictionary<string, PdfFont>();
+
+        public void PrepareForSave()
+        {
+            foreach (var font in _fonts.Values)
+            {
+                font.PrepareForSave();
+            }
         }
     }
 }

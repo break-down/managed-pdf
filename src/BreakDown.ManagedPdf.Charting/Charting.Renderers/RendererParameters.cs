@@ -31,81 +31,82 @@
 
 using BreakDown.ManagedPdf.Core.Drawing;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents the necessary data for chart rendering.
-/// </summary>
-internal class RendererParameters
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the RendererParameters class.
+    /// Represents the necessary data for chart rendering.
     /// </summary>
-    public RendererParameters()
+    internal class RendererParameters
     {
+        /// <summary>
+        /// Initializes a new instance of the RendererParameters class.
+        /// </summary>
+        public RendererParameters()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the RendererParameters class with the specified graphics and
+        /// coordinates.
+        /// </summary>
+        public RendererParameters(XGraphics gfx, double x, double y, double width, double height)
+        {
+            _gfx = gfx;
+            _box = new XRect(x, y, width, height);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the RendererParameters class with the specified graphics and
+        /// rectangle.
+        /// </summary>
+        public RendererParameters(XGraphics gfx, XRect boundingBox)
+        {
+            _gfx = gfx;
+            _box = boundingBox;
+        }
+
+        /// <summary>
+        /// Gets or sets the graphics object.
+        /// </summary>
+        public XGraphics Graphics
+        {
+            get { return _gfx; }
+            set { _gfx = value; }
+        }
+
+        XGraphics _gfx;
+
+        /// <summary>
+        /// Gets or sets the item to draw.
+        /// </summary>
+        public object DrawingItem
+        {
+            get { return _item; }
+            set { _item = value; }
+        }
+
+        object _item;
+
+        /// <summary>
+        /// Gets or sets the rectangle for the drawing item.
+        /// </summary>
+        public XRect Box
+        {
+            get { return _box; }
+            set { _box = value; }
+        }
+
+        XRect _box;
+
+        /// <summary>
+        /// Gets or sets the RendererInfo.
+        /// </summary>
+        public RendererInfo RendererInfo
+        {
+            get { return _rendererInfo; }
+            set { _rendererInfo = value; }
+        }
+
+        RendererInfo _rendererInfo;
     }
-
-    /// <summary>
-    /// Initializes a new instance of the RendererParameters class with the specified graphics and
-    /// coordinates.
-    /// </summary>
-    public RendererParameters(XGraphics gfx, double x, double y, double width, double height)
-    {
-        _gfx = gfx;
-        _box = new XRect(x, y, width, height);
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the RendererParameters class with the specified graphics and
-    /// rectangle.
-    /// </summary>
-    public RendererParameters(XGraphics gfx, XRect boundingBox)
-    {
-        _gfx = gfx;
-        _box = boundingBox;
-    }
-
-    /// <summary>
-    /// Gets or sets the graphics object.
-    /// </summary>
-    public XGraphics Graphics
-    {
-        get { return _gfx; }
-        set { _gfx = value; }
-    }
-
-    XGraphics _gfx;
-
-    /// <summary>
-    /// Gets or sets the item to draw.
-    /// </summary>
-    public object DrawingItem
-    {
-        get { return _item; }
-        set { _item = value; }
-    }
-
-    object _item;
-
-    /// <summary>
-    /// Gets or sets the rectangle for the drawing item.
-    /// </summary>
-    public XRect Box
-    {
-        get { return _box; }
-        set { _box = value; }
-    }
-
-    XRect _box;
-
-    /// <summary>
-    /// Gets or sets the RendererInfo.
-    /// </summary>
-    public RendererInfo RendererInfo
-    {
-        get { return _rendererInfo; }
-        set { _rendererInfo = value; }
-    }
-
-    RendererInfo _rendererInfo;
 }

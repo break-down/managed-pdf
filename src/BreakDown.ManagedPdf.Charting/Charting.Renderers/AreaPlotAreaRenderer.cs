@@ -32,64 +32,65 @@
 using BreakDown.ManagedPdf.Core.Drawing;
 using BreakDown.ManagedPdf.Core.Drawing.enums;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a plot area renderer of areas.
-/// </summary>
-internal class AreaPlotAreaRenderer : ColumnLikePlotAreaRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the AreaPlotAreaRenderer class
-    /// with the specified renderer parameters.
+    /// Represents a plot area renderer of areas.
     /// </summary>
-    internal AreaPlotAreaRenderer(RendererParameters parms)
-        : base(parms)
+    internal class AreaPlotAreaRenderer : ColumnLikePlotAreaRenderer
     {
-    }
-
-    /// <summary>
-    /// Draws the content of the area plot area.
-    /// </summary>
-    internal override void Draw()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        var plotAreaRect = cri.plotAreaRendererInfo.Rect;
-        if (plotAreaRect.IsEmpty)
+        /// <summary>
+        /// Initializes a new instance of the AreaPlotAreaRenderer class
+        /// with the specified renderer parameters.
+        /// </summary>
+        internal AreaPlotAreaRenderer(RendererParameters parms)
+            : base(parms)
         {
-            return;
         }
 
-        var gfx = _rendererParms.Graphics;
-        var state = gfx.Save();
-
-        //gfx.SetClip(plotAreaRect, XCombineMode.Intersect);
-        gfx.IntersectClip(plotAreaRect);
-
-        var matrix = cri.plotAreaRendererInfo._matrix;
-        var xMajorTick = cri.xAxisRendererInfo.MajorTick;
-        foreach (var sri in cri.seriesRendererInfos)
+        /// <summary>
+        /// Draws the content of the area plot area.
+        /// </summary>
+        internal override void Draw()
         {
-            var count = sri._series.Elements.Count;
-            var points = new XPoint[count + 2];
-            points[0] = new XPoint(xMajorTick / 2, 0);
-            for (var idx = 0; idx < count; idx++)
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            var plotAreaRect = cri.plotAreaRendererInfo.Rect;
+            if (plotAreaRect.IsEmpty)
             {
-                var pointValue = sri._series.Elements[idx].Value;
-                if (double.IsNaN(pointValue))
-                {
-                    pointValue = 0;
-                }
-
-                points[idx + 1] = new XPoint(idx + xMajorTick / 2, pointValue);
+                return;
             }
 
-            points[count + 1] = new XPoint(count - 1 + xMajorTick / 2, 0);
-            matrix.TransformPoints(points);
-            gfx.DrawPolygon(sri.LineFormat, sri.FillFormat, points, XFillMode.Winding);
-        }
+            var gfx = _rendererParms.Graphics;
+            var state = gfx.Save();
 
-        //gfx.ResetClip();
-        gfx.Restore(state);
+            //gfx.SetClip(plotAreaRect, XCombineMode.Intersect);
+            gfx.IntersectClip(plotAreaRect);
+
+            var matrix = cri.plotAreaRendererInfo._matrix;
+            var xMajorTick = cri.xAxisRendererInfo.MajorTick;
+            foreach (var sri in cri.seriesRendererInfos)
+            {
+                var count = sri._series.Elements.Count;
+                var points = new XPoint[count + 2];
+                points[0] = new XPoint(xMajorTick / 2, 0);
+                for (var idx = 0; idx < count; idx++)
+                {
+                    var pointValue = sri._series.Elements[idx].Value;
+                    if (double.IsNaN(pointValue))
+                    {
+                        pointValue = 0;
+                    }
+
+                    points[idx + 1] = new XPoint(idx + xMajorTick / 2, pointValue);
+                }
+
+                points[count + 1] = new XPoint(count - 1 + xMajorTick / 2, 0);
+                matrix.TransformPoints(points);
+                gfx.DrawPolygon(sri.LineFormat, sri.FillFormat, points, XFillMode.Winding);
+            }
+
+            //gfx.ResetClip();
+            gfx.Restore(state);
+        }
     }
 }

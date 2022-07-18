@@ -29,20 +29,21 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Drawing.enums;
-
-/// <summary>
-/// Defines the direction an elliptical arc is drawn.
-/// </summary>
-public enum XSweepDirection // Same values as System.Windows.Media.SweepDirection.
+namespace BreakDown.ManagedPdf.Core.Drawing.enums
 {
     /// <summary>
-    /// Specifies that arcs are drawn in a counter clockwise (negative-angle) direction.
+    /// Defines the direction an elliptical arc is drawn.
     /// </summary>
-    Counterclockwise = 0,
+    public enum XSweepDirection // Same values as System.Windows.Media.SweepDirection.
+    {
+        /// <summary>
+        /// Specifies that arcs are drawn in a counter clockwise (negative-angle) direction.
+        /// </summary>
+        Counterclockwise = 0,
 
-    /// <summary>
-    /// Specifies that arcs are drawn in a clockwise (positive-angle) direction.
-    /// </summary>
-    Clockwise = 1,
+        /// <summary>
+        /// Specifies that arcs are drawn in a clockwise (positive-angle) direction.
+        /// </summary>
+        Clockwise = 1,
+    }
 }

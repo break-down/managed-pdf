@@ -29,25 +29,26 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Pdf.IO.enums;
-
-/// <summary>
-/// Determines the type of the password.
-/// </summary>
-public enum PasswordValidity
+namespace BreakDown.ManagedPdf.Core.Pdf.IO.enums
 {
     /// <summary>
-    /// Password is neither user nor owner password.
+    /// Determines the type of the password.
     /// </summary>
-    Invalid,
+    public enum PasswordValidity
+    {
+        /// <summary>
+        /// Password is neither user nor owner password.
+        /// </summary>
+        Invalid,
 
-    /// <summary>
-    /// Password is user password.
-    /// </summary>
-    UserPassword,
+        /// <summary>
+        /// Password is user password.
+        /// </summary>
+        UserPassword,
 
-    /// <summary>
-    /// Password is owner password.
-    /// </summary>
-    OwnerPassword,
+        /// <summary>
+        /// Password is owner password.
+        /// </summary>
+        OwnerPassword,
+    }
 }

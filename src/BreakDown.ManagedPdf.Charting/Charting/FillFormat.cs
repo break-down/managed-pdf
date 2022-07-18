@@ -31,62 +31,63 @@
 
 using BreakDown.ManagedPdf.Core.Drawing;
 
-namespace BreakDown.ManagedPdf.Charting.Charting;
-
-/// <summary>
-/// Defines the background filling of the shape.
-/// </summary>
-public class FillFormat : DocumentObject
+namespace BreakDown.ManagedPdf.Charting.Charting
 {
     /// <summary>
-    /// Initializes a new instance of the FillFormat class.
+    /// Defines the background filling of the shape.
     /// </summary>
-    public FillFormat()
+    public class FillFormat : DocumentObject
     {
+        /// <summary>
+        /// Initializes a new instance of the FillFormat class.
+        /// </summary>
+        public FillFormat()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the FillFormat class with the specified parent.
+        /// </summary>
+        internal FillFormat(DocumentObject parent) : base(parent)
+        {
+        }
+
+        #region Methods
+
+        /// <summary>
+        /// Creates a deep copy of this object.
+        /// </summary>
+        public new FillFormat Clone()
+        {
+            return (FillFormat)DeepCopy();
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the color of the filling.
+        /// </summary>
+        public XColor Color
+        {
+            get { return _color; }
+            set { _color = value; }
+        }
+
+        internal XColor _color = XColor.Empty;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the background color should be visible.
+        /// </summary>
+        public bool Visible
+        {
+            get { return _visible; }
+            set { _visible = value; }
+        }
+
+        internal bool _visible;
+
+        #endregion
     }
-
-    /// <summary>
-    /// Initializes a new instance of the FillFormat class with the specified parent.
-    /// </summary>
-    internal FillFormat(DocumentObject parent) : base(parent)
-    {
-    }
-
-    #region Methods
-
-    /// <summary>
-    /// Creates a deep copy of this object.
-    /// </summary>
-    public new FillFormat Clone()
-    {
-        return (FillFormat)DeepCopy();
-    }
-
-    #endregion
-
-    #region Properties
-
-    /// <summary>
-    /// Gets or sets the color of the filling.
-    /// </summary>
-    public XColor Color
-    {
-        get { return _color; }
-        set { _color = value; }
-    }
-
-    internal XColor _color = XColor.Empty;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the background color should be visible.
-    /// </summary>
-    public bool Visible
-    {
-        get { return _visible; }
-        set { _visible = value; }
-    }
-
-    internal bool _visible;
-
-    #endregion
 }

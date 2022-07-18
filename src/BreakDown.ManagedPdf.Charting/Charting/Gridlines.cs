@@ -29,66 +29,67 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting;
-
-/// <summary>
-/// Represents the gridlines on the axes.
-/// </summary>
-public class Gridlines : ChartObject
+namespace BreakDown.ManagedPdf.Charting.Charting
 {
     /// <summary>
-    /// Initializes a new instance of the Gridlines class.
+    /// Represents the gridlines on the axes.
     /// </summary>
-    public Gridlines()
+    public class Gridlines : ChartObject
     {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the Gridlines class with the specified parent.
-    /// </summary>
-    internal Gridlines(DocumentObject parent)
-        : base(parent)
-    {
-    }
-
-    #region Methods
-
-    /// <summary>
-    /// Creates a deep copy of this object.
-    /// </summary>
-    public new Gridlines Clone()
-    {
-        return (Gridlines)DeepCopy();
-    }
-
-    /// <summary>
-    /// Implements the deep copy of the object.
-    /// </summary>
-    protected override object DeepCopy()
-    {
-        var gridlines = (Gridlines)base.DeepCopy();
-        if (gridlines._lineFormat != null)
+        /// <summary>
+        /// Initializes a new instance of the Gridlines class.
+        /// </summary>
+        public Gridlines()
         {
-            gridlines._lineFormat = gridlines._lineFormat.Clone();
-            gridlines._lineFormat._parent = gridlines;
         }
 
-        return gridlines;
+        /// <summary>
+        /// Initializes a new instance of the Gridlines class with the specified parent.
+        /// </summary>
+        internal Gridlines(DocumentObject parent)
+            : base(parent)
+        {
+        }
+
+        #region Methods
+
+        /// <summary>
+        /// Creates a deep copy of this object.
+        /// </summary>
+        public new Gridlines Clone()
+        {
+            return (Gridlines)DeepCopy();
+        }
+
+        /// <summary>
+        /// Implements the deep copy of the object.
+        /// </summary>
+        protected override object DeepCopy()
+        {
+            var gridlines = (Gridlines)base.DeepCopy();
+            if (gridlines._lineFormat != null)
+            {
+                gridlines._lineFormat = gridlines._lineFormat.Clone();
+                gridlines._lineFormat._parent = gridlines;
+            }
+
+            return gridlines;
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the line format of the grid.
+        /// </summary>
+        public LineFormat LineFormat
+        {
+            get { return _lineFormat ?? (_lineFormat = new LineFormat(this)); }
+        }
+
+        internal LineFormat _lineFormat;
+
+        #endregion
     }
-
-    #endregion
-
-    #region Properties
-
-    /// <summary>
-    /// Gets the line format of the grid.
-    /// </summary>
-    public LineFormat LineFormat
-    {
-        get { return _lineFormat ?? (_lineFormat = new LineFormat(this)); }
-    }
-
-    internal LineFormat _lineFormat;
-
-    #endregion
 }

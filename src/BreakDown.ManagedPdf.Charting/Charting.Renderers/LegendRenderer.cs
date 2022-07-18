@@ -33,170 +33,171 @@ using System;
 using BreakDown.ManagedPdf.Charting.Charting.enums;
 using BreakDown.ManagedPdf.Core.Drawing;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents the legend renderer for all chart types.
-/// </summary>
-internal abstract class LegendRenderer : Renderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the LegendRenderer class with the specified renderer parameters.
+    /// Represents the legend renderer for all chart types.
     /// </summary>
-    internal LegendRenderer(RendererParameters parms)
-        : base(parms)
+    internal abstract class LegendRenderer : Renderer
     {
-    }
-
-    /// <summary>
-    /// Layouts and calculates the space used by the legend.
-    /// </summary>
-    internal override void Format()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        var lri = cri.legendRendererInfo;
-        if (lri == null)
+        /// <summary>
+        /// Initializes a new instance of the LegendRenderer class with the specified renderer parameters.
+        /// </summary>
+        internal LegendRenderer(RendererParameters parms)
+            : base(parms)
         {
-            return;
         }
 
-        var parms = new RendererParameters();
-        parms.Graphics = _rendererParms.Graphics;
-
-        var verticalLegend = (lri._legend._docking == DockingType.Left || lri._legend._docking == DockingType.Right);
-        var maxMarkerArea = new XSize();
-        var ler = new LegendEntryRenderer(parms);
-        foreach (var leri in lri.Entries)
+        /// <summary>
+        /// Layouts and calculates the space used by the legend.
+        /// </summary>
+        internal override void Format()
         {
-            parms.RendererInfo = leri;
-            ler.Format();
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            var lri = cri.legendRendererInfo;
+            if (lri == null)
+            {
+                return;
+            }
 
-            maxMarkerArea.Width = Math.Max(leri.MarkerArea.Width, maxMarkerArea.Width);
-            maxMarkerArea.Height = Math.Max(leri.MarkerArea.Height, maxMarkerArea.Height);
+            var parms = new RendererParameters();
+            parms.Graphics = _rendererParms.Graphics;
 
+            var verticalLegend = (lri._legend._docking == DockingType.Left || lri._legend._docking == DockingType.Right);
+            var maxMarkerArea = new XSize();
+            var ler = new LegendEntryRenderer(parms);
+            foreach (var leri in lri.Entries)
+            {
+                parms.RendererInfo = leri;
+                ler.Format();
+
+                maxMarkerArea.Width = Math.Max(leri.MarkerArea.Width, maxMarkerArea.Width);
+                maxMarkerArea.Height = Math.Max(leri.MarkerArea.Height, maxMarkerArea.Height);
+
+                if (verticalLegend)
+                {
+                    lri.Width = Math.Max(lri.Width, leri.Width);
+                    lri.Height += leri.Height;
+                }
+                else
+                {
+                    lri.Width += leri.Width;
+                    lri.Height = Math.Max(lri.Height, leri.Height);
+                }
+            }
+
+            // Add padding to left, right, top and bottom
+            var paddingFactor = 1;
+            if (lri.BorderPen != null)
+            {
+                paddingFactor = 2;
+            }
+
+            lri.Width += (LegendRenderer.LeftPadding + LegendRenderer.RightPadding) * paddingFactor;
+            lri.Height += (LegendRenderer.TopPadding + LegendRenderer.BottomPadding) * paddingFactor;
             if (verticalLegend)
             {
-                lri.Width = Math.Max(lri.Width, leri.Width);
-                lri.Height += leri.Height;
+                lri.Height += LegendRenderer.EntrySpacing * (lri.Entries.Length - 1);
             }
             else
             {
-                lri.Width += leri.Width;
-                lri.Height = Math.Max(lri.Height, leri.Height);
+                lri.Width += LegendRenderer.EntrySpacing * (lri.Entries.Length - 1);
             }
-        }
 
-        // Add padding to left, right, top and bottom
-        var paddingFactor = 1;
-        if (lri.BorderPen != null)
-        {
-            paddingFactor = 2;
-        }
-
-        lri.Width += (LegendRenderer.LeftPadding + LegendRenderer.RightPadding) * paddingFactor;
-        lri.Height += (LegendRenderer.TopPadding + LegendRenderer.BottomPadding) * paddingFactor;
-        if (verticalLegend)
-        {
-            lri.Height += LegendRenderer.EntrySpacing * (lri.Entries.Length - 1);
-        }
-        else
-        {
-            lri.Width += LegendRenderer.EntrySpacing * (lri.Entries.Length - 1);
-        }
-
-        foreach (var leri in lri.Entries)
-        {
-            leri.MarkerArea = maxMarkerArea;
-        }
-    }
-
-    /// <summary>
-    /// Draws the legend.
-    /// </summary>
-    internal override void Draw()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        var lri = cri.legendRendererInfo;
-        if (lri == null)
-        {
-            return;
-        }
-
-        var gfx = _rendererParms.Graphics;
-        var parms = new RendererParameters();
-        parms.Graphics = gfx;
-
-        var ler = new LegendEntryRenderer(parms);
-
-        var verticalLegend = (lri._legend._docking == DockingType.Left || lri._legend._docking == DockingType.Right);
-        var paddingFactor = 1;
-        if (lri.BorderPen != null)
-        {
-            paddingFactor = 2;
-        }
-
-        var legendRect = lri.Rect;
-        legendRect.X += LegendRenderer.LeftPadding * paddingFactor;
-        legendRect.Y += LegendRenderer.TopPadding * paddingFactor;
-        foreach (var leri in cri.legendRendererInfo.Entries)
-        {
-            var entryRect = legendRect;
-            entryRect.Width = leri.Width;
-            entryRect.Height = leri.Height;
-
-            leri.Rect = entryRect;
-            parms.RendererInfo = leri;
-            ler.Draw();
-
-            if (verticalLegend)
+            foreach (var leri in lri.Entries)
             {
-                legendRect.Y += entryRect.Height + LegendRenderer.EntrySpacing;
-            }
-            else
-            {
-                legendRect.X += entryRect.Width + LegendRenderer.EntrySpacing;
+                leri.MarkerArea = maxMarkerArea;
             }
         }
 
-        // Draw border around legend
-        if (lri.BorderPen != null)
+        /// <summary>
+        /// Draws the legend.
+        /// </summary>
+        internal override void Draw()
         {
-            var borderRect = lri.Rect;
-            borderRect.X += LegendRenderer.LeftPadding;
-            borderRect.Y += LegendRenderer.TopPadding;
-            borderRect.Width -= LegendRenderer.LeftPadding + LegendRenderer.RightPadding;
-            borderRect.Height -= LegendRenderer.TopPadding + LegendRenderer.BottomPadding;
-            gfx.DrawRectangle(lri.BorderPen, borderRect);
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            var lri = cri.legendRendererInfo;
+            if (lri == null)
+            {
+                return;
+            }
+
+            var gfx = _rendererParms.Graphics;
+            var parms = new RendererParameters();
+            parms.Graphics = gfx;
+
+            var ler = new LegendEntryRenderer(parms);
+
+            var verticalLegend = (lri._legend._docking == DockingType.Left || lri._legend._docking == DockingType.Right);
+            var paddingFactor = 1;
+            if (lri.BorderPen != null)
+            {
+                paddingFactor = 2;
+            }
+
+            var legendRect = lri.Rect;
+            legendRect.X += LegendRenderer.LeftPadding * paddingFactor;
+            legendRect.Y += LegendRenderer.TopPadding * paddingFactor;
+            foreach (var leri in cri.legendRendererInfo.Entries)
+            {
+                var entryRect = legendRect;
+                entryRect.Width = leri.Width;
+                entryRect.Height = leri.Height;
+
+                leri.Rect = entryRect;
+                parms.RendererInfo = leri;
+                ler.Draw();
+
+                if (verticalLegend)
+                {
+                    legendRect.Y += entryRect.Height + LegendRenderer.EntrySpacing;
+                }
+                else
+                {
+                    legendRect.X += entryRect.Width + LegendRenderer.EntrySpacing;
+                }
+            }
+
+            // Draw border around legend
+            if (lri.BorderPen != null)
+            {
+                var borderRect = lri.Rect;
+                borderRect.X += LegendRenderer.LeftPadding;
+                borderRect.Y += LegendRenderer.TopPadding;
+                borderRect.Width -= LegendRenderer.LeftPadding + LegendRenderer.RightPadding;
+                borderRect.Height -= LegendRenderer.TopPadding + LegendRenderer.BottomPadding;
+                gfx.DrawRectangle(lri.BorderPen, borderRect);
+            }
         }
+
+        /// <summary>
+        /// Used to insert a padding on the left.
+        /// </summary>
+        protected const double LeftPadding = 6;
+
+        /// <summary>
+        /// Used to insert a padding on the right.
+        /// </summary>
+        protected const double RightPadding = 6;
+
+        /// <summary>
+        /// Used to insert a padding at the top.
+        /// </summary>
+        protected const double TopPadding = 6;
+
+        /// <summary>
+        /// Used to insert a padding at the bottom.
+        /// </summary>
+        protected const double BottomPadding = 6;
+
+        /// <summary>
+        /// Used to insert a padding between entries.
+        /// </summary>
+        protected const double EntrySpacing = 5;
+
+        /// <summary>
+        /// Default line width used for the legend's border.
+        /// </summary>
+        protected const double DefaultLineWidth = 0.14; // 0.05 mm
     }
-
-    /// <summary>
-    /// Used to insert a padding on the left.
-    /// </summary>
-    protected const double LeftPadding = 6;
-
-    /// <summary>
-    /// Used to insert a padding on the right.
-    /// </summary>
-    protected const double RightPadding = 6;
-
-    /// <summary>
-    /// Used to insert a padding at the top.
-    /// </summary>
-    protected const double TopPadding = 6;
-
-    /// <summary>
-    /// Used to insert a padding at the bottom.
-    /// </summary>
-    protected const double BottomPadding = 6;
-
-    /// <summary>
-    /// Used to insert a padding between entries.
-    /// </summary>
-    protected const double EntrySpacing = 5;
-
-    /// <summary>
-    /// Default line width used for the legend's border.
-    /// </summary>
-    protected const double DefaultLineWidth = 0.14; // 0.05 mm
 }

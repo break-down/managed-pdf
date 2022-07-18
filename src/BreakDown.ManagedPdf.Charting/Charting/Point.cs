@@ -29,104 +29,105 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting;
-
-/// <summary>
-/// Represents a formatted value on the data series.
-/// </summary>
-public class Point : ChartObject
+namespace BreakDown.ManagedPdf.Charting.Charting
 {
     /// <summary>
-    /// Initializes a new instance of the Point class.
+    /// Represents a formatted value on the data series.
     /// </summary>
-    internal Point()
+    public class Point : ChartObject
     {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the Point class with a real value.
-    /// </summary>
-    public Point(double value)
-        : this()
-    {
-        Value = value;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the Point class with a real value.
-    /// </summary>
-    public Point(string value)
-        : this()
-    {
-        // = "34.5 23.9"
-        Value = 0;
-    }
-
-    #region Methods
-
-    /// <summary>
-    /// Creates a deep copy of this object.
-    /// </summary>
-    public new Point Clone()
-    {
-        return (Point)DeepCopy();
-    }
-
-    /// <summary>
-    /// Implements the deep copy of the object.
-    /// </summary>
-    protected override object DeepCopy()
-    {
-        var point = (Point)base.DeepCopy();
-        if (point._lineFormat != null)
+        /// <summary>
+        /// Initializes a new instance of the Point class.
+        /// </summary>
+        internal Point()
         {
-            point._lineFormat = point._lineFormat.Clone();
-            point._lineFormat._parent = point;
         }
 
-        if (point._fillFormat != null)
+        /// <summary>
+        /// Initializes a new instance of the Point class with a real value.
+        /// </summary>
+        public Point(double value)
+            : this()
         {
-            point._fillFormat = point._fillFormat.Clone();
-            point._fillFormat._parent = point;
+            Value = value;
         }
 
-        return point;
+        /// <summary>
+        /// Initializes a new instance of the Point class with a real value.
+        /// </summary>
+        public Point(string value)
+            : this()
+        {
+            // = "34.5 23.9"
+            Value = 0;
+        }
+
+        #region Methods
+
+        /// <summary>
+        /// Creates a deep copy of this object.
+        /// </summary>
+        public new Point Clone()
+        {
+            return (Point)DeepCopy();
+        }
+
+        /// <summary>
+        /// Implements the deep copy of the object.
+        /// </summary>
+        protected override object DeepCopy()
+        {
+            var point = (Point)base.DeepCopy();
+            if (point._lineFormat != null)
+            {
+                point._lineFormat = point._lineFormat.Clone();
+                point._lineFormat._parent = point;
+            }
+
+            if (point._fillFormat != null)
+            {
+                point._fillFormat = point._fillFormat.Clone();
+                point._fillFormat._parent = point;
+            }
+
+            return point;
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the line format of the data point's border.
+        /// </summary>
+        public LineFormat LineFormat
+        {
+            get { return _lineFormat ?? (_lineFormat = new LineFormat(this)); }
+        }
+
+        internal LineFormat _lineFormat;
+
+        /// <summary>
+        /// Gets the filling format of the data point.
+        /// </summary>
+        public FillFormat FillFormat
+        {
+            get { return _fillFormat ?? (_fillFormat = new FillFormat(this)); }
+        }
+
+        internal FillFormat _fillFormat;
+
+        /// <summary>
+        /// The actual value of the data point.
+        /// </summary>
+        public double Value
+        {
+            get { return _value; }
+            set { _value = value; }
+        }
+
+        internal double _value;
+
+        #endregion
     }
-
-    #endregion
-
-    #region Properties
-
-    /// <summary>
-    /// Gets the line format of the data point's border.
-    /// </summary>
-    public LineFormat LineFormat
-    {
-        get { return _lineFormat ?? (_lineFormat = new LineFormat(this)); }
-    }
-
-    internal LineFormat _lineFormat;
-
-    /// <summary>
-    /// Gets the filling format of the data point.
-    /// </summary>
-    public FillFormat FillFormat
-    {
-        get { return _fillFormat ?? (_fillFormat = new FillFormat(this)); }
-    }
-
-    internal FillFormat _fillFormat;
-
-    /// <summary>
-    /// The actual value of the data point.
-    /// </summary>
-    public double Value
-    {
-        get { return _value; }
-        set { _value = value; }
-    }
-
-    internal double _value;
-
-    #endregion
 }

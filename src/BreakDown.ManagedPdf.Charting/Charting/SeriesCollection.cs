@@ -29,57 +29,58 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting;
-
-/// <summary>
-/// The collection of data series.
-/// </summary>
-public class SeriesCollection : DocumentObjectCollection
+namespace BreakDown.ManagedPdf.Charting.Charting
 {
     /// <summary>
-    /// Initializes a new instance of the SeriesCollection class.
+    /// The collection of data series.
     /// </summary>
-    internal SeriesCollection()
+    public class SeriesCollection : DocumentObjectCollection
     {
+        /// <summary>
+        /// Initializes a new instance of the SeriesCollection class.
+        /// </summary>
+        internal SeriesCollection()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SeriesCollection class with the specified parent.
+        /// </summary>
+        internal SeriesCollection(DocumentObject parent) : base(parent)
+        {
+        }
+
+        /// <summary>
+        /// Gets a series by its index.
+        /// </summary>
+        public new Series this[int index]
+        {
+            get { return base[index] as Series; }
+        }
+
+        #region Methods
+
+        /// <summary>
+        /// Creates a deep copy of this object.
+        /// </summary>
+        public new SeriesCollection Clone()
+        {
+            return (SeriesCollection)DeepCopy();
+        }
+
+        /// <summary>
+        /// Adds a new series to the collection.
+        /// </summary>
+        public Series AddSeries()
+        {
+            var series = new Series();
+
+            // Initialize chart type for each new series.
+            series._chartType = ((Chart)_parent)._type;
+            Add(series);
+            return series;
+        }
+
+        #endregion
     }
-
-    /// <summary>
-    /// Initializes a new instance of the SeriesCollection class with the specified parent.
-    /// </summary>
-    internal SeriesCollection(DocumentObject parent) : base(parent)
-    {
-    }
-
-    /// <summary>
-    /// Gets a series by its index.
-    /// </summary>
-    public new Series this[int index]
-    {
-        get { return base[index] as Series; }
-    }
-
-    #region Methods
-
-    /// <summary>
-    /// Creates a deep copy of this object.
-    /// </summary>
-    public new SeriesCollection Clone()
-    {
-        return (SeriesCollection)DeepCopy();
-    }
-
-    /// <summary>
-    /// Adds a new series to the collection.
-    /// </summary>
-    public Series AddSeries()
-    {
-        var series = new Series();
-
-        // Initialize chart type for each new series.
-        series._chartType = ((Chart)_parent)._type;
-        Add(series);
-        return series;
-    }
-
-    #endregion
 }

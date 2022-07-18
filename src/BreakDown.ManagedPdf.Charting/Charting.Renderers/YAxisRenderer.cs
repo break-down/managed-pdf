@@ -31,128 +31,129 @@
 
 using System;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents the base class for all Y axis renderer.
-/// </summary>
-internal abstract class YAxisRenderer : AxisRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the YAxisRenderer class with the specified renderer parameters.
+    /// Represents the base class for all Y axis renderer.
     /// </summary>
-    internal YAxisRenderer(RendererParameters parms)
-        : base(parms)
+    internal abstract class YAxisRenderer : AxisRenderer
     {
-    }
-
-    /// <summary>
-    /// Calculates optimal minimum/maximum scale and minor/major tick based on yMin and yMax.
-    /// </summary>
-    protected void FineTuneYAxis(AxisRendererInfo rendererInfo, double yMin, double yMax)
-    {
-        if (yMin == double.MaxValue && yMax == double.MinValue)
+        /// <summary>
+        /// Initializes a new instance of the YAxisRenderer class with the specified renderer parameters.
+        /// </summary>
+        internal YAxisRenderer(RendererParameters parms)
+            : base(parms)
         {
-            // No series data given.
-            yMin = 0.0f;
-            yMax = 0.9f;
         }
 
-        if (yMin == yMax)
+        /// <summary>
+        /// Calculates optimal minimum/maximum scale and minor/major tick based on yMin and yMax.
+        /// </summary>
+        protected void FineTuneYAxis(AxisRendererInfo rendererInfo, double yMin, double yMax)
         {
-            if (yMin == 0)
+            if (yMin == double.MaxValue && yMax == double.MinValue)
             {
+                // No series data given.
+                yMin = 0.0f;
                 yMax = 0.9f;
             }
-            else if (yMin < 0)
-            {
-                yMax = 0;
-            }
-            else if (yMin > 0)
-            {
-                yMax = yMin + 1;
-            }
-        }
 
-        // If the ratio between yMax to yMin is more than 1.2, the smallest number will be set too zero.
-        // It's Excel's behavior.
-        if (yMin != 0)
-        {
-            if (yMin < 0 && yMax < 0)
+            if (yMin == yMax)
             {
-                if (yMin / yMax >= 1.2)
+                if (yMin == 0)
+                {
+                    yMax = 0.9f;
+                }
+                else if (yMin < 0)
                 {
                     yMax = 0;
                 }
+                else if (yMin > 0)
+                {
+                    yMax = yMin + 1;
+                }
             }
-            else if (yMax / yMin >= 1.2)
+
+            // If the ratio between yMax to yMin is more than 1.2, the smallest number will be set too zero.
+            // It's Excel's behavior.
+            if (yMin != 0)
             {
-                yMin = 0;
+                if (yMin < 0 && yMax < 0)
+                {
+                    if (yMin / yMax >= 1.2)
+                    {
+                        yMax = 0;
+                    }
+                }
+                else if (yMax / yMin >= 1.2)
+                {
+                    yMin = 0;
+                }
+            }
+
+            var deltaYRaw = yMax - yMin;
+
+            var digits = (int)(Math.Log(deltaYRaw, 10) + 1);
+            var normed = deltaYRaw / Math.Pow(10, digits) * 10;
+
+            double normedStepWidth = 1;
+            if (normed < 2)
+            {
+                normedStepWidth = 0.2f;
+            }
+            else if (normed < 5)
+            {
+                normedStepWidth = 0.5f;
+            }
+
+            var yari = rendererInfo;
+            var stepWidth = normedStepWidth * Math.Pow(10.0, digits - 1.0);
+            if (yari._axis == null || double.IsNaN(yari._axis._majorTick))
+            {
+                yari.MajorTick = stepWidth;
+            }
+            else
+            {
+                yari.MajorTick = yari._axis._majorTick;
+            }
+
+            var roundFactor = stepWidth * 0.5;
+            if (yari._axis == null || double.IsNaN(yari._axis.MinimumScale))
+            {
+                var signumMin = (yMin != 0) ? yMin / Math.Abs(yMin) : 0;
+                yari.MinimumScale = (int)(Math.Abs((yMin - roundFactor) / stepWidth) - (1 * signumMin)) * stepWidth * signumMin;
+            }
+            else
+            {
+                yari.MinimumScale = yari._axis.MinimumScale;
+            }
+
+            if (yari._axis == null || double.IsNaN(yari._axis.MaximumScale))
+            {
+                var signumMax = (yMax != 0) ? yMax / Math.Abs(yMax) : 0;
+                yari.MaximumScale = (int)(Math.Abs((yMax + roundFactor) / stepWidth) + (1 * signumMax)) * stepWidth * signumMax;
+            }
+            else
+            {
+                yari.MaximumScale = yari._axis.MaximumScale;
+            }
+
+            if (yari._axis == null || double.IsNaN(yari._axis._minorTick))
+            {
+                yari.MinorTick = yari.MajorTick / 5;
+            }
+            else
+            {
+                yari.MinorTick = yari._axis._minorTick;
             }
         }
 
-        var deltaYRaw = yMax - yMin;
-
-        var digits = (int)(Math.Log(deltaYRaw, 10) + 1);
-        var normed = deltaYRaw / Math.Pow(10, digits) * 10;
-
-        double normedStepWidth = 1;
-        if (normed < 2)
+        /// <summary>
+        /// Returns the default tick labels format string.
+        /// </summary>
+        protected override string GetDefaultTickLabelsFormat()
         {
-            normedStepWidth = 0.2f;
+            return "0.0";
         }
-        else if (normed < 5)
-        {
-            normedStepWidth = 0.5f;
-        }
-
-        var yari = rendererInfo;
-        var stepWidth = normedStepWidth * Math.Pow(10.0, digits - 1.0);
-        if (yari._axis == null || double.IsNaN(yari._axis._majorTick))
-        {
-            yari.MajorTick = stepWidth;
-        }
-        else
-        {
-            yari.MajorTick = yari._axis._majorTick;
-        }
-
-        var roundFactor = stepWidth * 0.5;
-        if (yari._axis == null || double.IsNaN(yari._axis.MinimumScale))
-        {
-            var signumMin = (yMin != 0) ? yMin / Math.Abs(yMin) : 0;
-            yari.MinimumScale = (int)(Math.Abs((yMin - roundFactor) / stepWidth) - (1 * signumMin)) * stepWidth * signumMin;
-        }
-        else
-        {
-            yari.MinimumScale = yari._axis.MinimumScale;
-        }
-
-        if (yari._axis == null || double.IsNaN(yari._axis.MaximumScale))
-        {
-            var signumMax = (yMax != 0) ? yMax / Math.Abs(yMax) : 0;
-            yari.MaximumScale = (int)(Math.Abs((yMax + roundFactor) / stepWidth) + (1 * signumMax)) * stepWidth * signumMax;
-        }
-        else
-        {
-            yari.MaximumScale = yari._axis.MaximumScale;
-        }
-
-        if (yari._axis == null || double.IsNaN(yari._axis._minorTick))
-        {
-            yari.MinorTick = yari.MajorTick / 5;
-        }
-        else
-        {
-            yari.MinorTick = yari._axis._minorTick;
-        }
-    }
-
-    /// <summary>
-    /// Returns the default tick labels format string.
-    /// </summary>
-    protected override string GetDefaultTickLabelsFormat()
-    {
-        return "0.0";
     }
 }

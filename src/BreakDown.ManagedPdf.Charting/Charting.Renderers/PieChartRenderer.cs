@@ -34,157 +34,158 @@ using BreakDown.ManagedPdf.Charting.Charting.enums;
 using BreakDown.ManagedPdf.Core.Drawing;
 using BreakDown.ManagedPdf.Core.Drawing.enums;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a pie chart renderer.
-/// </summary>
-internal class PieChartRenderer : ChartRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the PieChartRenderer class with the
-    /// specified renderer parameters.
+    /// Represents a pie chart renderer.
     /// </summary>
-    internal PieChartRenderer(RendererParameters parms)
-        : base(parms)
+    internal class PieChartRenderer : ChartRenderer
     {
-    }
-
-    /// <summary>
-    /// Returns an initialized and renderer specific rendererInfo.
-    /// </summary>
-    internal override RendererInfo Init()
-    {
-        var cri = new ChartRendererInfo();
-        cri._chart = (Chart)_rendererParms.DrawingItem;
-        _rendererParms.RendererInfo = cri;
-
-        InitSeries(cri);
-
-        LegendRenderer lr = new PieLegendRenderer(_rendererParms);
-        cri.legendRendererInfo = (LegendRendererInfo)lr.Init();
-
-        var plotArea = cri._chart.PlotArea;
-        var renderer = GetPlotAreaRenderer();
-        cri.plotAreaRendererInfo = (PlotAreaRendererInfo)renderer.Init();
-
-        DataLabelRenderer dlr = new PieDataLabelRenderer(_rendererParms);
-        dlr.Init();
-
-        return cri;
-    }
-
-    /// <summary>
-    /// Layouts and calculates the space used by the pie chart.
-    /// </summary>
-    internal override void Format()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-
-        LegendRenderer lr = new PieLegendRenderer(_rendererParms);
-        lr.Format();
-
-        // Calculate rects and positions.
-        var chartRect = LayoutLegend();
-        cri.plotAreaRendererInfo.Rect = chartRect;
-        var edge = Math.Min(chartRect.Width, chartRect.Height);
-        cri.plotAreaRendererInfo.X += (chartRect.Width - edge) / 2;
-        cri.plotAreaRendererInfo.Y += (chartRect.Height - edge) / 2;
-        cri.plotAreaRendererInfo.Width = edge;
-        cri.plotAreaRendererInfo.Height = edge;
-
-        DataLabelRenderer dlr = new PieDataLabelRenderer(_rendererParms);
-        dlr.Format();
-
-        // Calculated remaining plot area, now it's safe to format.
-        var renderer = GetPlotAreaRenderer();
-        renderer.Format();
-
-        dlr.CalcPositions();
-    }
-
-    /// <summary>
-    /// Draws the pie chart.
-    /// </summary>
-    internal override void Draw()
-    {
-        LegendRenderer lr = new PieLegendRenderer(_rendererParms);
-        lr.Draw();
-
-        var wr = new WallRenderer(_rendererParms);
-        wr.Draw();
-
-        var pabr = new PlotAreaBorderRenderer(_rendererParms);
-        pabr.Draw();
-
-        var renderer = GetPlotAreaRenderer();
-        renderer.Draw();
-
-        DataLabelRenderer dlr = new PieDataLabelRenderer(_rendererParms);
-        dlr.Draw();
-    }
-
-    /// <summary>
-    /// Returns the specific plot area renderer.
-    /// </summary>
-    private PlotAreaRenderer GetPlotAreaRenderer()
-    {
-        var chart = (Chart)_rendererParms.DrawingItem;
-        switch (chart._type)
+        /// <summary>
+        /// Initializes a new instance of the PieChartRenderer class with the
+        /// specified renderer parameters.
+        /// </summary>
+        internal PieChartRenderer(RendererParameters parms)
+            : base(parms)
         {
-            case ChartType.Pie2D:
-                return new PieClosedPlotAreaRenderer(_rendererParms);
-
-            case ChartType.PieExploded2D:
-                return new PieExplodedPlotAreaRenderer(_rendererParms);
         }
 
-        return null;
-    }
-
-    /// <summary>
-    /// Initializes all necessary data to draw a series for a pie chart.
-    /// </summary>
-    protected void InitSeries(ChartRendererInfo rendererInfo)
-    {
-        var seriesColl = rendererInfo._chart.SeriesCollection;
-        rendererInfo.seriesRendererInfos = new SeriesRendererInfo[seriesColl.Count];
-        for (var idx = 0; idx < seriesColl.Count; ++idx)
+        /// <summary>
+        /// Returns an initialized and renderer specific rendererInfo.
+        /// </summary>
+        internal override RendererInfo Init()
         {
-            var sri = new SeriesRendererInfo();
-            rendererInfo.seriesRendererInfos[idx] = sri;
-            sri._series = seriesColl[idx];
+            var cri = new ChartRendererInfo();
+            cri._chart = (Chart)_rendererParms.DrawingItem;
+            _rendererParms.RendererInfo = cri;
 
-            sri.LineFormat = Converter.ToXPen(sri._series._lineFormat, XColors.Black, ChartRenderer.DefaultSeriesLineWidth);
-            sri.FillFormat = Converter.ToXBrush(sri._series._fillFormat, ColumnColors.Item(idx));
+            InitSeries(cri);
 
-            sri._pointRendererInfos = new SectorRendererInfo[sri._series._seriesElements.Count];
-            for (var pointIdx = 0; pointIdx < sri._pointRendererInfos.Length; ++pointIdx)
+            LegendRenderer lr = new PieLegendRenderer(_rendererParms);
+            cri.legendRendererInfo = (LegendRendererInfo)lr.Init();
+
+            var plotArea = cri._chart.PlotArea;
+            var renderer = GetPlotAreaRenderer();
+            cri.plotAreaRendererInfo = (PlotAreaRendererInfo)renderer.Init();
+
+            DataLabelRenderer dlr = new PieDataLabelRenderer(_rendererParms);
+            dlr.Init();
+
+            return cri;
+        }
+
+        /// <summary>
+        /// Layouts and calculates the space used by the pie chart.
+        /// </summary>
+        internal override void Format()
+        {
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+
+            LegendRenderer lr = new PieLegendRenderer(_rendererParms);
+            lr.Format();
+
+            // Calculate rects and positions.
+            var chartRect = LayoutLegend();
+            cri.plotAreaRendererInfo.Rect = chartRect;
+            var edge = Math.Min(chartRect.Width, chartRect.Height);
+            cri.plotAreaRendererInfo.X += (chartRect.Width - edge) / 2;
+            cri.plotAreaRendererInfo.Y += (chartRect.Height - edge) / 2;
+            cri.plotAreaRendererInfo.Width = edge;
+            cri.plotAreaRendererInfo.Height = edge;
+
+            DataLabelRenderer dlr = new PieDataLabelRenderer(_rendererParms);
+            dlr.Format();
+
+            // Calculated remaining plot area, now it's safe to format.
+            var renderer = GetPlotAreaRenderer();
+            renderer.Format();
+
+            dlr.CalcPositions();
+        }
+
+        /// <summary>
+        /// Draws the pie chart.
+        /// </summary>
+        internal override void Draw()
+        {
+            LegendRenderer lr = new PieLegendRenderer(_rendererParms);
+            lr.Draw();
+
+            var wr = new WallRenderer(_rendererParms);
+            wr.Draw();
+
+            var pabr = new PlotAreaBorderRenderer(_rendererParms);
+            pabr.Draw();
+
+            var renderer = GetPlotAreaRenderer();
+            renderer.Draw();
+
+            DataLabelRenderer dlr = new PieDataLabelRenderer(_rendererParms);
+            dlr.Draw();
+        }
+
+        /// <summary>
+        /// Returns the specific plot area renderer.
+        /// </summary>
+        private PlotAreaRenderer GetPlotAreaRenderer()
+        {
+            var chart = (Chart)_rendererParms.DrawingItem;
+            switch (chart._type)
             {
-                PointRendererInfo pri = new SectorRendererInfo();
-                var point = sri._series._seriesElements[pointIdx];
-                pri.Point = point;
-                if (point != null)
+                case ChartType.Pie2D:
+                    return new PieClosedPlotAreaRenderer(_rendererParms);
+
+                case ChartType.PieExploded2D:
+                    return new PieExplodedPlotAreaRenderer(_rendererParms);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Initializes all necessary data to draw a series for a pie chart.
+        /// </summary>
+        protected void InitSeries(ChartRendererInfo rendererInfo)
+        {
+            var seriesColl = rendererInfo._chart.SeriesCollection;
+            rendererInfo.seriesRendererInfos = new SeriesRendererInfo[seriesColl.Count];
+            for (var idx = 0; idx < seriesColl.Count; ++idx)
+            {
+                var sri = new SeriesRendererInfo();
+                rendererInfo.seriesRendererInfos[idx] = sri;
+                sri._series = seriesColl[idx];
+
+                sri.LineFormat = Converter.ToXPen(sri._series._lineFormat, XColors.Black, ChartRenderer.DefaultSeriesLineWidth);
+                sri.FillFormat = Converter.ToXBrush(sri._series._fillFormat, ColumnColors.Item(idx));
+
+                sri._pointRendererInfos = new SectorRendererInfo[sri._series._seriesElements.Count];
+                for (var pointIdx = 0; pointIdx < sri._pointRendererInfos.Length; ++pointIdx)
                 {
-                    pri.LineFormat = sri.LineFormat;
-                    if (point._lineFormat != null && !point._lineFormat._color.IsEmpty)
+                    PointRendererInfo pri = new SectorRendererInfo();
+                    var point = sri._series._seriesElements[pointIdx];
+                    pri.Point = point;
+                    if (point != null)
                     {
-                        pri.LineFormat = new XPen(point._lineFormat._color);
+                        pri.LineFormat = sri.LineFormat;
+                        if (point._lineFormat != null && !point._lineFormat._color.IsEmpty)
+                        {
+                            pri.LineFormat = new XPen(point._lineFormat._color);
+                        }
+
+                        if (point._fillFormat != null && !point._fillFormat._color.IsEmpty)
+                        {
+                            pri.FillFormat = new XSolidBrush(point._fillFormat._color);
+                        }
+                        else
+                        {
+                            pri.FillFormat = new XSolidBrush(PieColors.Item(pointIdx));
+                        }
+
+                        pri.LineFormat.LineJoin = XLineJoin.Round;
                     }
 
-                    if (point._fillFormat != null && !point._fillFormat._color.IsEmpty)
-                    {
-                        pri.FillFormat = new XSolidBrush(point._fillFormat._color);
-                    }
-                    else
-                    {
-                        pri.FillFormat = new XSolidBrush(PieColors.Item(pointIdx));
-                    }
-
-                    pri.LineFormat.LineJoin = XLineJoin.Round;
+                    sri._pointRendererInfos[pointIdx] = pri;
                 }
-
-                sri._pointRendererInfos[pointIdx] = pri;
             }
         }
     }

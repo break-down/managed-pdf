@@ -29,30 +29,31 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Drawing.BarCodes.enums;
-
-/// <summary>
-/// Specifies the drawing direction of the code.
-/// </summary>
-public enum CodeDirection
+namespace BreakDown.ManagedPdf.Core.Drawing.BarCodes.enums
 {
     /// <summary>
-    /// Does not rotate the code.
+    /// Specifies the drawing direction of the code.
     /// </summary>
-    LeftToRight,
+    public enum CodeDirection
+    {
+        /// <summary>
+        /// Does not rotate the code.
+        /// </summary>
+        LeftToRight,
 
-    /// <summary>
-    /// Rotates the code 180° at the anchor position.
-    /// </summary>
-    BottomToTop,
+        /// <summary>
+        /// Rotates the code 180° at the anchor position.
+        /// </summary>
+        BottomToTop,
 
-    /// <summary>
-    /// Rotates the code 180° at the anchor position.
-    /// </summary>
-    RightToLeft,
+        /// <summary>
+        /// Rotates the code 180° at the anchor position.
+        /// </summary>
+        RightToLeft,
 
-    /// <summary>
-    /// Rotates the code 180° at the anchor position.
-    /// </summary>
-    TopToBottom,
+        /// <summary>
+        /// Rotates the code 180° at the anchor position.
+        /// </summary>
+        TopToBottom,
+    }
 }

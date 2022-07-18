@@ -33,66 +33,67 @@ using System.Collections.Generic;
 using System.IO;
 using BreakDown.ManagedPdf.Core.Pdf;
 
-namespace BreakDown.ManagedPdf.Core.Drawing.Internal;
-
-/// <summary>
-/// The class that imports images of various formats.
-/// </summary>
-internal class ImageImporter
+namespace BreakDown.ManagedPdf.Core.Drawing.Internal
 {
-    // TODO Make a singleton!
     /// <summary>
-    /// Gets the image importer.
+    /// The class that imports images of various formats.
     /// </summary>
-    public static ImageImporter GetImageImporter()
+    internal class ImageImporter
     {
-        return new ImageImporter();
-    }
-
-    private ImageImporter()
-    {
-        _importers.Add(new ImageImporterJpeg());
-        _importers.Add(new ImageImporterBmp());
-
-        // TODO: Special importer for PDF? Or dealt with at a higher level?
-    }
-
-    /// <summary>
-    /// Imports the image.
-    /// </summary>
-    public ImportedImage ImportImage(Stream stream, PdfDocument document)
-    {
-        var helper = new StreamReaderHelper(stream);
-
-        // Try all registered importers to see if any of them can handle the image.
-        foreach (var importer in _importers)
+        // TODO Make a singleton!
+        /// <summary>
+        /// Gets the image importer.
+        /// </summary>
+        public static ImageImporter GetImageImporter()
         {
-            helper.Reset();
-            var image = importer.ImportImage(helper, document);
-            if (image != null)
-            {
-                return image;
-            }
+            return new ImageImporter();
         }
 
-        return null;
-    }
+        private ImageImporter()
+        {
+            _importers.Add(new ImageImporterJpeg());
+            _importers.Add(new ImageImporterBmp());
+
+            // TODO: Special importer for PDF? Or dealt with at a higher level?
+        }
+
+        /// <summary>
+        /// Imports the image.
+        /// </summary>
+        public ImportedImage ImportImage(Stream stream, PdfDocument document)
+        {
+            var helper = new StreamReaderHelper(stream);
+
+            // Try all registered importers to see if any of them can handle the image.
+            foreach (var importer in _importers)
+            {
+                helper.Reset();
+                var image = importer.ImportImage(helper, document);
+                if (image != null)
+                {
+                    return image;
+                }
+            }
+
+            return null;
+        }
 
 #if GDI || WPF || CORE
-    /// <summary>
-    /// Imports the image.
-    /// </summary>
-    public ImportedImage ImportImage(string filename, PdfDocument document)
-    {
-        ImportedImage ii;
-        using (Stream fs = File.OpenRead(filename))
+        /// <summary>
+        /// Imports the image.
+        /// </summary>
+        public ImportedImage ImportImage(string filename, PdfDocument document)
         {
-            ii = ImportImage(fs, document);
-        }
+            ImportedImage ii;
+            using (Stream fs = File.OpenRead(filename))
+            {
+                ii = ImportImage(fs, document);
+            }
 
-        return ii;
-    }
+            return ii;
+        }
 #endif
 
-    private readonly List<IImageImporter> _importers = new List<IImageImporter>();
+        private readonly List<IImageImporter> _importers = new List<IImageImporter>();
+    }
 }

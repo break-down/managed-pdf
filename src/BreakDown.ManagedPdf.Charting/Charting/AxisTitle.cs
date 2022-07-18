@@ -32,109 +32,110 @@
 using System;
 using BreakDown.ManagedPdf.Charting.Charting.enums;
 
-namespace BreakDown.ManagedPdf.Charting.Charting;
-
-/// <summary>
-/// Represents the title of an axis.
-/// </summary>
-public class AxisTitle : ChartObject
+namespace BreakDown.ManagedPdf.Charting.Charting
 {
     /// <summary>
-    /// Initializes a new instance of the AxisTitle class.
+    /// Represents the title of an axis.
     /// </summary>
-    public AxisTitle()
+    public class AxisTitle : ChartObject
     {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the AxisTitle class with the specified parent.
-    /// </summary>
-    internal AxisTitle(DocumentObject parent) : base(parent)
-    {
-    }
-
-    #region Methods
-
-    /// <summary>
-    /// Creates a deep copy of this object.
-    /// </summary>
-    public new AxisTitle Clone()
-    {
-        return (AxisTitle)DeepCopy();
-    }
-
-    /// <summary>
-    /// Implements the deep copy of the object.
-    /// </summary>
-    protected override object DeepCopy()
-    {
-        var axisTitle = (AxisTitle)base.DeepCopy();
-        if (axisTitle._font != null)
+        /// <summary>
+        /// Initializes a new instance of the AxisTitle class.
+        /// </summary>
+        public AxisTitle()
         {
-            axisTitle._font = axisTitle._font.Clone();
-            axisTitle._font._parent = axisTitle;
         }
 
-        return axisTitle;
+        /// <summary>
+        /// Initializes a new instance of the AxisTitle class with the specified parent.
+        /// </summary>
+        internal AxisTitle(DocumentObject parent) : base(parent)
+        {
+        }
+
+        #region Methods
+
+        /// <summary>
+        /// Creates a deep copy of this object.
+        /// </summary>
+        public new AxisTitle Clone()
+        {
+            return (AxisTitle)DeepCopy();
+        }
+
+        /// <summary>
+        /// Implements the deep copy of the object.
+        /// </summary>
+        protected override object DeepCopy()
+        {
+            var axisTitle = (AxisTitle)base.DeepCopy();
+            if (axisTitle._font != null)
+            {
+                axisTitle._font = axisTitle._font.Clone();
+                axisTitle._font._parent = axisTitle;
+            }
+
+            return axisTitle;
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the caption of the title.
+        /// </summary>
+        public string Caption
+        {
+            get { return _caption; }
+            set { _caption = value; }
+        }
+
+        internal string _caption = String.Empty;
+
+        /// <summary>
+        /// Gets the font of the title.
+        /// </summary>
+        public Font Font
+        {
+            get { return _font ?? (_font = new Font(this)); }
+        }
+
+        internal Font _font;
+
+        /// <summary>
+        /// Gets or sets the orientation of the caption.
+        /// </summary>
+        public double Orientation
+        {
+            get { return _orientation; }
+            set { _orientation = value; }
+        }
+
+        internal double _orientation;
+
+        /// <summary>
+        /// Gets or sets the horizontal alignment of the caption.
+        /// </summary>
+        public HorizontalAlignment Alignment
+        {
+            get { return _alignment; }
+            set { _alignment = value; }
+        }
+
+        internal HorizontalAlignment _alignment;
+
+        /// <summary>
+        /// Gets or sets the vertical alignment of the caption.
+        /// </summary>
+        public VerticalAlignment VerticalAlignment
+        {
+            get { return _verticalAlignment; }
+            set { _verticalAlignment = value; }
+        }
+
+        internal VerticalAlignment _verticalAlignment;
+
+        #endregion
     }
-
-    #endregion
-
-    #region Properties
-
-    /// <summary>
-    /// Gets or sets the caption of the title.
-    /// </summary>
-    public string Caption
-    {
-        get { return _caption; }
-        set { _caption = value; }
-    }
-
-    internal string _caption = String.Empty;
-
-    /// <summary>
-    /// Gets the font of the title.
-    /// </summary>
-    public Font Font
-    {
-        get { return _font ?? (_font = new Font(this)); }
-    }
-
-    internal Font _font;
-
-    /// <summary>
-    /// Gets or sets the orientation of the caption.
-    /// </summary>
-    public double Orientation
-    {
-        get { return _orientation; }
-        set { _orientation = value; }
-    }
-
-    internal double _orientation;
-
-    /// <summary>
-    /// Gets or sets the horizontal alignment of the caption.
-    /// </summary>
-    public HorizontalAlignment Alignment
-    {
-        get { return _alignment; }
-        set { _alignment = value; }
-    }
-
-    internal HorizontalAlignment _alignment;
-
-    /// <summary>
-    /// Gets or sets the vertical alignment of the caption.
-    /// </summary>
-    public VerticalAlignment VerticalAlignment
-    {
-        get { return _verticalAlignment; }
-        set { _verticalAlignment = value; }
-    }
-
-    internal VerticalAlignment _verticalAlignment;
-
-    #endregion
 }

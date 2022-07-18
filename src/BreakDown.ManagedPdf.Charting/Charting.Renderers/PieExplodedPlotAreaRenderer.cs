@@ -33,100 +33,101 @@ using System;
 using BreakDown.ManagedPdf.Charting.Charting.enums;
 using BreakDown.ManagedPdf.Core.Drawing;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a exploded pie plot area renderer.
-/// </summary>
-internal class PieExplodedPlotAreaRenderer : PiePlotAreaRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the PieExplodedPlotAreaRenderer class
-    /// with the specified renderer parameters.
+    /// Represents a exploded pie plot area renderer.
     /// </summary>
-    internal PieExplodedPlotAreaRenderer(RendererParameters parms)
-        : base(parms)
+    internal class PieExplodedPlotAreaRenderer : PiePlotAreaRenderer
     {
-    }
-
-    /// <summary>
-    /// Calculate angles for each sector.
-    /// </summary>
-    protected override void CalcSectors()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        if (cri.seriesRendererInfos.Length == 0)
+        /// <summary>
+        /// Initializes a new instance of the PieExplodedPlotAreaRenderer class
+        /// with the specified renderer parameters.
+        /// </summary>
+        internal PieExplodedPlotAreaRenderer(RendererParameters parms)
+            : base(parms)
         {
-            return;
         }
 
-        var sri = cri.seriesRendererInfos[0];
-
-        var sumValues = sri.SumOfPoints;
-        if (sumValues == 0)
+        /// <summary>
+        /// Calculate angles for each sector.
+        /// </summary>
+        protected override void CalcSectors()
         {
-            return;
-        }
-
-        double textMeasure = 0;
-        if (sri._dataLabelRendererInfo != null && sri._dataLabelRendererInfo.Position == DataLabelPosition.OutsideEnd)
-        {
-            foreach (var dleri in sri._dataLabelRendererInfo.Entries)
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            if (cri.seriesRendererInfos.Length == 0)
             {
-                textMeasure = Math.Max(textMeasure, dleri.Width);
-                textMeasure = Math.Max(textMeasure, dleri.Height);
+                return;
             }
-        }
 
-        var pieRect = cri.plotAreaRendererInfo.Rect;
-        if (textMeasure != 0)
-        {
-            pieRect.X += textMeasure;
-            pieRect.Y += textMeasure;
-            pieRect.Width -= 2 * textMeasure;
-            pieRect.Height -= 2 * textMeasure;
-        }
+            var sri = cri.seriesRendererInfos[0];
 
-        var origin = new XPoint(pieRect.X + pieRect.Width / 2, pieRect.Y + pieRect.Height / 2);
-        var innerRect = new XRect();
-        var p1 = new XPoint();
-
-        double midAngle = 0,
-               sectorStartAngle = 0,
-               sectorSweepAngle = 0,
-               deltaAngle = 2,
-               startAngle = 270,
-               sweepAngle = 0,
-               rInnerCircle = pieRect.Width / 15,
-               rOuterCircle = pieRect.Width / 2;
-
-        foreach (SectorRendererInfo sector in sri._pointRendererInfos)
-        {
-            if (!double.IsNaN(sector.Point._value) && sector.Point._value != 0)
+            var sumValues = sri.SumOfPoints;
+            if (sumValues == 0)
             {
-                sweepAngle = 360 / (sumValues / Math.Abs(sector.Point._value));
-
-                midAngle = startAngle + sweepAngle / 2;
-                sectorStartAngle = Math.Max(0, startAngle + deltaAngle);
-                sectorSweepAngle = Math.Max(sweepAngle, sweepAngle - deltaAngle);
-
-                p1.X = origin.X + rInnerCircle * Math.Cos(midAngle / 180 * Math.PI);
-                p1.Y = origin.Y + rInnerCircle * Math.Sin(midAngle / 180 * Math.PI);
-                innerRect.X = p1.X - rOuterCircle + rInnerCircle;
-                innerRect.Y = p1.Y - rOuterCircle + rInnerCircle;
-                innerRect.Width = (rOuterCircle - rInnerCircle) * 2;
-                innerRect.Height = innerRect.Width;
-
-                sector.Rect = innerRect;
-                sector.StartAngle = sectorStartAngle;
-                sector.SweepAngle = sectorSweepAngle;
-
-                startAngle += sweepAngle;
+                return;
             }
-            else
+
+            double textMeasure = 0;
+            if (sri._dataLabelRendererInfo != null && sri._dataLabelRendererInfo.Position == DataLabelPosition.OutsideEnd)
             {
-                sector.StartAngle = double.NaN;
-                sector.SweepAngle = double.NaN;
+                foreach (var dleri in sri._dataLabelRendererInfo.Entries)
+                {
+                    textMeasure = Math.Max(textMeasure, dleri.Width);
+                    textMeasure = Math.Max(textMeasure, dleri.Height);
+                }
+            }
+
+            var pieRect = cri.plotAreaRendererInfo.Rect;
+            if (textMeasure != 0)
+            {
+                pieRect.X += textMeasure;
+                pieRect.Y += textMeasure;
+                pieRect.Width -= 2 * textMeasure;
+                pieRect.Height -= 2 * textMeasure;
+            }
+
+            var origin = new XPoint(pieRect.X + pieRect.Width / 2, pieRect.Y + pieRect.Height / 2);
+            var innerRect = new XRect();
+            var p1 = new XPoint();
+
+            double midAngle = 0,
+                   sectorStartAngle = 0,
+                   sectorSweepAngle = 0,
+                   deltaAngle = 2,
+                   startAngle = 270,
+                   sweepAngle = 0,
+                   rInnerCircle = pieRect.Width / 15,
+                   rOuterCircle = pieRect.Width / 2;
+
+            foreach (SectorRendererInfo sector in sri._pointRendererInfos)
+            {
+                if (!double.IsNaN(sector.Point._value) && sector.Point._value != 0)
+                {
+                    sweepAngle = 360 / (sumValues / Math.Abs(sector.Point._value));
+
+                    midAngle = startAngle + sweepAngle / 2;
+                    sectorStartAngle = Math.Max(0, startAngle + deltaAngle);
+                    sectorSweepAngle = Math.Max(sweepAngle, sweepAngle - deltaAngle);
+
+                    p1.X = origin.X + rInnerCircle * Math.Cos(midAngle / 180 * Math.PI);
+                    p1.Y = origin.Y + rInnerCircle * Math.Sin(midAngle / 180 * Math.PI);
+                    innerRect.X = p1.X - rOuterCircle + rInnerCircle;
+                    innerRect.Y = p1.Y - rOuterCircle + rInnerCircle;
+                    innerRect.Width = (rOuterCircle - rInnerCircle) * 2;
+                    innerRect.Height = innerRect.Width;
+
+                    sector.Rect = innerRect;
+                    sector.StartAngle = sectorStartAngle;
+                    sector.SweepAngle = sectorSweepAngle;
+
+                    startAngle += sweepAngle;
+                }
+                else
+                {
+                    sector.StartAngle = double.NaN;
+                    sector.SweepAngle = double.NaN;
+                }
             }
         }
     }

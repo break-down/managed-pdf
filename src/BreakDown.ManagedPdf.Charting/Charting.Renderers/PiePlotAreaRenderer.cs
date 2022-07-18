@@ -29,74 +29,75 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents the base for all pie plot area renderer.
-/// </summary>
-internal abstract class PiePlotAreaRenderer : PlotAreaRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the PiePlotAreaRenderer class
-    /// with the specified renderer parameters.
+    /// Represents the base for all pie plot area renderer.
     /// </summary>
-    internal PiePlotAreaRenderer(RendererParameters parms)
-        : base(parms)
+    internal abstract class PiePlotAreaRenderer : PlotAreaRenderer
     {
-    }
-
-    /// <summary>
-    /// Layouts and calculates the space used by the pie plot area.
-    /// </summary>
-    internal override void Format()
-    {
-        CalcSectors();
-    }
-
-    /// <summary>
-    /// Draws the content of the pie plot area.
-    /// </summary>
-    internal override void Draw()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        var plotAreaRect = cri.plotAreaRendererInfo.Rect;
-        if (plotAreaRect.IsEmpty)
+        /// <summary>
+        /// Initializes a new instance of the PiePlotAreaRenderer class
+        /// with the specified renderer parameters.
+        /// </summary>
+        internal PiePlotAreaRenderer(RendererParameters parms)
+            : base(parms)
         {
-            return;
         }
 
-        if (cri.seriesRendererInfos.Length == 0)
+        /// <summary>
+        /// Layouts and calculates the space used by the pie plot area.
+        /// </summary>
+        internal override void Format()
         {
-            return;
+            CalcSectors();
         }
 
-        var gfx = _rendererParms.Graphics;
-        var state = gfx.Save();
-
-        // Draw sectors.
-        var sri = cri.seriesRendererInfos[0];
-        foreach (SectorRendererInfo sector in sri._pointRendererInfos)
+        /// <summary>
+        /// Draws the content of the pie plot area.
+        /// </summary>
+        internal override void Draw()
         {
-            if (!double.IsNaN(sector.StartAngle) && !double.IsNaN(sector.SweepAngle))
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            var plotAreaRect = cri.plotAreaRendererInfo.Rect;
+            if (plotAreaRect.IsEmpty)
             {
-                gfx.DrawPie(sector.FillFormat, sector.Rect, sector.StartAngle, sector.SweepAngle);
+                return;
             }
-        }
 
-        // Draw border of the sectors.
-        foreach (SectorRendererInfo sector in sri._pointRendererInfos)
-        {
-            if (!double.IsNaN(sector.StartAngle) && !double.IsNaN(sector.SweepAngle))
+            if (cri.seriesRendererInfos.Length == 0)
             {
-                gfx.DrawPie(sector.LineFormat, sector.Rect, sector.StartAngle, sector.SweepAngle);
+                return;
             }
+
+            var gfx = _rendererParms.Graphics;
+            var state = gfx.Save();
+
+            // Draw sectors.
+            var sri = cri.seriesRendererInfos[0];
+            foreach (SectorRendererInfo sector in sri._pointRendererInfos)
+            {
+                if (!double.IsNaN(sector.StartAngle) && !double.IsNaN(sector.SweepAngle))
+                {
+                    gfx.DrawPie(sector.FillFormat, sector.Rect, sector.StartAngle, sector.SweepAngle);
+                }
+            }
+
+            // Draw border of the sectors.
+            foreach (SectorRendererInfo sector in sri._pointRendererInfos)
+            {
+                if (!double.IsNaN(sector.StartAngle) && !double.IsNaN(sector.SweepAngle))
+                {
+                    gfx.DrawPie(sector.LineFormat, sector.Rect, sector.StartAngle, sector.SweepAngle);
+                }
+            }
+
+            gfx.Restore(state);
         }
 
-        gfx.Restore(state);
+        /// <summary>
+        /// Calculates the specific positions for each sector.
+        /// </summary>
+        protected abstract void CalcSectors();
     }
-
-    /// <summary>
-    /// Calculates the specific positions for each sector.
-    /// </summary>
-    protected abstract void CalcSectors();
 }

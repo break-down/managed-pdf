@@ -31,166 +31,167 @@
 
 using BreakDown.ManagedPdf.Core.Drawing;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents an area chart renderer.
-/// </summary>
-internal class AreaChartRenderer : ColumnLikeChartRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the AreaChartRenderer class with the
-    /// specified renderer parameters.
+    /// Represents an area chart renderer.
     /// </summary>
-    internal AreaChartRenderer(RendererParameters parms)
-        : base(parms)
+    internal class AreaChartRenderer : ColumnLikeChartRenderer
     {
-    }
-
-    /// <summary>
-    /// Returns an initialized and renderer specific rendererInfo.
-    /// </summary>
-    internal override RendererInfo Init()
-    {
-        var cri = new ChartRendererInfo();
-        cri._chart = (Chart)_rendererParms.DrawingItem;
-        _rendererParms.RendererInfo = cri;
-
-        InitSeriesRendererInfo();
-
-        LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
-        cri.legendRendererInfo = (LegendRendererInfo)lr.Init();
-
-        AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
-        cri.xAxisRendererInfo = (AxisRendererInfo)xar.Init();
-
-        AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
-        cri.yAxisRendererInfo = (AxisRendererInfo)yar.Init();
-
-        var plotArea = cri._chart.PlotArea;
-        PlotAreaRenderer renderer = new AreaPlotAreaRenderer(_rendererParms);
-        cri.plotAreaRendererInfo = (PlotAreaRendererInfo)renderer.Init();
-
-        return cri;
-    }
-
-    /// <summary>
-    /// Layouts and calculates the space used by the line chart.
-    /// </summary>
-    internal override void Format()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-
-        LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
-        lr.Format();
-
-        // axes
-        AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
-        xar.Format();
-
-        AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
-        yar.Format();
-
-        // Calculate rects and positions.
-        CalcLayout();
-
-        // Calculated remaining plot area, now it's safe to format.
-        PlotAreaRenderer renderer = new AreaPlotAreaRenderer(_rendererParms);
-        renderer.Format();
-    }
-
-    /// <summary>
-    /// Draws the column chart.
-    /// </summary>
-    internal override void Draw()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-
-        LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
-        lr.Draw();
-
-        // Draw wall.
-        var wr = new WallRenderer(_rendererParms);
-        wr.Draw();
-
-        // Draw gridlines.
-        GridlinesRenderer glr = new ColumnLikeGridlinesRenderer(_rendererParms);
-        glr.Draw();
-
-        var pabr = new PlotAreaBorderRenderer(_rendererParms);
-        pabr.Draw();
-
-        PlotAreaRenderer renderer = new AreaPlotAreaRenderer(_rendererParms);
-        renderer.Draw();
-
-        // Draw axes.
-        if (cri.xAxisRendererInfo._axis != null)
+        /// <summary>
+        /// Initializes a new instance of the AreaChartRenderer class with the
+        /// specified renderer parameters.
+        /// </summary>
+        internal AreaChartRenderer(RendererParameters parms)
+            : base(parms)
         {
+        }
+
+        /// <summary>
+        /// Returns an initialized and renderer specific rendererInfo.
+        /// </summary>
+        internal override RendererInfo Init()
+        {
+            var cri = new ChartRendererInfo();
+            cri._chart = (Chart)_rendererParms.DrawingItem;
+            _rendererParms.RendererInfo = cri;
+
+            InitSeriesRendererInfo();
+
+            LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
+            cri.legendRendererInfo = (LegendRendererInfo)lr.Init();
+
             AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
-            xar.Draw();
-        }
+            cri.xAxisRendererInfo = (AxisRendererInfo)xar.Init();
 
-        if (cri.yAxisRendererInfo._axis != null)
-        {
             AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
-            yar.Draw();
-        }
-    }
+            cri.yAxisRendererInfo = (AxisRendererInfo)yar.Init();
 
-    /// <summary>
-    /// Initializes all necessary data to draw a series for an area chart.
-    /// </summary>
-    private void InitSeriesRendererInfo()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            var plotArea = cri._chart.PlotArea;
+            PlotAreaRenderer renderer = new AreaPlotAreaRenderer(_rendererParms);
+            cri.plotAreaRendererInfo = (PlotAreaRendererInfo)renderer.Init();
 
-        var seriesColl = cri._chart.SeriesCollection;
-        cri.seriesRendererInfos = new SeriesRendererInfo[seriesColl.Count];
-        for (var idx = 0; idx < seriesColl.Count; ++idx)
-        {
-            var sri = new SeriesRendererInfo();
-            sri._series = seriesColl[idx];
-            cri.seriesRendererInfos[idx] = sri;
+            return cri;
         }
 
-        InitSeries();
-    }
-
-    /// <summary>
-    /// Initializes all necessary data to draw a series for an area chart.
-    /// </summary>
-    internal void InitSeries()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-
-        var seriesIndex = 0;
-        foreach (var sri in cri.seriesRendererInfos)
+        /// <summary>
+        /// Layouts and calculates the space used by the line chart.
+        /// </summary>
+        internal override void Format()
         {
-            sri.LineFormat = Converter.ToXPen(sri._series._lineFormat, XColors.Black, ChartRenderer.DefaultSeriesLineWidth);
-            sri.FillFormat = Converter.ToXBrush(sri._series._fillFormat, ColumnColors.Item(seriesIndex++));
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
 
-            sri._pointRendererInfos = new PointRendererInfo[sri._series._seriesElements.Count];
-            for (var pointIdx = 0; pointIdx < sri._pointRendererInfos.Length; ++pointIdx)
+            LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
+            lr.Format();
+
+            // axes
+            AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
+            xar.Format();
+
+            AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
+            yar.Format();
+
+            // Calculate rects and positions.
+            CalcLayout();
+
+            // Calculated remaining plot area, now it's safe to format.
+            PlotAreaRenderer renderer = new AreaPlotAreaRenderer(_rendererParms);
+            renderer.Format();
+        }
+
+        /// <summary>
+        /// Draws the column chart.
+        /// </summary>
+        internal override void Draw()
+        {
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+
+            LegendRenderer lr = new ColumnLikeLegendRenderer(_rendererParms);
+            lr.Draw();
+
+            // Draw wall.
+            var wr = new WallRenderer(_rendererParms);
+            wr.Draw();
+
+            // Draw gridlines.
+            GridlinesRenderer glr = new ColumnLikeGridlinesRenderer(_rendererParms);
+            glr.Draw();
+
+            var pabr = new PlotAreaBorderRenderer(_rendererParms);
+            pabr.Draw();
+
+            PlotAreaRenderer renderer = new AreaPlotAreaRenderer(_rendererParms);
+            renderer.Draw();
+
+            // Draw axes.
+            if (cri.xAxisRendererInfo._axis != null)
             {
-                var pri = new PointRendererInfo();
-                var point = sri._series._seriesElements[pointIdx];
-                pri.Point = point;
-                if (point != null)
+                AxisRenderer xar = new HorizontalXAxisRenderer(_rendererParms);
+                xar.Draw();
+            }
+
+            if (cri.yAxisRendererInfo._axis != null)
+            {
+                AxisRenderer yar = new VerticalYAxisRenderer(_rendererParms);
+                yar.Draw();
+            }
+        }
+
+        /// <summary>
+        /// Initializes all necessary data to draw a series for an area chart.
+        /// </summary>
+        private void InitSeriesRendererInfo()
+        {
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+
+            var seriesColl = cri._chart.SeriesCollection;
+            cri.seriesRendererInfos = new SeriesRendererInfo[seriesColl.Count];
+            for (var idx = 0; idx < seriesColl.Count; ++idx)
+            {
+                var sri = new SeriesRendererInfo();
+                sri._series = seriesColl[idx];
+                cri.seriesRendererInfos[idx] = sri;
+            }
+
+            InitSeries();
+        }
+
+        /// <summary>
+        /// Initializes all necessary data to draw a series for an area chart.
+        /// </summary>
+        internal void InitSeries()
+        {
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+
+            var seriesIndex = 0;
+            foreach (var sri in cri.seriesRendererInfos)
+            {
+                sri.LineFormat = Converter.ToXPen(sri._series._lineFormat, XColors.Black, ChartRenderer.DefaultSeriesLineWidth);
+                sri.FillFormat = Converter.ToXBrush(sri._series._fillFormat, ColumnColors.Item(seriesIndex++));
+
+                sri._pointRendererInfos = new PointRendererInfo[sri._series._seriesElements.Count];
+                for (var pointIdx = 0; pointIdx < sri._pointRendererInfos.Length; ++pointIdx)
                 {
-                    pri.LineFormat = sri.LineFormat;
-                    pri.FillFormat = sri.FillFormat;
-                    if (point._lineFormat != null && !point._lineFormat._color.IsEmpty)
+                    var pri = new PointRendererInfo();
+                    var point = sri._series._seriesElements[pointIdx];
+                    pri.Point = point;
+                    if (point != null)
                     {
-                        pri.LineFormat = new XPen(point._lineFormat._color, point._lineFormat._width);
+                        pri.LineFormat = sri.LineFormat;
+                        pri.FillFormat = sri.FillFormat;
+                        if (point._lineFormat != null && !point._lineFormat._color.IsEmpty)
+                        {
+                            pri.LineFormat = new XPen(point._lineFormat._color, point._lineFormat._width);
+                        }
+
+                        if (point._fillFormat != null && !point._lineFormat._color.IsEmpty)
+                        {
+                            pri.FillFormat = new XSolidBrush(point._fillFormat._color);
+                        }
                     }
 
-                    if (point._fillFormat != null && !point._lineFormat._color.IsEmpty)
-                    {
-                        pri.FillFormat = new XSolidBrush(point._fillFormat._color);
-                    }
+                    sri._pointRendererInfos[pointIdx] = pri;
                 }
-
-                sri._pointRendererInfos[pointIdx] = pri;
             }
         }
     }

@@ -33,118 +33,119 @@ using System;
 using System.ComponentModel;
 using BreakDown.ManagedPdf.Charting.Charting.enums;
 
-namespace BreakDown.ManagedPdf.Charting.Charting;
-
-/// <summary>
-/// Represents a DataLabel of a Series
-/// </summary>
-public class DataLabel : DocumentObject
+namespace BreakDown.ManagedPdf.Charting.Charting
 {
     /// <summary>
-    /// Initializes a new instance of the DataLabel class.
+    /// Represents a DataLabel of a Series
     /// </summary>
-    public DataLabel()
+    public class DataLabel : DocumentObject
     {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the DataLabel class with the specified parent.
-    /// </summary>
-    internal DataLabel(DocumentObject parent) : base(parent)
-    {
-    }
-
-    #region Methods
-
-    /// <summary>
-    /// Creates a deep copy of this object.
-    /// </summary>
-    public new DataLabel Clone()
-    {
-        return (DataLabel)DeepCopy();
-    }
-
-    /// <summary>
-    /// Implements the deep copy of the object.
-    /// </summary>
-    protected override object DeepCopy()
-    {
-        var dataLabel = (DataLabel)base.DeepCopy();
-        if (dataLabel._font != null)
+        /// <summary>
+        /// Initializes a new instance of the DataLabel class.
+        /// </summary>
+        public DataLabel()
         {
-            dataLabel._font = dataLabel._font.Clone();
-            dataLabel._font._parent = dataLabel;
         }
 
-        return dataLabel;
-    }
-
-    #endregion
-
-    #region Properties
-
-    /// <summary>
-    /// Gets or sets a numeric format string for the DataLabel.
-    /// </summary>
-    public string Format
-    {
-        get { return _format; }
-        set { _format = value; }
-    }
-
-    internal string _format = String.Empty;
-
-    /// <summary>
-    /// Gets the Font for the DataLabel.
-    /// </summary>
-    public Font Font
-    {
-        get { return _font ?? (_font = new Font(this)); }
-    }
-
-    internal Font _font;
-
-    /// <summary>
-    /// Gets or sets the position of the DataLabel.
-    /// </summary>
-    public DataLabelPosition Position
-    {
-        get { return (DataLabelPosition)_position; }
-        set
+        /// <summary>
+        /// Initializes a new instance of the DataLabel class with the specified parent.
+        /// </summary>
+        internal DataLabel(DocumentObject parent) : base(parent)
         {
-            if (!Enum.IsDefined(typeof(DataLabelPosition), value))
+        }
+
+        #region Methods
+
+        /// <summary>
+        /// Creates a deep copy of this object.
+        /// </summary>
+        public new DataLabel Clone()
+        {
+            return (DataLabel)DeepCopy();
+        }
+
+        /// <summary>
+        /// Implements the deep copy of the object.
+        /// </summary>
+        protected override object DeepCopy()
+        {
+            var dataLabel = (DataLabel)base.DeepCopy();
+            if (dataLabel._font != null)
             {
-                throw new InvalidEnumArgumentException("value", (int)value, typeof(DataLabelPosition));
+                dataLabel._font = dataLabel._font.Clone();
+                dataLabel._font._parent = dataLabel;
             }
 
-            _position = value;
-            _positionInitialized = true;
+            return dataLabel;
         }
-    }
 
-    internal DataLabelPosition _position;
-    internal bool _positionInitialized;
+        #endregion
 
-    /// <summary>
-    /// Gets or sets the type of the DataLabel.
-    /// </summary>
-    public DataLabelType Type
-    {
-        get { return _type; }
-        set
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets a numeric format string for the DataLabel.
+        /// </summary>
+        public string Format
         {
-            if (!Enum.IsDefined(typeof(DataLabelType), value))
-            {
-                throw new InvalidEnumArgumentException("value", (int)value, typeof(DataLabelType));
-            }
-
-            _type = value;
-            _typeInitialized = true;
+            get { return _format; }
+            set { _format = value; }
         }
+
+        internal string _format = String.Empty;
+
+        /// <summary>
+        /// Gets the Font for the DataLabel.
+        /// </summary>
+        public Font Font
+        {
+            get { return _font ?? (_font = new Font(this)); }
+        }
+
+        internal Font _font;
+
+        /// <summary>
+        /// Gets or sets the position of the DataLabel.
+        /// </summary>
+        public DataLabelPosition Position
+        {
+            get { return (DataLabelPosition)_position; }
+            set
+            {
+                if (!Enum.IsDefined(typeof(DataLabelPosition), value))
+                {
+                    throw new InvalidEnumArgumentException("value", (int)value, typeof(DataLabelPosition));
+                }
+
+                _position = value;
+                _positionInitialized = true;
+            }
+        }
+
+        internal DataLabelPosition _position;
+        internal bool _positionInitialized;
+
+        /// <summary>
+        /// Gets or sets the type of the DataLabel.
+        /// </summary>
+        public DataLabelType Type
+        {
+            get { return _type; }
+            set
+            {
+                if (!Enum.IsDefined(typeof(DataLabelType), value))
+                {
+                    throw new InvalidEnumArgumentException("value", (int)value, typeof(DataLabelType));
+                }
+
+                _type = value;
+                _typeInitialized = true;
+            }
+        }
+
+        internal DataLabelType _type;
+        internal bool _typeInitialized;
+
+        #endregion
     }
-
-    internal DataLabelType _type;
-    internal bool _typeInitialized;
-
-    #endregion
 }

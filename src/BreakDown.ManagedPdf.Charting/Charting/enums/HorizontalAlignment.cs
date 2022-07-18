@@ -29,25 +29,26 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting.enums;
-
-/// <summary>
-/// Used to determine the horizontal alignment of the axis title.
-/// </summary>
-public enum HorizontalAlignment
+namespace BreakDown.ManagedPdf.Charting.Charting.enums
 {
     /// <summary>
-    /// Axis title will be left aligned.
+    /// Used to determine the horizontal alignment of the axis title.
     /// </summary>
-    Left,
+    public enum HorizontalAlignment
+    {
+        /// <summary>
+        /// Axis title will be left aligned.
+        /// </summary>
+        Left,
 
-    /// <summary>
-    /// Axis title will be right aligned.
-    /// </summary>
-    Right,
+        /// <summary>
+        /// Axis title will be right aligned.
+        /// </summary>
+        Right,
 
-    /// <summary>
-    /// Axis title will be centered.
-    /// </summary>
-    Center
+        /// <summary>
+        /// Axis title will be centered.
+        /// </summary>
+        Center
+    }
 }

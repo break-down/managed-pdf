@@ -13,36 +13,37 @@
 using BreakDown.ManagedPdf.Core.Drawing;
 using BreakDown.ManagedPdf.Html.Adapters;
 
-namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters;
-
-/// <summary>
-/// Adapter for WinForms Font object for core.
-/// </summary>
-internal sealed class FontFamilyAdapter : RFontFamily
+namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
 {
     /// <summary>
-    /// the underline win-forms font.
+    /// Adapter for WinForms Font object for core.
     /// </summary>
-    private readonly XFontFamily _fontFamily;
-
-    /// <summary>
-    /// Init.
-    /// </summary>
-    public FontFamilyAdapter(XFontFamily fontFamily)
+    internal sealed class FontFamilyAdapter : RFontFamily
     {
-        _fontFamily = fontFamily;
-    }
+        /// <summary>
+        /// the underline win-forms font.
+        /// </summary>
+        private readonly XFontFamily _fontFamily;
 
-    /// <summary>
-    /// the underline win-forms font family.
-    /// </summary>
-    public XFontFamily FontFamily
-    {
-        get { return _fontFamily; }
-    }
+        /// <summary>
+        /// Init.
+        /// </summary>
+        public FontFamilyAdapter(XFontFamily fontFamily)
+        {
+            _fontFamily = fontFamily;
+        }
 
-    public override string Name
-    {
-        get { return _fontFamily.Name; }
+        /// <summary>
+        /// the underline win-forms font family.
+        /// </summary>
+        public XFontFamily FontFamily
+        {
+            get { return _fontFamily; }
+        }
+
+        public override string Name
+        {
+            get { return _fontFamily.Name; }
+        }
     }
 }

@@ -31,72 +31,73 @@
 
 using System;
 
-namespace BreakDown.ManagedPdf.Core.Pdf;
-
-/// <summary>
-/// Summary description for KeyInfo.
-/// </summary>
-internal class KeyInfoAttribute : Attribute
+namespace BreakDown.ManagedPdf.Core.Pdf
 {
-    public KeyInfoAttribute()
+    /// <summary>
+    /// Summary description for KeyInfo.
+    /// </summary>
+    internal class KeyInfoAttribute : Attribute
     {
+        public KeyInfoAttribute()
+        {
+        }
+
+        public KeyInfoAttribute(KeyType keyType)
+        {
+            //_version = version;
+            KeyType = keyType;
+        }
+
+        public KeyInfoAttribute(string version, KeyType keyType)
+        {
+            _version = version;
+            KeyType = keyType;
+        }
+
+        public KeyInfoAttribute(KeyType keyType, Type objectType)
+        {
+            //_version = version;
+            KeyType = keyType;
+            _objectType = objectType;
+        }
+
+        public KeyInfoAttribute(string version, KeyType keyType, Type objectType)
+        {
+            //_version = version;
+            KeyType = keyType;
+            _objectType = objectType;
+        }
+
+        public string Version
+        {
+            get { return _version; }
+            set { _version = value; }
+        }
+
+        string _version = "1.0";
+
+        public KeyType KeyType
+        {
+            get { return _entryType; }
+            set { _entryType = value; }
+        }
+
+        KeyType _entryType;
+
+        public Type ObjectType
+        {
+            get { return _objectType; }
+            set { _objectType = value; }
+        }
+
+        Type _objectType;
+
+        public string FixedValue
+        {
+            get { return _fixedValue; }
+            set { _fixedValue = value; }
+        }
+
+        string _fixedValue;
     }
-
-    public KeyInfoAttribute(KeyType keyType)
-    {
-        //_version = version;
-        KeyType = keyType;
-    }
-
-    public KeyInfoAttribute(string version, KeyType keyType)
-    {
-        _version = version;
-        KeyType = keyType;
-    }
-
-    public KeyInfoAttribute(KeyType keyType, Type objectType)
-    {
-        //_version = version;
-        KeyType = keyType;
-        _objectType = objectType;
-    }
-
-    public KeyInfoAttribute(string version, KeyType keyType, Type objectType)
-    {
-        //_version = version;
-        KeyType = keyType;
-        _objectType = objectType;
-    }
-
-    public string Version
-    {
-        get { return _version; }
-        set { _version = value; }
-    }
-
-    string _version = "1.0";
-
-    public KeyType KeyType
-    {
-        get { return _entryType; }
-        set { _entryType = value; }
-    }
-
-    KeyType _entryType;
-
-    public Type ObjectType
-    {
-        get { return _objectType; }
-        set { _objectType = value; }
-    }
-
-    Type _objectType;
-
-    public string FixedValue
-    {
-        get { return _fixedValue; }
-        set { _fixedValue = value; }
-    }
-
-    string _fixedValue;
 }

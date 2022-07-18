@@ -29,31 +29,32 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Internal;
-
-class PdfDiagnostics
+namespace BreakDown.ManagedPdf.Core.Pdf.Internal
 {
-    public static bool TraceCompressedObjects
+    class PdfDiagnostics
     {
-        get { return _traceCompressedObjects; }
-        set { _traceCompressedObjects = value; }
+        public static bool TraceCompressedObjects
+        {
+            get { return _traceCompressedObjects; }
+            set { _traceCompressedObjects = value; }
+        }
+
+        static bool _traceCompressedObjects = true;
+
+        public static bool TraceXrefStreams
+        {
+            get { return _traceXrefStreams && TraceCompressedObjects; }
+            set { _traceXrefStreams = value; }
+        }
+
+        static bool _traceXrefStreams = true;
+
+        public static bool TraceObjectStreams
+        {
+            get { return _traceObjectStreams && TraceCompressedObjects; }
+            set { _traceObjectStreams = value; }
+        }
+
+        static bool _traceObjectStreams = true;
     }
-
-    static bool _traceCompressedObjects = true;
-
-    public static bool TraceXrefStreams
-    {
-        get { return _traceXrefStreams && TraceCompressedObjects; }
-        set { _traceXrefStreams = value; }
-    }
-
-    static bool _traceXrefStreams = true;
-
-    public static bool TraceObjectStreams
-    {
-        get { return _traceObjectStreams && TraceCompressedObjects; }
-        set { _traceObjectStreams = value; }
-    }
-
-    static bool _traceObjectStreams = true;
 }

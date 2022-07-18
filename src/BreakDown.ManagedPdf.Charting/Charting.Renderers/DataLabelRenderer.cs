@@ -32,77 +32,48 @@
 using BreakDown.ManagedPdf.Charting.Charting.enums;
 using BreakDown.ManagedPdf.Core.Drawing;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a data label renderer.
-/// </summary>
-internal abstract class DataLabelRenderer : Renderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the DataLabelRenderer class with the
-    /// specified renderer parameters.
+    /// Represents a data label renderer.
     /// </summary>
-    internal DataLabelRenderer(RendererParameters parms)
-        : base(parms)
+    internal abstract class DataLabelRenderer : Renderer
     {
-    }
-
-    /// <summary>
-    /// Creates a data label rendererInfo.
-    /// Does not return any renderer info.
-    /// </summary>
-    internal override RendererInfo Init()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        foreach (var sri in cri.seriesRendererInfos)
+        /// <summary>
+        /// Initializes a new instance of the DataLabelRenderer class with the
+        /// specified renderer parameters.
+        /// </summary>
+        internal DataLabelRenderer(RendererParameters parms)
+            : base(parms)
         {
-            if (cri._chart._hasDataLabel || cri._chart._dataLabel != null ||
-                sri._series._hasDataLabel || sri._series._dataLabel != null)
+        }
+
+        /// <summary>
+        /// Creates a data label rendererInfo.
+        /// Does not return any renderer info.
+        /// </summary>
+        internal override RendererInfo Init()
+        {
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            foreach (var sri in cri.seriesRendererInfos)
             {
-                var dlri = new DataLabelRendererInfo();
+                if (cri._chart._hasDataLabel || cri._chart._dataLabel != null ||
+                    sri._series._hasDataLabel || sri._series._dataLabel != null)
+                {
+                    var dlri = new DataLabelRendererInfo();
 
-                var dl = sri._series._dataLabel;
-                if (dl == null)
-                {
-                    dl = cri._chart._dataLabel;
-                }
-
-                if (dl == null)
-                {
-                    dlri.Format = "0";
-                    dlri.Font = cri.DefaultDataLabelFont;
-                    dlri.FontColor = new XSolidBrush(XColors.Black);
-                    dlri.Position = DataLabelPosition.InsideEnd;
-                    if (cri._chart._type == ChartType.Pie2D || cri._chart._type == ChartType.PieExploded2D)
+                    var dl = sri._series._dataLabel;
+                    if (dl == null)
                     {
-                        dlri.Type = DataLabelType.Percent;
-                    }
-                    else
-                    {
-                        dlri.Type = DataLabelType.Value;
-                    }
-                }
-                else
-                {
-                    dlri.Format = dl.Format.Length > 0 ? dl.Format : "0";
-                    dlri.Font = Converter.ToXFont(dl._font, cri.DefaultDataLabelFont);
-                    dlri.FontColor = Converter.ToXBrush(dl._font, XColors.Black);
-                    if (dl._positionInitialized)
-                    {
-                        dlri.Position = dl._position;
-                    }
-                    else
-                    {
-                        dlri.Position = DataLabelPosition.OutsideEnd;
+                        dl = cri._chart._dataLabel;
                     }
 
-                    if (dl._typeInitialized)
+                    if (dl == null)
                     {
-                        dlri.Type = dl._type;
-                    }
-                    else
-                    {
+                        dlri.Format = "0";
+                        dlri.Font = cri.DefaultDataLabelFont;
+                        dlri.FontColor = new XSolidBrush(XColors.Black);
+                        dlri.Position = DataLabelPosition.InsideEnd;
                         if (cri._chart._type == ChartType.Pie2D || cri._chart._type == ChartType.PieExploded2D)
                         {
                             dlri.Type = DataLabelType.Percent;
@@ -112,17 +83,47 @@ internal abstract class DataLabelRenderer : Renderer
                             dlri.Type = DataLabelType.Value;
                         }
                     }
-                }
+                    else
+                    {
+                        dlri.Format = dl.Format.Length > 0 ? dl.Format : "0";
+                        dlri.Font = Converter.ToXFont(dl._font, cri.DefaultDataLabelFont);
+                        dlri.FontColor = Converter.ToXBrush(dl._font, XColors.Black);
+                        if (dl._positionInitialized)
+                        {
+                            dlri.Position = dl._position;
+                        }
+                        else
+                        {
+                            dlri.Position = DataLabelPosition.OutsideEnd;
+                        }
 
-                sri._dataLabelRendererInfo = dlri;
+                        if (dl._typeInitialized)
+                        {
+                            dlri.Type = dl._type;
+                        }
+                        else
+                        {
+                            if (cri._chart._type == ChartType.Pie2D || cri._chart._type == ChartType.PieExploded2D)
+                            {
+                                dlri.Type = DataLabelType.Percent;
+                            }
+                            else
+                            {
+                                dlri.Type = DataLabelType.Value;
+                            }
+                        }
+                    }
+
+                    sri._dataLabelRendererInfo = dlri;
+                }
             }
+
+            return null;
         }
 
-        return null;
+        /// <summary>
+        /// Calculates the specific positions for each data label.
+        /// </summary>
+        internal abstract void CalcPositions();
     }
-
-    /// <summary>
-    /// Calculates the specific positions for each data label.
-    /// </summary>
-    internal abstract void CalcPositions();
 }

@@ -29,13 +29,14 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents the base class of all renderer infos.
-/// Renderer infos are used to hold all necessary information and time consuming calculations
-/// between rendering cycles.
-/// </summary>
-internal abstract class RendererInfo
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
+    /// <summary>
+    /// Represents the base class of all renderer infos.
+    /// Renderer infos are used to hold all necessary information and time consuming calculations
+    /// between rendering cycles.
+    /// </summary>
+    internal abstract class RendererInfo
+    {
+    }
 }

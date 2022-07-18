@@ -31,33 +31,34 @@
 
 using System;
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Advanced;
-
-/// <summary>
-/// Base class for FontTable, ImageTable, FormXObjectTable etc.
-/// </summary>
-public class PdfResourceTable
+namespace BreakDown.ManagedPdf.Core.Pdf.Advanced
 {
     /// <summary>
-    /// Base class for document wide resource tables.
+    /// Base class for FontTable, ImageTable, FormXObjectTable etc.
     /// </summary>
-    public PdfResourceTable(PdfDocument owner)
+    public class PdfResourceTable
     {
-        if (owner == null)
+        /// <summary>
+        /// Base class for document wide resource tables.
+        /// </summary>
+        public PdfResourceTable(PdfDocument owner)
         {
-            throw new ArgumentNullException("owner");
+            if (owner == null)
+            {
+                throw new ArgumentNullException("owner");
+            }
+
+            _owner = owner;
         }
 
-        _owner = owner;
-    }
+        /// <summary>
+        /// Gets the owning document of this resource table.
+        /// </summary>
+        protected PdfDocument Owner
+        {
+            get { return _owner; }
+        }
 
-    /// <summary>
-    /// Gets the owning document of this resource table.
-    /// </summary>
-    protected PdfDocument Owner
-    {
-        get { return _owner; }
+        readonly PdfDocument _owner;
     }
-
-    readonly PdfDocument _owner;
 }

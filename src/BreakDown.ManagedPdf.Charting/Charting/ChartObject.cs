@@ -29,24 +29,25 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting;
-
-/// <summary>
-/// Base class for all chart classes.
-/// </summary>
-public class ChartObject : DocumentObject
+namespace BreakDown.ManagedPdf.Charting.Charting
 {
     /// <summary>
-    /// Initializes a new instance of the ChartObject class.
+    /// Base class for all chart classes.
     /// </summary>
-    public ChartObject()
+    public class ChartObject : DocumentObject
     {
-    }
+        /// <summary>
+        /// Initializes a new instance of the ChartObject class.
+        /// </summary>
+        public ChartObject()
+        {
+        }
 
-    /// <summary>
-    /// Initializes a new instance of the ChartObject class with the specified parent.
-    /// </summary>
-    internal ChartObject(DocumentObject parent) : base(parent)
-    {
+        /// <summary>
+        /// Initializes a new instance of the ChartObject class with the specified parent.
+        /// </summary>
+        internal ChartObject(DocumentObject parent) : base(parent)
+        {
+        }
     }
 }

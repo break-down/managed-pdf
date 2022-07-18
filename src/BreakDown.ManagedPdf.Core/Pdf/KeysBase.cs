@@ -31,15 +31,16 @@
 
 using System;
 
-namespace BreakDown.ManagedPdf.Core.Pdf;
-
-/// <summary>
-/// Base class for all dictionary Keys classes.
-/// </summary>
-public class KeysBase
+namespace BreakDown.ManagedPdf.Core.Pdf
 {
-    internal static DictionaryMeta CreateMeta(Type type)
+    /// <summary>
+    /// Base class for all dictionary Keys classes.
+    /// </summary>
+    public class KeysBase
     {
-        return new DictionaryMeta(type);
+        internal static DictionaryMeta CreateMeta(Type type)
+        {
+            return new DictionaryMeta(type);
+        }
     }
 }

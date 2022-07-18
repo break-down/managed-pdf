@@ -29,65 +29,66 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Structure;
-
-/// <summary>
-/// Represents a PDF table attributes object.
-/// </summary>
-public class PdfTableAttributes : PdfAttributesBase
+namespace BreakDown.ManagedPdf.Core.Pdf.Structure
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="PdfTableAttributes"/> class.
+    /// Represents a PDF table attributes object.
     /// </summary>
-    /// <param name="document">The document that owns this object.</param>
-    internal PdfTableAttributes(PdfDocument document)
-        : base(document)
+    public class PdfTableAttributes : PdfAttributesBase
     {
-        SetOwner();
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PdfTableAttributes"/> class.
-    /// </summary>
-    public PdfTableAttributes()
-    {
-        SetOwner();
-    }
-
-    private void SetOwner()
-    {
-        Elements.SetName(PdfAttributesBase.Keys.O, "/Table");
-    }
-
-    /// <summary>
-    /// Predefined keys of this dictionary.
-    /// </summary>
-    public new class Keys : PdfAttributesBase.Keys
-    {
-        // Reference: TABLE 10.36  Standard table attributes / Page 935
-
-        // ReSharper disable InconsistentNaming
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PdfTableAttributes"/> class.
+        /// </summary>
+        /// <param name="document">The document that owns this object.</param>
+        internal PdfTableAttributes(PdfDocument document)
+            : base(document)
+        {
+            SetOwner();
+        }
 
         /// <summary>
-        /// (Optional; not inheritable) The number of rows in the enclosing table that are spanned
-        /// by the cell. The cell expands by adding rows in the block-progression direction
-        /// specified by the table’s WritingMode attribute. Default value: 1.
-        /// This entry applies only to table cells that have structure types TH or TD or that are
-        /// role mapped to structure types TH or TD.
+        /// Initializes a new instance of the <see cref="PdfTableAttributes"/> class.
         /// </summary>
-        [KeyInfo(KeyType.Integer | KeyType.Optional)]
-        public const string RowSpan = "/RowSpan";
+        public PdfTableAttributes()
+        {
+            SetOwner();
+        }
+
+        private void SetOwner()
+        {
+            Elements.SetName(PdfAttributesBase.Keys.O, "/Table");
+        }
 
         /// <summary>
-        /// (Optional; not inheritable) The number of columns in the enclosing table that are spanned
-        /// by the cell. The cell expands by adding columns in the inline-progression direction
-        /// specified by the table’s WritingMode attribute. Default value: 1.
-        /// This entry applies only to table cells that have structure types TH or TD or that are
-        /// role mapped to structure types TH or TD.
+        /// Predefined keys of this dictionary.
         /// </summary>
-        [KeyInfo(KeyType.Integer | KeyType.Optional)]
-        public const string ColSpan = "/ColSpan";
+        public new class Keys : PdfAttributesBase.Keys
+        {
+            // Reference: TABLE 10.36  Standard table attributes / Page 935
 
-        // ReSharper restore InconsistentNaming
+            // ReSharper disable InconsistentNaming
+
+            /// <summary>
+            /// (Optional; not inheritable) The number of rows in the enclosing table that are spanned
+            /// by the cell. The cell expands by adding rows in the block-progression direction
+            /// specified by the table’s WritingMode attribute. Default value: 1.
+            /// This entry applies only to table cells that have structure types TH or TD or that are
+            /// role mapped to structure types TH or TD.
+            /// </summary>
+            [KeyInfo(KeyType.Integer | KeyType.Optional)]
+            public const string RowSpan = "/RowSpan";
+
+            /// <summary>
+            /// (Optional; not inheritable) The number of columns in the enclosing table that are spanned
+            /// by the cell. The cell expands by adding columns in the inline-progression direction
+            /// specified by the table’s WritingMode attribute. Default value: 1.
+            /// This entry applies only to table cells that have structure types TH or TD or that are
+            /// role mapped to structure types TH or TD.
+            /// </summary>
+            [KeyInfo(KeyType.Integer | KeyType.Optional)]
+            public const string ColSpan = "/ColSpan";
+
+            // ReSharper restore InconsistentNaming
+        }
     }
 }

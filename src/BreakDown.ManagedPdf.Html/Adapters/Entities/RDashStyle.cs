@@ -10,17 +10,18 @@
 // - Sun Tsu,
 // "The Art of War"
 
-namespace BreakDown.ManagedPdf.Html.Adapters.Entities;
-
-/// <summary>
-/// Specifies the style of dashed lines drawn with a <see cref="RPen"/> object.
-/// </summary>
-public enum RDashStyle
+namespace BreakDown.ManagedPdf.Html.Adapters.Entities
 {
-    Solid,
-    Dash,
-    Dot,
-    DashDot,
-    DashDotDot,
-    Custom,
+    /// <summary>
+    /// Specifies the style of dashed lines drawn with a <see cref="RPen"/> object.
+    /// </summary>
+    public enum RDashStyle
+    {
+        Solid,
+        Dash,
+        Dot,
+        DashDot,
+        DashDotDot,
+        Custom,
+    }
 }

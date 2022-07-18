@@ -33,154 +33,155 @@
 
 // ReSharper disable InconsistentNaming
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Content.Objects.@enum;
-
-/// <summary>
-/// The names of the op-codes. 
-/// </summary>
-public enum OpCodeName
+namespace BreakDown.ManagedPdf.Core.Pdf.Content.Objects.@enum
 {
-    Dictionary, // Name followed by dictionary.
-
-    // I know that this is not useable in VB or other languages with no case sensitivity.
-
-    // Reference: TABLE A.1  PDF content stream operators / Page 985
-
     /// <summary>
-    /// Close, fill, and stroke path using nonzero winding number rule.
+    /// The names of the op-codes. 
     /// </summary>
-    b,
+    public enum OpCodeName
+    {
+        Dictionary, // Name followed by dictionary.
 
-    /// <summary>
-    /// Fill and stroke path using nonzero winding number rule.
-    /// </summary>
-    B,
+        // I know that this is not useable in VB or other languages with no case sensitivity.
 
-    /// <summary>
-    /// Close, fill, and stroke path using even-odd rule.
-    /// </summary>
-    bx, // b*
+        // Reference: TABLE A.1  PDF content stream operators / Page 985
 
-    /// <summary>
-    /// Fill and stroke path using even-odd rule.
-    /// </summary>
-    Bx, // B*
+        /// <summary>
+        /// Close, fill, and stroke path using nonzero winding number rule.
+        /// </summary>
+        b,
 
-    /// <summary>
-    /// (PDF 1.2) Begin marked-content sequence with property list.
-    /// </summary>
-    BDC,
+        /// <summary>
+        /// Fill and stroke path using nonzero winding number rule.
+        /// </summary>
+        B,
 
-    /// <summary>
-    /// Begin inline image object.
-    /// </summary>
-    BI,
+        /// <summary>
+        /// Close, fill, and stroke path using even-odd rule.
+        /// </summary>
+        bx, // b*
 
-    /// <summary>
-    /// (PDF 1.2) Begin marked-content sequence.
-    /// </summary>
-    BMC,
+        /// <summary>
+        /// Fill and stroke path using even-odd rule.
+        /// </summary>
+        Bx, // B*
 
-    /// <summary>
-    /// Begin text object.
-    /// </summary>
-    BT,
+        /// <summary>
+        /// (PDF 1.2) Begin marked-content sequence with property list.
+        /// </summary>
+        BDC,
 
-    /// <summary>
-    /// (PDF 1.1) Begin compatibility section.
-    /// </summary>
-    BX,
+        /// <summary>
+        /// Begin inline image object.
+        /// </summary>
+        BI,
 
-    c,
-    cm,
-    CS,
-    cs,
-    d,
-    d0,
-    d1,
-    Do,
+        /// <summary>
+        /// (PDF 1.2) Begin marked-content sequence.
+        /// </summary>
+        BMC,
 
-    /// <summary>
-    /// (PDF 1.2) Define marked-content point with property list.
-    /// </summary>
-    DP,
+        /// <summary>
+        /// Begin text object.
+        /// </summary>
+        BT,
 
-    EI,
+        /// <summary>
+        /// (PDF 1.1) Begin compatibility section.
+        /// </summary>
+        BX,
 
-    /// <summary>
-    /// (PDF 1.2) End marked-content sequence.
-    /// </summary>
-    EMC,
+        c,
+        cm,
+        CS,
+        cs,
+        d,
+        d0,
+        d1,
+        Do,
 
-    ET,
+        /// <summary>
+        /// (PDF 1.2) Define marked-content point with property list.
+        /// </summary>
+        DP,
 
-    /// <summary>
-    /// (PDF 1.1) End compatibility section.
-    /// </summary>
-    EX,
+        EI,
 
-    f,
-    F,
-    fx, // f*
-    G,
-    g,
-    gs,
-    h,
-    i,
-    ID,
-    j,
-    J,
-    K,
-    k,
-    l,
-    m,
-    M,
+        /// <summary>
+        /// (PDF 1.2) End marked-content sequence.
+        /// </summary>
+        EMC,
 
-    /// <summary>
-    /// (PDF 1.2) Define marked-content point
-    /// </summary>
-    MP,
+        ET,
 
-    n,
-    q,
-    Q,
-    re,
-    RG,
-    rg,
-    ri,
-    s,
-    S,
-    SC,
-    sc,
-    SCN,
-    scn,
-    sh,
-    Tx, // T*
-    Tc,
-    Td,
-    TD,
-    Tf,
-    Tj,
-    TJ,
-    TL,
-    Tm,
-    Tr,
-    Ts,
-    Tw,
-    Tz,
-    v,
-    w,
-    W,
-    Wx, // W*
-    y,
+        /// <summary>
+        /// (PDF 1.1) End compatibility section.
+        /// </summary>
+        EX,
 
-    /// <summary>
-    /// Move to next line and show text.
-    /// </summary>
-    QuoteSingle, // '
+        f,
+        F,
+        fx, // f*
+        G,
+        g,
+        gs,
+        h,
+        i,
+        ID,
+        j,
+        J,
+        K,
+        k,
+        l,
+        m,
+        M,
 
-    /// <summary>
-    /// Set word and character spacing, move to next line, and show text.
-    /// </summary>
-    QuoteDbl, // "
+        /// <summary>
+        /// (PDF 1.2) Define marked-content point
+        /// </summary>
+        MP,
+
+        n,
+        q,
+        Q,
+        re,
+        RG,
+        rg,
+        ri,
+        s,
+        S,
+        SC,
+        sc,
+        SCN,
+        scn,
+        sh,
+        Tx, // T*
+        Tc,
+        Td,
+        TD,
+        Tf,
+        Tj,
+        TJ,
+        TL,
+        Tm,
+        Tr,
+        Ts,
+        Tw,
+        Tz,
+        v,
+        w,
+        W,
+        Wx, // W*
+        y,
+
+        /// <summary>
+        /// Move to next line and show text.
+        /// </summary>
+        QuoteSingle, // '
+
+        /// <summary>
+        /// Set word and character spacing, move to next line, and show text.
+        /// </summary>
+        QuoteDbl, // "
+    }
 }

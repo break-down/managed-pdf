@@ -31,92 +31,93 @@
 
 using BreakDown.ManagedPdf.Charting.Charting.enums;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents the legend renderer specific to bar charts.
-/// </summary>
-internal class BarClusteredLegendRenderer : ColumnLikeLegendRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the BarClusteredLegendRenderer class with the
-    /// specified renderer parameters.
+    /// Represents the legend renderer specific to bar charts.
     /// </summary>
-    internal BarClusteredLegendRenderer(RendererParameters parms)
-        : base(parms)
+    internal class BarClusteredLegendRenderer : ColumnLikeLegendRenderer
     {
-    }
-
-    /// <summary>
-    /// Draws the legend.
-    /// </summary>
-    internal override void Draw()
-    {
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        var lri = cri.legendRendererInfo;
-        if (lri == null)
+        /// <summary>
+        /// Initializes a new instance of the BarClusteredLegendRenderer class with the
+        /// specified renderer parameters.
+        /// </summary>
+        internal BarClusteredLegendRenderer(RendererParameters parms)
+            : base(parms)
         {
-            return;
         }
 
-        var gfx = _rendererParms.Graphics;
-        var parms = new RendererParameters();
-        parms.Graphics = gfx;
-
-        var ler = new LegendEntryRenderer(parms);
-
-        var verticalLegend = (lri._legend._docking == DockingType.Left || lri._legend._docking == DockingType.Right);
-        var paddingFactor = 1;
-        if (lri.BorderPen != null)
+        /// <summary>
+        /// Draws the legend.
+        /// </summary>
+        internal override void Draw()
         {
-            paddingFactor = 2;
-        }
-
-        var legendRect = lri.Rect;
-        legendRect.X += LeftPadding * paddingFactor;
-        if (verticalLegend)
-        {
-            legendRect.Y = legendRect.Bottom - BottomPadding * paddingFactor;
-        }
-        else
-        {
-            legendRect.Y += TopPadding * paddingFactor;
-        }
-
-        foreach (var leri in cri.legendRendererInfo.Entries)
-        {
-            if (verticalLegend)
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            var lri = cri.legendRendererInfo;
+            if (lri == null)
             {
-                legendRect.Y -= leri.Height;
+                return;
             }
 
-            var entryRect = legendRect;
-            entryRect.Width = leri.Width;
-            entryRect.Height = leri.Height;
+            var gfx = _rendererParms.Graphics;
+            var parms = new RendererParameters();
+            parms.Graphics = gfx;
 
-            leri.Rect = entryRect;
-            parms.RendererInfo = leri;
-            ler.Draw();
+            var ler = new LegendEntryRenderer(parms);
 
+            var verticalLegend = (lri._legend._docking == DockingType.Left || lri._legend._docking == DockingType.Right);
+            var paddingFactor = 1;
+            if (lri.BorderPen != null)
+            {
+                paddingFactor = 2;
+            }
+
+            var legendRect = lri.Rect;
+            legendRect.X += LeftPadding * paddingFactor;
             if (verticalLegend)
             {
-                legendRect.Y -= EntrySpacing;
+                legendRect.Y = legendRect.Bottom - BottomPadding * paddingFactor;
             }
             else
             {
-                legendRect.X += entryRect.Width + EntrySpacing;
+                legendRect.Y += TopPadding * paddingFactor;
             }
-        }
 
-        // Draw border around legend
-        if (lri.BorderPen != null)
-        {
-            var borderRect = lri.Rect;
-            borderRect.X += LeftPadding;
-            borderRect.Y += TopPadding;
-            borderRect.Width -= LeftPadding + RightPadding;
-            borderRect.Height -= TopPadding + BottomPadding;
-            gfx.DrawRectangle(lri.BorderPen, borderRect);
+            foreach (var leri in cri.legendRendererInfo.Entries)
+            {
+                if (verticalLegend)
+                {
+                    legendRect.Y -= leri.Height;
+                }
+
+                var entryRect = legendRect;
+                entryRect.Width = leri.Width;
+                entryRect.Height = leri.Height;
+
+                leri.Rect = entryRect;
+                parms.RendererInfo = leri;
+                ler.Draw();
+
+                if (verticalLegend)
+                {
+                    legendRect.Y -= EntrySpacing;
+                }
+                else
+                {
+                    legendRect.X += entryRect.Width + EntrySpacing;
+                }
+            }
+
+            // Draw border around legend
+            if (lri.BorderPen != null)
+            {
+                var borderRect = lri.Rect;
+                borderRect.X += LeftPadding;
+                borderRect.Y += TopPadding;
+                borderRect.Width -= LeftPadding + RightPadding;
+                borderRect.Height -= TopPadding + BottomPadding;
+                gfx.DrawRectangle(lri.BorderPen, borderRect);
+            }
         }
     }
 }

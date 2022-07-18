@@ -29,39 +29,40 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Annotations;
-
-/// <summary>
-/// Represents a generic annotation. Used for annotation dictionaries unknown to PDFsharp.
-/// </summary>
-internal sealed class PdfGenericAnnotation : PdfAnnotation
+namespace BreakDown.ManagedPdf.Core.Pdf.Annotations
 {
-    //DMH 6/7/06
-    //Make this public so we can use it in PdfAnnotations to
-    //get the Meta data from existings annotations.
-    public PdfGenericAnnotation(PdfDictionary dict)
-        : base(dict)
-    {
-    }
-
     /// <summary>
-    /// Predefined keys of this dictionary.
+    /// Represents a generic annotation. Used for annotation dictionaries unknown to PDFsharp.
     /// </summary>
-    internal new class Keys : PdfAnnotation.Keys
+    internal sealed class PdfGenericAnnotation : PdfAnnotation
     {
-        public static DictionaryMeta Meta
+        //DMH 6/7/06
+        //Make this public so we can use it in PdfAnnotations to
+        //get the Meta data from existings annotations.
+        public PdfGenericAnnotation(PdfDictionary dict)
+            : base(dict)
         {
-            get { return _meta ?? (_meta = CreateMeta(typeof(Keys))); }
         }
 
-        static DictionaryMeta _meta;
-    }
+        /// <summary>
+        /// Predefined keys of this dictionary.
+        /// </summary>
+        internal new class Keys : PdfAnnotation.Keys
+        {
+            public static DictionaryMeta Meta
+            {
+                get { return _meta ?? (_meta = CreateMeta(typeof(Keys))); }
+            }
 
-    /// <summary>
-    /// Gets the KeysMeta of this dictionary type.
-    /// </summary>
-    internal override DictionaryMeta Meta
-    {
-        get { return Keys.Meta; }
+            static DictionaryMeta _meta;
+        }
+
+        /// <summary>
+        /// Gets the KeysMeta of this dictionary type.
+        /// </summary>
+        internal override DictionaryMeta Meta
+        {
+            get { return Keys.Meta; }
+        }
     }
 }

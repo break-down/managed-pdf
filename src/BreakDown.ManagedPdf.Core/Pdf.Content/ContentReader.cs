@@ -32,44 +32,45 @@
 using System.IO;
 using BreakDown.ManagedPdf.Core.Pdf.Content.Objects;
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Content;
-
-/// <summary>
-/// Represents the functionality for reading PDF content streams.
-/// </summary>
-public static class ContentReader
+namespace BreakDown.ManagedPdf.Core.Pdf.Content
 {
     /// <summary>
-    /// Reads the content stream(s) of the specified page.
+    /// Represents the functionality for reading PDF content streams.
     /// </summary>
-    /// <param name="page">The page.</param>
-    static public CSequence ReadContent(PdfPage page)
+    public static class ContentReader
     {
-        var parser = new CParser(page);
-        var sequence = parser.ReadContent();
+        /// <summary>
+        /// Reads the content stream(s) of the specified page.
+        /// </summary>
+        /// <param name="page">The page.</param>
+        static public CSequence ReadContent(PdfPage page)
+        {
+            var parser = new CParser(page);
+            var sequence = parser.ReadContent();
 
-        return sequence;
-    }
+            return sequence;
+        }
 
-    /// <summary>
-    /// Reads the specified content.
-    /// </summary>
-    /// <param name="content">The content.</param>
-    static public CSequence ReadContent(byte[] content)
-    {
-        var parser = new CParser(content);
-        var sequence = parser.ReadContent();
-        return sequence;
-    }
+        /// <summary>
+        /// Reads the specified content.
+        /// </summary>
+        /// <param name="content">The content.</param>
+        static public CSequence ReadContent(byte[] content)
+        {
+            var parser = new CParser(content);
+            var sequence = parser.ReadContent();
+            return sequence;
+        }
 
-    /// <summary>
-    /// Reads the specified content.
-    /// </summary>
-    /// <param name="content">The content.</param>
-    static public CSequence ReadContent(MemoryStream content)
-    {
-        var parser = new CParser(content);
-        var sequence = parser.ReadContent();
-        return sequence;
+        /// <summary>
+        /// Reads the specified content.
+        /// </summary>
+        /// <param name="content">The content.</param>
+        static public CSequence ReadContent(MemoryStream content)
+        {
+            var parser = new CParser(content);
+            var sequence = parser.ReadContent();
+            return sequence;
+        }
     }
 }

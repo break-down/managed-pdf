@@ -10,23 +10,24 @@
 // - Sun Tsu,
 // "The Art of War"
 
-namespace BreakDown.ManagedPdf.Html.Core.Dom;
-
-/// <summary>
-/// Represents the possible units of the CSS lengths
-/// </summary>
-/// <remarks>
-/// http://www.w3.org/TR/CSS21/syndata.html#length-units
-/// </remarks>
-internal enum CssUnit
+namespace BreakDown.ManagedPdf.Html.Core.Dom
 {
-    None,
-    Ems,
-    Pixels,
-    Ex,
-    Inches,
-    Centimeters,
-    Milimeters,
-    Points,
-    Picas
+    /// <summary>
+    /// Represents the possible units of the CSS lengths
+    /// </summary>
+    /// <remarks>
+    /// http://www.w3.org/TR/CSS21/syndata.html#length-units
+    /// </remarks>
+    internal enum CssUnit
+    {
+        None,
+        Ems,
+        Pixels,
+        Ex,
+        Inches,
+        Centimeters,
+        Milimeters,
+        Points,
+        Picas
+    }
 }

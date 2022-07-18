@@ -36,147 +36,148 @@ using System.Globalization;
 using System.Text;
 using BreakDown.ManagedPdf.Core.Internal;
 
-namespace BreakDown.ManagedPdf.Core.Fonts.OpenType;
-
-/// <summary>
-/// Global table of all OpenType fontfaces cached by their face name and check sum.
-/// </summary>
-[DebuggerDisplay("{DebuggerDisplay}")]
-internal class OpenTypeFontfaceCache
+namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
 {
-    OpenTypeFontfaceCache()
-    {
-        _fontfaceCache = new Dictionary<string, OpenTypeFontface>(StringComparer.OrdinalIgnoreCase);
-        _fontfacesByCheckSum = new Dictionary<ulong, OpenTypeFontface>();
-    }
-
     /// <summary>
-    /// Tries to get fontface by its key.
+    /// Global table of all OpenType fontfaces cached by their face name and check sum.
     /// </summary>
-    public static bool TryGetFontface(string key, out OpenTypeFontface fontface)
+    [DebuggerDisplay("{DebuggerDisplay}")]
+    internal class OpenTypeFontfaceCache
     {
-        try
+        OpenTypeFontfaceCache()
         {
-            Lock.EnterFontFactory();
-            var result = Singleton._fontfaceCache.TryGetValue(key, out fontface);
-            return result;
+            _fontfaceCache = new Dictionary<string, OpenTypeFontface>(StringComparer.OrdinalIgnoreCase);
+            _fontfacesByCheckSum = new Dictionary<ulong, OpenTypeFontface>();
         }
-        finally
-        {
-            Lock.ExitFontFactory();
-        }
-    }
 
-    /// <summary>
-    /// Tries to get fontface by its check sum.
-    /// </summary>
-    public static bool TryGetFontface(ulong checkSum, out OpenTypeFontface fontface)
-    {
-        try
+        /// <summary>
+        /// Tries to get fontface by its key.
+        /// </summary>
+        public static bool TryGetFontface(string key, out OpenTypeFontface fontface)
         {
-            Lock.EnterFontFactory();
-            var result = Singleton._fontfacesByCheckSum.TryGetValue(checkSum, out fontface);
-            return result;
-        }
-        finally
-        {
-            Lock.ExitFontFactory();
-        }
-    }
-
-    public static OpenTypeFontface AddFontface(OpenTypeFontface fontface)
-    {
-        try
-        {
-            Lock.EnterFontFactory();
-            if (TryGetFontface(fontface.FullFaceName, out var fontfaceCheck))
+            try
             {
-                if (fontfaceCheck.CheckSum != fontface.CheckSum)
+                Lock.EnterFontFactory();
+                var result = Singleton._fontfaceCache.TryGetValue(key, out fontface);
+                return result;
+            }
+            finally
+            {
+                Lock.ExitFontFactory();
+            }
+        }
+
+        /// <summary>
+        /// Tries to get fontface by its check sum.
+        /// </summary>
+        public static bool TryGetFontface(ulong checkSum, out OpenTypeFontface fontface)
+        {
+            try
+            {
+                Lock.EnterFontFactory();
+                var result = Singleton._fontfacesByCheckSum.TryGetValue(checkSum, out fontface);
+                return result;
+            }
+            finally
+            {
+                Lock.ExitFontFactory();
+            }
+        }
+
+        public static OpenTypeFontface AddFontface(OpenTypeFontface fontface)
+        {
+            try
+            {
+                Lock.EnterFontFactory();
+                if (TryGetFontface(fontface.FullFaceName, out var fontfaceCheck))
                 {
-                    throw new InvalidOperationException("OpenTypeFontface with same signature but different bytes.");
+                    if (fontfaceCheck.CheckSum != fontface.CheckSum)
+                    {
+                        throw new InvalidOperationException("OpenTypeFontface with same signature but different bytes.");
+                    }
+
+                    return fontfaceCheck;
                 }
 
-                return fontfaceCheck;
+                Singleton._fontfaceCache.Add(fontface.FullFaceName, fontface);
+                Singleton._fontfacesByCheckSum.Add(fontface.CheckSum, fontface);
+                return fontface;
             }
-
-            Singleton._fontfaceCache.Add(fontface.FullFaceName, fontface);
-            Singleton._fontfacesByCheckSum.Add(fontface.CheckSum, fontface);
-            return fontface;
-        }
-        finally
-        {
-            Lock.ExitFontFactory();
-        }
-    }
-
-    /// <summary>
-    /// Gets the singleton.
-    /// </summary>
-    static OpenTypeFontfaceCache Singleton
-    {
-        get
-        {
-            // ReSharper disable once InvertIf
-            if (_singleton == null)
+            finally
             {
-                try
+                Lock.ExitFontFactory();
+            }
+        }
+
+        /// <summary>
+        /// Gets the singleton.
+        /// </summary>
+        static OpenTypeFontfaceCache Singleton
+        {
+            get
+            {
+                // ReSharper disable once InvertIf
+                if (_singleton == null)
                 {
-                    Lock.EnterFontFactory();
-                    if (_singleton == null)
+                    try
                     {
-                        _singleton = new OpenTypeFontfaceCache();
+                        Lock.EnterFontFactory();
+                        if (_singleton == null)
+                        {
+                            _singleton = new OpenTypeFontfaceCache();
+                        }
+                    }
+                    finally
+                    {
+                        Lock.ExitFontFactory();
                     }
                 }
-                finally
-                {
-                    Lock.ExitFontFactory();
-                }
+
+                return _singleton;
+            }
+        }
+
+        static volatile OpenTypeFontfaceCache _singleton;
+
+        internal static string GetCacheState()
+        {
+            var state = new StringBuilder();
+            state.Append("====================\n");
+            state.Append("OpenType fontfaces by name\n");
+            var familyKeys = Singleton._fontfaceCache.Keys;
+            var count = familyKeys.Count;
+            var keys = new string[count];
+            familyKeys.CopyTo(keys, 0);
+            Array.Sort(keys, StringComparer.OrdinalIgnoreCase);
+            foreach (var key in keys)
+            {
+                state.AppendFormat("  {0}: {1}\n", key, Singleton._fontfaceCache[key].DebuggerDisplay);
             }
 
-            return _singleton;
+            state.Append("\n");
+            return state.ToString();
         }
-    }
 
-    static volatile OpenTypeFontfaceCache _singleton;
+        /// <summary>
+        /// Maps face name to OpenType fontface.
+        /// </summary>
+        readonly Dictionary<string, OpenTypeFontface> _fontfaceCache;
 
-    internal static string GetCacheState()
-    {
-        var state = new StringBuilder();
-        state.Append("====================\n");
-        state.Append("OpenType fontfaces by name\n");
-        var familyKeys = Singleton._fontfaceCache.Keys;
-        var count = familyKeys.Count;
-        var keys = new string[count];
-        familyKeys.CopyTo(keys, 0);
-        Array.Sort(keys, StringComparer.OrdinalIgnoreCase);
-        foreach (var key in keys)
+        /// <summary>
+        /// Maps font source key to OpenType fontface.
+        /// </summary>
+        readonly Dictionary<ulong, OpenTypeFontface> _fontfacesByCheckSum;
+
+        /// <summary>
+        /// Gets the DebuggerDisplayAttribute text.
+        /// </summary>
+
+        // ReSharper disable UnusedMember.Local
+        string DebuggerDisplay
+
+            // ReSharper restore UnusedMember.Local
         {
-            state.AppendFormat("  {0}: {1}\n", key, Singleton._fontfaceCache[key].DebuggerDisplay);
+            get { return string.Format(CultureInfo.InvariantCulture, "Fontfaces: {0}", _fontfaceCache.Count); }
         }
-
-        state.Append("\n");
-        return state.ToString();
-    }
-
-    /// <summary>
-    /// Maps face name to OpenType fontface.
-    /// </summary>
-    readonly Dictionary<string, OpenTypeFontface> _fontfaceCache;
-
-    /// <summary>
-    /// Maps font source key to OpenType fontface.
-    /// </summary>
-    readonly Dictionary<ulong, OpenTypeFontface> _fontfacesByCheckSum;
-
-    /// <summary>
-    /// Gets the DebuggerDisplayAttribute text.
-    /// </summary>
-
-    // ReSharper disable UnusedMember.Local
-    string DebuggerDisplay
-
-        // ReSharper restore UnusedMember.Local
-    {
-        get { return string.Format(CultureInfo.InvariantCulture, "Fontfaces: {0}", _fontfaceCache.Count); }
     }
 }

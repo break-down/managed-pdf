@@ -33,100 +33,101 @@ using System;
 using System.ComponentModel;
 using BreakDown.ManagedPdf.Charting.Charting.enums;
 
-namespace BreakDown.ManagedPdf.Charting.Charting;
-
-/// <summary>
-/// Represents a legend of a chart.
-/// </summary>
-public class Legend : ChartObject
+namespace BreakDown.ManagedPdf.Charting.Charting
 {
     /// <summary>
-    /// Initializes a new instance of the Legend class.
+    /// Represents a legend of a chart.
     /// </summary>
-    public Legend()
+    public class Legend : ChartObject
     {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the Legend class with the specified parent.
-    /// </summary>
-    internal Legend(DocumentObject parent) : base(parent)
-    {
-    }
-
-    #region Methods
-
-    /// <summary>
-    /// Creates a deep copy of this object.
-    /// </summary>
-    public new Legend Clone()
-    {
-        return (Legend)DeepCopy();
-    }
-
-    /// <summary>
-    /// Implements the deep copy of the object.
-    /// </summary>
-    protected override object DeepCopy()
-    {
-        var legend = (Legend)base.DeepCopy();
-        if (legend._lineFormat != null)
+        /// <summary>
+        /// Initializes a new instance of the Legend class.
+        /// </summary>
+        public Legend()
         {
-            legend._lineFormat = legend._lineFormat.Clone();
-            legend._lineFormat._parent = legend;
         }
 
-        if (legend._font != null)
+        /// <summary>
+        /// Initializes a new instance of the Legend class with the specified parent.
+        /// </summary>
+        internal Legend(DocumentObject parent) : base(parent)
         {
-            legend._font = legend._font.Clone();
-            legend._font._parent = legend;
         }
 
-        return legend;
-    }
+        #region Methods
 
-    #endregion
-
-    #region Properties
-
-    /// <summary>
-    /// Gets the line format of the legend's border.
-    /// </summary>
-    public LineFormat LineFormat
-    {
-        get { return _lineFormat ?? (_lineFormat = new LineFormat(this)); }
-    }
-
-    internal LineFormat _lineFormat;
-
-    /// <summary>
-    /// Gets the font of the legend.
-    /// </summary>
-    public Font Font
-    {
-        get { return _font ?? (_font = new Font(this)); }
-    }
-
-    internal Font _font;
-
-    /// <summary>
-    /// Gets or sets the docking type.
-    /// </summary>
-    public DockingType Docking
-    {
-        get { return _docking; }
-        set
+        /// <summary>
+        /// Creates a deep copy of this object.
+        /// </summary>
+        public new Legend Clone()
         {
-            if (!Enum.IsDefined(typeof(DockingType), value))
+            return (Legend)DeepCopy();
+        }
+
+        /// <summary>
+        /// Implements the deep copy of the object.
+        /// </summary>
+        protected override object DeepCopy()
+        {
+            var legend = (Legend)base.DeepCopy();
+            if (legend._lineFormat != null)
             {
-                throw new InvalidEnumArgumentException("value", (int)value, typeof(DockingType));
+                legend._lineFormat = legend._lineFormat.Clone();
+                legend._lineFormat._parent = legend;
             }
 
-            _docking = value;
+            if (legend._font != null)
+            {
+                legend._font = legend._font.Clone();
+                legend._font._parent = legend;
+            }
+
+            return legend;
         }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the line format of the legend's border.
+        /// </summary>
+        public LineFormat LineFormat
+        {
+            get { return _lineFormat ?? (_lineFormat = new LineFormat(this)); }
+        }
+
+        internal LineFormat _lineFormat;
+
+        /// <summary>
+        /// Gets the font of the legend.
+        /// </summary>
+        public Font Font
+        {
+            get { return _font ?? (_font = new Font(this)); }
+        }
+
+        internal Font _font;
+
+        /// <summary>
+        /// Gets or sets the docking type.
+        /// </summary>
+        public DockingType Docking
+        {
+            get { return _docking; }
+            set
+            {
+                if (!Enum.IsDefined(typeof(DockingType), value))
+                {
+                    throw new InvalidEnumArgumentException("value", (int)value, typeof(DockingType));
+                }
+
+                _docking = value;
+            }
+        }
+
+        internal DockingType _docking;
+
+        #endregion
     }
-
-    internal DockingType _docking;
-
-    #endregion
 }

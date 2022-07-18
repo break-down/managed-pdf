@@ -31,25 +31,26 @@
 
 // ReSharper disable InconsistentNaming
 
-namespace BreakDown.ManagedPdf.Core.Drawing.enums;
-
-/// <summary>
-/// Indicates how to handle the first point of a path.
-/// </summary>
-internal enum PathStart
+namespace BreakDown.ManagedPdf.Core.Drawing.enums
 {
     /// <summary>
-    /// Set the current position to the first point.
+    /// Indicates how to handle the first point of a path.
     /// </summary>
-    MoveTo1st,
+    internal enum PathStart
+    {
+        /// <summary>
+        /// Set the current position to the first point.
+        /// </summary>
+        MoveTo1st,
 
-    /// <summary>
-    /// Draws a line to the first point.
-    /// </summary>
-    LineTo1st,
+        /// <summary>
+        /// Draws a line to the first point.
+        /// </summary>
+        LineTo1st,
 
-    /// <summary>
-    /// Ignores the first point.
-    /// </summary>
-    Ignore1st,
+        /// <summary>
+        /// Ignores the first point.
+        /// </summary>
+        Ignore1st,
+    }
 }

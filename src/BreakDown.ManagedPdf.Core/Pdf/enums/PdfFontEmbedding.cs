@@ -31,34 +31,35 @@
 
 using System;
 
-namespace BreakDown.ManagedPdf.Core.Pdf.enums;
-
-/// <summary>
-/// Specifies the embedding options of an XFont when converted into PDF.
-/// Font embedding is not optional anymore. So Always is the only option.
-/// </summary>
-public enum PdfFontEmbedding
+namespace BreakDown.ManagedPdf.Core.Pdf.enums
 {
     /// <summary>
-    /// All fonts are embedded.
+    /// Specifies the embedding options of an XFont when converted into PDF.
+    /// Font embedding is not optional anymore. So Always is the only option.
     /// </summary>
-    Always,
+    public enum PdfFontEmbedding
+    {
+        /// <summary>
+        /// All fonts are embedded.
+        /// </summary>
+        Always,
 
-    /// <summary>
-    /// Fonts are not embedded. This is not an option anymore.
-    /// </summary>
-    [Obsolete("Fonts must always be embedded.")]
-    None,
+        /// <summary>
+        /// Fonts are not embedded. This is not an option anymore.
+        /// </summary>
+        [Obsolete("Fonts must always be embedded.")]
+        None,
 
-    /// <summary>
-    /// Unicode fonts are embedded, WinAnsi fonts are not embedded.
-    /// </summary>
-    [Obsolete("Fonts must always be embedded.")]
-    Default,
+        /// <summary>
+        /// Unicode fonts are embedded, WinAnsi fonts are not embedded.
+        /// </summary>
+        [Obsolete("Fonts must always be embedded.")]
+        Default,
 
-    /// <summary>
-    /// Not yet implemented.
-    /// </summary>
-    [Obsolete("Fonts must always be embedded.")]
-    Automatic,
+        /// <summary>
+        /// Not yet implemented.
+        /// </summary>
+        [Obsolete("Fonts must always be embedded.")]
+        Automatic,
+    }
 }

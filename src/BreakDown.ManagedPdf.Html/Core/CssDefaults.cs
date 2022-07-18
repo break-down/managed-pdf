@@ -10,17 +10,17 @@
 // - Sun Tsu,
 // "The Art of War"
 
-namespace BreakDown.ManagedPdf.Html.Core;
-
-internal static class CssDefaults
+namespace BreakDown.ManagedPdf.Html.Core
 {
-    /// <summary>
-    /// CSS Specification's Default Style Sheet for HTML 4
-    /// </summary>
-    /// <remarks>
-    /// http://www.w3.org/TR/CSS21/sample.html
-    /// </remarks>
-    public const string DefaultStyleSheet = @"
+    internal static class CssDefaults
+    {
+        /// <summary>
+        /// CSS Specification's Default Style Sheet for HTML 4
+        /// </summary>
+        /// <remarks>
+        /// http://www.w3.org/TR/CSS21/sample.html
+        /// </remarks>
+        public const string DefaultStyleSheet = @"
         html, address,
         blockquote,
         body, dd, div,
@@ -124,4 +124,5 @@ internal static class CssDefaults
             padding: 8px; 
             Font: 9pt Tahoma;
         }";
+    }
 }

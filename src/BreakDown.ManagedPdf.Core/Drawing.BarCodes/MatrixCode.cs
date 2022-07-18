@@ -33,114 +33,115 @@
 using System;
 using BreakDown.ManagedPdf.Core.Drawing.BarCodes.enums;
 
-namespace BreakDown.ManagedPdf.Core.Drawing.BarCodes;
-
-/// <summary>
-/// Represents the base class of all 2D codes.
-/// </summary>
-public abstract class MatrixCode : CodeBase
+namespace BreakDown.ManagedPdf.Core.Drawing.BarCodes
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="MatrixCode"/> class.
+    /// Represents the base class of all 2D codes.
     /// </summary>
-    public MatrixCode(string text, string encoding, int rows, int columns, XSize size)
-        : base(text, size, CodeDirection.LeftToRight)
+    public abstract class MatrixCode : CodeBase
     {
-        _encoding = encoding;
-        if (String.IsNullOrEmpty(_encoding))
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MatrixCode"/> class.
+        /// </summary>
+        public MatrixCode(string text, string encoding, int rows, int columns, XSize size)
+            : base(text, size, CodeDirection.LeftToRight)
         {
-            _encoding = new String('a', Text.Length);
+            _encoding = encoding;
+            if (String.IsNullOrEmpty(_encoding))
+            {
+                _encoding = new String('a', Text.Length);
+            }
+
+            if (columns < rows)
+            {
+                _rows = columns;
+                _columns = rows;
+            }
+            else
+            {
+                _columns = columns;
+                _rows = rows;
+            }
+
+            Text = text;
         }
 
-        if (columns < rows)
+        /// <summary>
+        /// Gets or sets the encoding. docDaSt
+        /// </summary>
+        public string Encoding
         {
-            _rows = columns;
-            _columns = rows;
+            get { return _encoding; }
+            set
+            {
+                _encoding = value;
+                _matrixImage = null;
+            }
         }
-        else
+
+        string _encoding;
+
+        /// <summary>
+        /// docDaSt
+        /// </summary>
+        public int Columns
         {
-            _columns = columns;
-            _rows = rows;
+            get { return _columns; }
+            set
+            {
+                _columns = value;
+                _matrixImage = null;
+            }
         }
 
-        Text = text;
-    }
+        int _columns;
 
-    /// <summary>
-    /// Gets or sets the encoding. docDaSt
-    /// </summary>
-    public string Encoding
-    {
-        get { return _encoding; }
-        set
+        /// <summary>
+        /// docDaSt
+        /// </summary>
+        public int Rows
         {
-            _encoding = value;
-            _matrixImage = null;
+            get { return _rows; }
+            set
+            {
+                _rows = value;
+                _matrixImage = null;
+            }
         }
-    }
 
-    string _encoding;
+        int _rows;
 
-    /// <summary>
-    /// docDaSt
-    /// </summary>
-    public int Columns
-    {
-        get { return _columns; }
-        set
+        /// <summary>
+        /// docDaSt
+        /// </summary>
+        public new string Text
         {
-            _columns = value;
-            _matrixImage = null;
+            get { return base.Text; }
+            set
+            {
+                base.Text = value;
+                _matrixImage = null;
+            }
         }
-    }
 
-    int _columns;
-
-    /// <summary>
-    /// docDaSt
-    /// </summary>
-    public int Rows
-    {
-        get { return _rows; }
-        set
+        internal XImage MatrixImage
         {
-            _rows = value;
-            _matrixImage = null;
+            get { return _matrixImage; }
+            set { _matrixImage = value; }
         }
-    }
 
-    int _rows;
+        XImage _matrixImage;
 
-    /// <summary>
-    /// docDaSt
-    /// </summary>
-    public new string Text
-    {
-        get { return base.Text; }
-        set
+        /// <summary>
+        /// When implemented in a derived class renders the 2D code.
+        /// </summary>
+        protected internal abstract void Render(XGraphics gfx, XBrush brush, XPoint center);
+
+        /// <summary>
+        /// Determines whether the specified string can be used as Text for this matrix code type.
+        /// </summary>
+        protected override void CheckCode(string text)
         {
-            base.Text = value;
-            _matrixImage = null;
         }
-    }
-
-    internal XImage MatrixImage
-    {
-        get { return _matrixImage; }
-        set { _matrixImage = value; }
-    }
-
-    XImage _matrixImage;
-
-    /// <summary>
-    /// When implemented in a derived class renders the 2D code.
-    /// </summary>
-    protected internal abstract void Render(XGraphics gfx, XBrush brush, XPoint center);
-
-    /// <summary>
-    /// Determines whether the specified string can be used as Text for this matrix code type.
-    /// </summary>
-    protected override void CheckCode(string text)
-    {
     }
 }

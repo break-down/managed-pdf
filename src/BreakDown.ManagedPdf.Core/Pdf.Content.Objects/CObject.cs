@@ -31,47 +31,49 @@
 
 using System;
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Content.Objects;
-// TODO: split into single files
-
-/// <summary>
-/// Base class for all PDF content stream objects.
-/// </summary>
-public abstract class CObject : ICloneable
+namespace BreakDown.ManagedPdf.Core.Pdf.Content.Objects
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CObject"/> class.
-    /// </summary>
-    protected CObject()
-    {
-    }
+    // TODO: split into single files
 
     /// <summary>
-    /// Creates a new object that is a copy of the current instance.
+    /// Base class for all PDF content stream objects.
     /// </summary>
-    object ICloneable.Clone()
+    public abstract class CObject : ICloneable
     {
-        return Copy();
-    }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CObject"/> class.
+        /// </summary>
+        protected CObject()
+        {
+        }
 
-    /// <summary>
-    /// Creates a new object that is a copy of the current instance.
-    /// </summary>
-    public CObject Clone()
-    {
-        return Copy();
-    }
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        object ICloneable.Clone()
+        {
+            return Copy();
+        }
 
-    /// <summary>
-    /// Implements the copy mechanism. Must be overridden in derived classes.
-    /// </summary>
-    protected virtual CObject Copy()
-    {
-        return (CObject)MemberwiseClone();
-    }
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        public CObject Clone()
+        {
+            return Copy();
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    internal abstract void WriteObject(ContentWriter writer);
+        /// <summary>
+        /// Implements the copy mechanism. Must be overridden in derived classes.
+        /// </summary>
+        protected virtual CObject Copy()
+        {
+            return (CObject)MemberwiseClone();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        internal abstract void WriteObject(ContentWriter writer);
+    }
 }

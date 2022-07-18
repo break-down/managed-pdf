@@ -31,23 +31,24 @@
 
 using System;
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Content.Objects.@enum;
-
-/// <summary>
-/// Specifies the group of operations the op-code belongs to.
-/// </summary>
-[Flags]
-public enum OpCodeFlags
+namespace BreakDown.ManagedPdf.Core.Pdf.Content.Objects.@enum
 {
     /// <summary>
-    /// 
+    /// Specifies the group of operations the op-code belongs to.
     /// </summary>
-    None,
+    [Flags]
+    public enum OpCodeFlags
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        None,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    TextOut = 0x0001,
+        /// <summary>
+        /// 
+        /// </summary>
+        TextOut = 0x0001,
 
-    //Color, Pattern, Images,...
+        //Color, Pattern, Images,...
+    }
 }

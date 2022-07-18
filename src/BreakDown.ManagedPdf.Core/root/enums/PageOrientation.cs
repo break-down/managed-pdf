@@ -29,20 +29,21 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.root.enums;
-
-/// <summary>
-/// Specifies the orientation of a page.
-/// </summary>
-public enum PageOrientation
+namespace BreakDown.ManagedPdf.Core.root.enums
 {
     /// <summary>
-    /// The default page orientation.
+    /// Specifies the orientation of a page.
     /// </summary>
-    Portrait,
+    public enum PageOrientation
+    {
+        /// <summary>
+        /// The default page orientation.
+        /// </summary>
+        Portrait,
 
-    /// <summary>
-    /// The width and height of the page are reversed.
-    /// </summary>
-    Landscape,
+        /// <summary>
+        /// The width and height of the page are reversed.
+        /// </summary>
+        Landscape,
+    }
 }

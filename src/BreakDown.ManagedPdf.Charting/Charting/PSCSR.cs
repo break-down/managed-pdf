@@ -31,22 +31,23 @@
 
 using BreakDown.ManagedPdf.Charting.Charting.enums;
 
-namespace BreakDown.ManagedPdf.Charting.Charting;
-
-/// <summary>
-/// The Pdf-Sharp-Charting-String-Resources.
-/// </summary>
+namespace BreakDown.ManagedPdf.Charting.Charting
+{
+    /// <summary>
+    /// The Pdf-Sharp-Charting-String-Resources.
+    /// </summary>
 
 // ReSharper disable once InconsistentNaming
-internal class PSCSR
-{
-    internal static string InvalidChartTypeForCombination(ChartType chartType)
+    internal class PSCSR
     {
-        return string.Format("ChartType '{0}' not valid for combination of charts.", chartType.ToString());
-    }
+        internal static string InvalidChartTypeForCombination(ChartType chartType)
+        {
+            return string.Format("ChartType '{0}' not valid for combination of charts.", chartType.ToString());
+        }
 
-    internal static string PercentNotSupportedByColumnDataLabel
-    {
-        get { return "Column data label cannot be set to 'Percent'"; }
+        internal static string PercentNotSupportedByColumnDataLabel
+        {
+            get { return "Column data label cannot be set to 'Percent'"; }
+        }
     }
 }

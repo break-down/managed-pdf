@@ -31,48 +31,49 @@
 
 using System;
 
-namespace BreakDown.ManagedPdf.Charting.Charting;
-
-/// <summary>
-/// Represents the actual value on the XSeries.
-/// </summary>
-public class XValue : ChartObject
+namespace BreakDown.ManagedPdf.Charting.Charting
 {
     /// <summary>
-    /// Initializes a new instance of the XValue class.
+    /// Represents the actual value on the XSeries.
     /// </summary>
-    internal XValue()
+    public class XValue : ChartObject
     {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the XValue class with the specified value.
-    /// </summary>
-    public XValue(string value)
-        : this()
-    {
-        if (value == null)
+        /// <summary>
+        /// Initializes a new instance of the XValue class.
+        /// </summary>
+        internal XValue()
         {
-            throw new ArgumentNullException("value");
         }
 
-        _value = value;
+        /// <summary>
+        /// Initializes a new instance of the XValue class with the specified value.
+        /// </summary>
+        public XValue(string value)
+            : this()
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+
+            _value = value;
+        }
+
+        /// <summary>
+        /// The actual value of the XValue.
+        /// </summary>
+        internal string _value;
+
+        #region Methods
+
+        /// <summary>
+        /// Creates a deep copy of this object.
+        /// </summary>
+        public new XValue Clone()
+        {
+            return (XValue)DeepCopy();
+        }
+
+        #endregion
     }
-
-    /// <summary>
-    /// The actual value of the XValue.
-    /// </summary>
-    internal string _value;
-
-    #region Methods
-
-    /// <summary>
-    /// Creates a deep copy of this object.
-    /// </summary>
-    public new XValue Clone()
-    {
-        return (XValue)DeepCopy();
-    }
-
-    #endregion
 }

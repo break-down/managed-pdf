@@ -32,77 +32,78 @@
 using BreakDown.ManagedPdf.Core.Drawing;
 using BreakDown.ManagedPdf.Core.Drawing.enums;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents the legend renderer specific to pie charts.
-/// </summary>
-internal class PieLegendRenderer : LegendRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the PieLegendRenderer class with the specified renderer
-    /// parameters.
+    /// Represents the legend renderer specific to pie charts.
     /// </summary>
-    internal PieLegendRenderer(RendererParameters parms)
-        : base(parms)
+    internal class PieLegendRenderer : LegendRenderer
     {
-    }
-
-    /// <summary>
-    /// Initializes the legend's renderer info. Each data point will be represented through
-    /// a legend entry renderer info.
-    /// </summary>
-    internal override RendererInfo Init()
-    {
-        LegendRendererInfo lri = null;
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-        if (cri._chart._legend != null)
+        /// <summary>
+        /// Initializes a new instance of the PieLegendRenderer class with the specified renderer
+        /// parameters.
+        /// </summary>
+        internal PieLegendRenderer(RendererParameters parms)
+            : base(parms)
         {
-            lri = new LegendRendererInfo();
-            lri._legend = cri._chart._legend;
-
-            lri.Font = Converter.ToXFont(lri._legend._font, cri.DefaultFont);
-            lri.FontColor = new XSolidBrush(XColors.Black);
-
-            if (lri._legend._lineFormat != null)
-            {
-                lri.BorderPen = Converter.ToXPen(lri._legend._lineFormat, XColors.Black, DefaultLineWidth, XDashStyle.Solid);
-            }
-
-            XSeries xseries = null;
-            if (cri._chart._xValues != null)
-            {
-                xseries = cri._chart._xValues[0];
-            }
-
-            var index = 0;
-            var sri = cri.seriesRendererInfos[0];
-            lri.Entries = new LegendEntryRendererInfo[sri._pointRendererInfos.Length];
-            foreach (var pri in sri._pointRendererInfos)
-            {
-                var leri = new LegendEntryRendererInfo();
-                leri._seriesRendererInfo = sri;
-                leri._legendRendererInfo = lri;
-                leri.EntryText = string.Empty;
-                if (xseries != null)
-                {
-                    if (xseries.Count > index)
-                    {
-                        leri.EntryText = xseries[index]._value;
-                    }
-                }
-                else
-                {
-                    leri.EntryText = (index + 1).ToString(); // create default/dummy entry
-                }
-
-                leri.MarkerPen = pri.LineFormat;
-                leri.MarkerBrush = pri.FillFormat;
-
-                lri.Entries[index++] = leri;
-            }
         }
 
-        return lri;
+        /// <summary>
+        /// Initializes the legend's renderer info. Each data point will be represented through
+        /// a legend entry renderer info.
+        /// </summary>
+        internal override RendererInfo Init()
+        {
+            LegendRendererInfo lri = null;
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+            if (cri._chart._legend != null)
+            {
+                lri = new LegendRendererInfo();
+                lri._legend = cri._chart._legend;
+
+                lri.Font = Converter.ToXFont(lri._legend._font, cri.DefaultFont);
+                lri.FontColor = new XSolidBrush(XColors.Black);
+
+                if (lri._legend._lineFormat != null)
+                {
+                    lri.BorderPen = Converter.ToXPen(lri._legend._lineFormat, XColors.Black, DefaultLineWidth, XDashStyle.Solid);
+                }
+
+                XSeries xseries = null;
+                if (cri._chart._xValues != null)
+                {
+                    xseries = cri._chart._xValues[0];
+                }
+
+                var index = 0;
+                var sri = cri.seriesRendererInfos[0];
+                lri.Entries = new LegendEntryRendererInfo[sri._pointRendererInfos.Length];
+                foreach (var pri in sri._pointRendererInfos)
+                {
+                    var leri = new LegendEntryRendererInfo();
+                    leri._seriesRendererInfo = sri;
+                    leri._legendRendererInfo = lri;
+                    leri.EntryText = string.Empty;
+                    if (xseries != null)
+                    {
+                        if (xseries.Count > index)
+                        {
+                            leri.EntryText = xseries[index]._value;
+                        }
+                    }
+                    else
+                    {
+                        leri.EntryText = (index + 1).ToString(); // create default/dummy entry
+                    }
+
+                    leri.MarkerPen = pri.LineFormat;
+                    leri.MarkerBrush = pri.FillFormat;
+
+                    lri.Entries[index++] = leri;
+                }
+            }
+
+            return lri;
+        }
     }
 }

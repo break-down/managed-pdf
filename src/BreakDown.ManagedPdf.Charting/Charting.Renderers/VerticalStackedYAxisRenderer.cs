@@ -31,65 +31,66 @@
 
 using System;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a Y axis renderer used for charts of type Column2D or Line.
-/// </summary>
-internal class VerticalStackedYAxisRenderer : VerticalYAxisRenderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the VerticalYAxisRenderer class with the
-    /// specified renderer parameters.
+    /// Represents a Y axis renderer used for charts of type Column2D or Line.
     /// </summary>
-    internal VerticalStackedYAxisRenderer(RendererParameters parms)
-        : base(parms)
+    internal class VerticalStackedYAxisRenderer : VerticalYAxisRenderer
     {
-    }
-
-    /// <summary>
-    /// Determines the sum of the smallest and the largest stacked column
-    /// from all series of the chart.
-    /// </summary>
-    protected override void CalcYAxis(out double yMin, out double yMax)
-    {
-        yMin = double.MaxValue;
-        yMax = double.MinValue;
-
-        var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
-
-        var maxPoints = 0;
-        foreach (var sri in cri.seriesRendererInfos)
+        /// <summary>
+        /// Initializes a new instance of the VerticalYAxisRenderer class with the
+        /// specified renderer parameters.
+        /// </summary>
+        internal VerticalStackedYAxisRenderer(RendererParameters parms)
+            : base(parms)
         {
-            maxPoints = Math.Max(maxPoints, sri._series._seriesElements.Count);
         }
 
-        for (var pointIdx = 0; pointIdx < maxPoints; ++pointIdx)
+        /// <summary>
+        /// Determines the sum of the smallest and the largest stacked column
+        /// from all series of the chart.
+        /// </summary>
+        protected override void CalcYAxis(out double yMin, out double yMax)
         {
-            double valueSumPos = 0, valueSumNeg = 0;
+            yMin = double.MaxValue;
+            yMax = double.MinValue;
+
+            var cri = (ChartRendererInfo)_rendererParms.RendererInfo;
+
+            var maxPoints = 0;
             foreach (var sri in cri.seriesRendererInfos)
             {
-                if (sri._pointRendererInfos.Length <= pointIdx)
-                {
-                    break;
-                }
-
-                var column = (ColumnRendererInfo)sri._pointRendererInfos[pointIdx];
-                if (column.Point != null && !double.IsNaN(column.Point._value))
-                {
-                    if (column.Point._value < 0)
-                    {
-                        valueSumNeg += column.Point._value;
-                    }
-                    else
-                    {
-                        valueSumPos += column.Point._value;
-                    }
-                }
+                maxPoints = Math.Max(maxPoints, sri._series._seriesElements.Count);
             }
 
-            yMin = Math.Min(valueSumNeg, yMin);
-            yMax = Math.Max(valueSumPos, yMax);
+            for (var pointIdx = 0; pointIdx < maxPoints; ++pointIdx)
+            {
+                double valueSumPos = 0, valueSumNeg = 0;
+                foreach (var sri in cri.seriesRendererInfos)
+                {
+                    if (sri._pointRendererInfos.Length <= pointIdx)
+                    {
+                        break;
+                    }
+
+                    var column = (ColumnRendererInfo)sri._pointRendererInfos[pointIdx];
+                    if (column.Point != null && !double.IsNaN(column.Point._value))
+                    {
+                        if (column.Point._value < 0)
+                        {
+                            valueSumNeg += column.Point._value;
+                        }
+                        else
+                        {
+                            valueSumPos += column.Point._value;
+                        }
+                    }
+                }
+
+                yMin = Math.Min(valueSumNeg, yMin);
+                yMax = Math.Max(valueSumPos, yMax);
+            }
         }
     }
 }

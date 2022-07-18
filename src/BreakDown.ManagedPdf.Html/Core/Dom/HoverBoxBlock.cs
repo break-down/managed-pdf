@@ -12,45 +12,46 @@
 
 using BreakDown.ManagedPdf.Html.Core.Entities;
 
-namespace BreakDown.ManagedPdf.Html.Core.Dom;
-
-/// <summary>
-/// CSS boxes that have ":hover" selector on them.
-/// </summary>
-internal sealed class HoverBoxBlock
+namespace BreakDown.ManagedPdf.Html.Core.Dom
 {
     /// <summary>
-    /// the box that has :hover css on
+    /// CSS boxes that have ":hover" selector on them.
     /// </summary>
-    private readonly CssBox _cssBox;
-
-    /// <summary>
-    /// the :hover style block data
-    /// </summary>
-    private readonly CssBlock _cssBlock;
-
-    /// <summary>
-    /// Init.
-    /// </summary>
-    public HoverBoxBlock(CssBox cssBox, CssBlock cssBlock)
+    internal sealed class HoverBoxBlock
     {
-        _cssBox = cssBox;
-        _cssBlock = cssBlock;
-    }
+        /// <summary>
+        /// the box that has :hover css on
+        /// </summary>
+        private readonly CssBox _cssBox;
 
-    /// <summary>
-    /// the box that has :hover css on
-    /// </summary>
-    public CssBox CssBox
-    {
-        get { return _cssBox; }
-    }
+        /// <summary>
+        /// the :hover style block data
+        /// </summary>
+        private readonly CssBlock _cssBlock;
 
-    /// <summary>
-    /// the :hover style block data
-    /// </summary>
-    public CssBlock CssBlock
-    {
-        get { return _cssBlock; }
+        /// <summary>
+        /// Init.
+        /// </summary>
+        public HoverBoxBlock(CssBox cssBox, CssBlock cssBlock)
+        {
+            _cssBox = cssBox;
+            _cssBlock = cssBlock;
+        }
+
+        /// <summary>
+        /// the box that has :hover css on
+        /// </summary>
+        public CssBox CssBox
+        {
+            get { return _cssBox; }
+        }
+
+        /// <summary>
+        /// the :hover style block data
+        /// </summary>
+        public CssBlock CssBlock
+        {
+            get { return _cssBlock; }
+        }
     }
 }

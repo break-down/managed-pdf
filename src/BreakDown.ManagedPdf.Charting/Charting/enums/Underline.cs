@@ -29,45 +29,46 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting.enums;
-
-/// <summary>
-/// Specifies the underline type for the font.
-/// </summary>
-public enum Underline
+namespace BreakDown.ManagedPdf.Charting.Charting.enums
 {
     /// <summary>
-    /// 
+    /// Specifies the underline type for the font.
     /// </summary>
-    None,
+    public enum Underline
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        None,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    Single,
+        /// <summary>
+        /// 
+        /// </summary>
+        Single,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    Words,
+        /// <summary>
+        /// 
+        /// </summary>
+        Words,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    Dotted,
+        /// <summary>
+        /// 
+        /// </summary>
+        Dotted,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    Dash,
+        /// <summary>
+        /// 
+        /// </summary>
+        Dash,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    DotDash,
+        /// <summary>
+        /// 
+        /// </summary>
+        DotDash,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    DotDotDash,
+        /// <summary>
+        /// 
+        /// </summary>
+        DotDotDash,
+    }
 }

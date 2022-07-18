@@ -34,152 +34,153 @@ using BreakDown.ManagedPdf.Charting.Charting.enums;
 using BreakDown.ManagedPdf.Core.Drawing;
 using BreakDown.ManagedPdf.Core.Drawing.enums;
 
-namespace BreakDown.ManagedPdf.Charting.Charting.Renderers;
-
-/// <summary>
-/// Represents a axis title renderer used for x and y axis titles.
-/// </summary>
-internal class AxisTitleRenderer : Renderer
+namespace BreakDown.ManagedPdf.Charting.Charting.Renderers
 {
     /// <summary>
-    /// Initializes a new instance of the AxisTitleRenderer class with the
-    /// specified renderer parameters.
+    /// Represents a axis title renderer used for x and y axis titles.
     /// </summary>
-    internal AxisTitleRenderer(RendererParameters parms)
-        : base(parms)
+    internal class AxisTitleRenderer : Renderer
     {
-    }
-
-    /// <summary>
-    /// Calculates the space used for the axis title.
-    /// </summary>
-    internal override void Format()
-    {
-        var gfx = _rendererParms.Graphics;
-
-        var atri = ((AxisRendererInfo)_rendererParms.RendererInfo)._axisTitleRendererInfo;
-        if (atri.AxisTitleText != "")
+        /// <summary>
+        /// Initializes a new instance of the AxisTitleRenderer class with the
+        /// specified renderer parameters.
+        /// </summary>
+        internal AxisTitleRenderer(RendererParameters parms)
+            : base(parms)
         {
-            var size = gfx.MeasureString(atri.AxisTitleText, atri.AxisTitleFont);
-            if (atri.AxisTitleOrientation != 0)
-            {
-                var points = new XPoint[2];
-                points[0].X = 0;
-                points[0].Y = 0;
-                points[1].X = size.Width;
-                points[1].Y = size.Height;
-
-                var matrix = new XMatrix();
-                matrix.RotatePrepend(-atri.AxisTitleOrientation);
-                matrix.TransformPoints(points);
-
-                size.Width = Math.Abs(points[1].X - points[0].X);
-                size.Height = Math.Abs(points[1].Y - points[0].Y);
-            }
-
-            atri.X = 0;
-            atri.Y = 0;
-            atri.Height = size.Height;
-            atri.Width = size.Width;
         }
-    }
 
-    /// <summary>
-    /// Draws the axis title.
-    /// </summary>
-    internal override void Draw()
-    {
-        var ari = (AxisRendererInfo)_rendererParms.RendererInfo;
-        var atri = ari._axisTitleRendererInfo;
-        if (atri.AxisTitleText != "")
+        /// <summary>
+        /// Calculates the space used for the axis title.
+        /// </summary>
+        internal override void Format()
         {
             var gfx = _rendererParms.Graphics;
-            if (atri.AxisTitleOrientation != 0)
+
+            var atri = ((AxisRendererInfo)_rendererParms.RendererInfo)._axisTitleRendererInfo;
+            if (atri.AxisTitleText != "")
             {
-                var layout = atri.Rect;
-                layout.X = -(layout.Width / 2);
-                layout.Y = -(layout.Height / 2);
-
-                double x = 0;
-                switch (atri.AxisTitleAlignment)
+                var size = gfx.MeasureString(atri.AxisTitleText, atri.AxisTitleFont);
+                if (atri.AxisTitleOrientation != 0)
                 {
-                    case HorizontalAlignment.Center:
-                        x = atri.X + atri.Width / 2;
-                        break;
+                    var points = new XPoint[2];
+                    points[0].X = 0;
+                    points[0].Y = 0;
+                    points[1].X = size.Width;
+                    points[1].Y = size.Height;
 
-                    case HorizontalAlignment.Right:
-                        x = atri.X + atri.Width - layout.Width / 2;
-                        break;
+                    var matrix = new XMatrix();
+                    matrix.RotatePrepend(-atri.AxisTitleOrientation);
+                    matrix.TransformPoints(points);
 
-                    case HorizontalAlignment.Left:
-                    default:
-                        x = atri.X;
-                        break;
+                    size.Width = Math.Abs(points[1].X - points[0].X);
+                    size.Height = Math.Abs(points[1].Y - points[0].Y);
                 }
 
-                double y = 0;
-                switch (atri.AxisTitleVerticalAlignment)
-                {
-                    case VerticalAlignment.Center:
-                        y = atri.Y + atri.Height / 2;
-                        break;
-
-                    case VerticalAlignment.Bottom:
-                        y = atri.Y + atri.Height - layout.Height / 2;
-                        break;
-
-                    case VerticalAlignment.Top:
-                    default:
-                        y = atri.Y;
-                        break;
-                }
-
-                var xsf = new XStringFormat();
-                xsf.Alignment = XStringAlignment.Center;
-                xsf.LineAlignment = XLineAlignment.Center;
-
-                var state = gfx.Save();
-                gfx.TranslateTransform(x, y);
-                gfx.RotateTransform(-atri.AxisTitleOrientation);
-                gfx.DrawString(atri.AxisTitleText, atri.AxisTitleFont, atri.AxisTitleBrush, layout, xsf);
-                gfx.Restore(state);
+                atri.X = 0;
+                atri.Y = 0;
+                atri.Height = size.Height;
+                atri.Width = size.Width;
             }
-            else
+        }
+
+        /// <summary>
+        /// Draws the axis title.
+        /// </summary>
+        internal override void Draw()
+        {
+            var ari = (AxisRendererInfo)_rendererParms.RendererInfo;
+            var atri = ari._axisTitleRendererInfo;
+            if (atri.AxisTitleText != "")
             {
-                var format = new XStringFormat();
-                switch (atri.AxisTitleAlignment)
+                var gfx = _rendererParms.Graphics;
+                if (atri.AxisTitleOrientation != 0)
                 {
-                    case HorizontalAlignment.Center:
-                        format.Alignment = XStringAlignment.Center;
-                        break;
+                    var layout = atri.Rect;
+                    layout.X = -(layout.Width / 2);
+                    layout.Y = -(layout.Height / 2);
 
-                    case HorizontalAlignment.Right:
-                        format.Alignment = XStringAlignment.Far;
-                        break;
+                    double x = 0;
+                    switch (atri.AxisTitleAlignment)
+                    {
+                        case HorizontalAlignment.Center:
+                            x = atri.X + atri.Width / 2;
+                            break;
 
-                    case HorizontalAlignment.Left:
-                    default:
-                        format.Alignment = XStringAlignment.Near;
-                        break;
+                        case HorizontalAlignment.Right:
+                            x = atri.X + atri.Width - layout.Width / 2;
+                            break;
+
+                        case HorizontalAlignment.Left:
+                        default:
+                            x = atri.X;
+                            break;
+                    }
+
+                    double y = 0;
+                    switch (atri.AxisTitleVerticalAlignment)
+                    {
+                        case VerticalAlignment.Center:
+                            y = atri.Y + atri.Height / 2;
+                            break;
+
+                        case VerticalAlignment.Bottom:
+                            y = atri.Y + atri.Height - layout.Height / 2;
+                            break;
+
+                        case VerticalAlignment.Top:
+                        default:
+                            y = atri.Y;
+                            break;
+                    }
+
+                    var xsf = new XStringFormat();
+                    xsf.Alignment = XStringAlignment.Center;
+                    xsf.LineAlignment = XLineAlignment.Center;
+
+                    var state = gfx.Save();
+                    gfx.TranslateTransform(x, y);
+                    gfx.RotateTransform(-atri.AxisTitleOrientation);
+                    gfx.DrawString(atri.AxisTitleText, atri.AxisTitleFont, atri.AxisTitleBrush, layout, xsf);
+                    gfx.Restore(state);
                 }
-
-                switch (atri.AxisTitleVerticalAlignment)
+                else
                 {
-                    case VerticalAlignment.Center:
-                        format.LineAlignment = XLineAlignment.Center;
-                        break;
+                    var format = new XStringFormat();
+                    switch (atri.AxisTitleAlignment)
+                    {
+                        case HorizontalAlignment.Center:
+                            format.Alignment = XStringAlignment.Center;
+                            break;
 
-                    case VerticalAlignment.Bottom:
-                        format.LineAlignment = XLineAlignment.Far;
-                        break;
+                        case HorizontalAlignment.Right:
+                            format.Alignment = XStringAlignment.Far;
+                            break;
 
-                    case VerticalAlignment.Top:
-                    default:
-                        format.LineAlignment = XLineAlignment.Near;
-                        break;
+                        case HorizontalAlignment.Left:
+                        default:
+                            format.Alignment = XStringAlignment.Near;
+                            break;
+                    }
+
+                    switch (atri.AxisTitleVerticalAlignment)
+                    {
+                        case VerticalAlignment.Center:
+                            format.LineAlignment = XLineAlignment.Center;
+                            break;
+
+                        case VerticalAlignment.Bottom:
+                            format.LineAlignment = XLineAlignment.Far;
+                            break;
+
+                        case VerticalAlignment.Top:
+                        default:
+                            format.LineAlignment = XLineAlignment.Near;
+                            break;
+                    }
+
+                    gfx.DrawString(atri.AxisTitleText, atri.AxisTitleFont, atri.AxisTitleBrush, atri.Rect, format);
                 }
-
-                gfx.DrawString(atri.AxisTitleText, atri.AxisTitleFont, atri.AxisTitleBrush, atri.Rect, format);
             }
         }
     }

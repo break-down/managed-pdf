@@ -31,21 +31,22 @@
 
 using System;
 
-namespace BreakDown.ManagedPdf.Core.Drawing.enums;
-
-/// <summary>
-/// Specifies the direction of the y-axis.
-/// </summary>
-public enum XPageDirection
+namespace BreakDown.ManagedPdf.Core.Drawing.enums
 {
     /// <summary>
-    /// Increasing Y values go downwards. This is the default.
+    /// Specifies the direction of the y-axis.
     /// </summary>
-    Downwards = 0,
+    public enum XPageDirection
+    {
+        /// <summary>
+        /// Increasing Y values go downwards. This is the default.
+        /// </summary>
+        Downwards = 0,
 
-    /// <summary>
-    /// Increasing Y values go upwards. This is only possible when drawing on a PDF page.
-    /// It is not implemented when drawing on a System.Drawing.Graphics object.
-    /// </summary>
-    [Obsolete("Not implemeted - yagni")] Upwards = 1, // Possible, but needs a lot of case differentiation - postponed.
+        /// <summary>
+        /// Increasing Y values go upwards. This is only possible when drawing on a PDF page.
+        /// It is not implemented when drawing on a System.Drawing.Graphics object.
+        /// </summary>
+        [Obsolete("Not implemeted - yagni")] Upwards = 1, // Possible, but needs a lot of case differentiation - postponed.
+    }
 }

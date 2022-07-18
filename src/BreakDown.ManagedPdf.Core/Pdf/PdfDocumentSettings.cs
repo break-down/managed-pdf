@@ -29,51 +29,52 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Pdf;
-
-/// <summary>
-/// Holds PDF specific information of the document.
-/// </summary>
-public sealed class PdfDocumentSettings
+namespace BreakDown.ManagedPdf.Core.Pdf
 {
-    internal PdfDocumentSettings(PdfDocument document)
-    {
-    }
-
     /// <summary>
-    /// Gets or sets the default trim margins.
+    /// Holds PDF specific information of the document.
     /// </summary>
-    public TrimMargins TrimMargins
+    public sealed class PdfDocumentSettings
     {
-        get
+        internal PdfDocumentSettings(PdfDocument document)
         {
-            if (_trimMargins == null)
-            {
-                _trimMargins = new TrimMargins();
-            }
-
-            return _trimMargins;
         }
-        set
+
+        /// <summary>
+        /// Gets or sets the default trim margins.
+        /// </summary>
+        public TrimMargins TrimMargins
         {
-            if (_trimMargins == null)
+            get
             {
-                _trimMargins = new TrimMargins();
-            }
+                if (_trimMargins == null)
+                {
+                    _trimMargins = new TrimMargins();
+                }
 
-            if (value != null)
-            {
-                _trimMargins.Left = value.Left;
-                _trimMargins.Right = value.Right;
-                _trimMargins.Top = value.Top;
-                _trimMargins.Bottom = value.Bottom;
+                return _trimMargins;
             }
-            else
+            set
             {
-                _trimMargins.All = 0;
+                if (_trimMargins == null)
+                {
+                    _trimMargins = new TrimMargins();
+                }
+
+                if (value != null)
+                {
+                    _trimMargins.Left = value.Left;
+                    _trimMargins.Right = value.Right;
+                    _trimMargins.Top = value.Top;
+                    _trimMargins.Bottom = value.Bottom;
+                }
+                else
+                {
+                    _trimMargins.All = 0;
+                }
             }
         }
+
+        TrimMargins _trimMargins = new TrimMargins();
     }
-
-    TrimMargins _trimMargins = new TrimMargins();
 }

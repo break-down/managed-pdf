@@ -31,103 +31,104 @@
 
 using System.Collections;
 
-namespace BreakDown.ManagedPdf.Charting.Charting;
-
-/// <summary>
-/// Represents a series of data on the X-Axis.
-/// </summary>
-public class XSeries : ChartObject
+namespace BreakDown.ManagedPdf.Charting.Charting
 {
     /// <summary>
-    /// Initializes a new instance of the XSeries class.
+    /// Represents a series of data on the X-Axis.
     /// </summary>
-    public XSeries()
+    public class XSeries : ChartObject
     {
-        _xSeriesElements = new XSeriesElements();
-    }
-
-    /// <summary>
-    /// Gets the xvalue at the specified index.
-    /// </summary>
-    public XValue this[int index]
-    {
-        get { return (XValue)_xSeriesElements[index]; }
-    }
-
-    /// <summary>
-    /// The actual value container of the XSeries.
-    /// </summary>
-    protected XSeriesElements _xSeriesElements;
-
-    #region Methods
-
-    /// <summary>
-    /// Creates a deep copy of this object.
-    /// </summary>
-    public new XSeries Clone()
-    {
-        return (XSeries)DeepCopy();
-    }
-
-    /// <summary>
-    /// Implements the deep copy of the object.
-    /// </summary>
-    protected override object DeepCopy()
-    {
-        var xSeries = (XSeries)base.DeepCopy();
-        if (xSeries._xSeriesElements != null)
+        /// <summary>
+        /// Initializes a new instance of the XSeries class.
+        /// </summary>
+        public XSeries()
         {
-            xSeries._xSeriesElements = xSeries._xSeriesElements.Clone();
-            xSeries._xSeriesElements._parent = xSeries;
+            _xSeriesElements = new XSeriesElements();
         }
 
-        return xSeries;
+        /// <summary>
+        /// Gets the xvalue at the specified index.
+        /// </summary>
+        public XValue this[int index]
+        {
+            get { return (XValue)_xSeriesElements[index]; }
+        }
+
+        /// <summary>
+        /// The actual value container of the XSeries.
+        /// </summary>
+        protected XSeriesElements _xSeriesElements;
+
+        #region Methods
+
+        /// <summary>
+        /// Creates a deep copy of this object.
+        /// </summary>
+        public new XSeries Clone()
+        {
+            return (XSeries)DeepCopy();
+        }
+
+        /// <summary>
+        /// Implements the deep copy of the object.
+        /// </summary>
+        protected override object DeepCopy()
+        {
+            var xSeries = (XSeries)base.DeepCopy();
+            if (xSeries._xSeriesElements != null)
+            {
+                xSeries._xSeriesElements = xSeries._xSeriesElements.Clone();
+                xSeries._xSeriesElements._parent = xSeries;
+            }
+
+            return xSeries;
+        }
+
+        /// <summary>
+        /// Adds a blank to the XSeries.
+        /// </summary>
+        public void AddBlank()
+        {
+            _xSeriesElements.AddBlank();
+        }
+
+        /// <summary>
+        /// Adds a value to the XSeries.
+        /// </summary>
+        public XValue Add(string value)
+        {
+            return _xSeriesElements.Add(value);
+        }
+
+        /// <summary>
+        /// Adds an array of values to the XSeries.
+        /// </summary>
+        public void Add(params string[] values)
+        {
+            _xSeriesElements.Add(values);
+        }
+
+        /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator GetEnumerator()
+        {
+            return _xSeriesElements.GetEnumerator();
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the number of xvalues actually contained in the xseries.
+        /// </summary>
+        public int Count
+        {
+            get { return _xSeriesElements.Count; }
+        }
+
+        #endregion
     }
-
-    /// <summary>
-    /// Adds a blank to the XSeries.
-    /// </summary>
-    public void AddBlank()
-    {
-        _xSeriesElements.AddBlank();
-    }
-
-    /// <summary>
-    /// Adds a value to the XSeries.
-    /// </summary>
-    public XValue Add(string value)
-    {
-        return _xSeriesElements.Add(value);
-    }
-
-    /// <summary>
-    /// Adds an array of values to the XSeries.
-    /// </summary>
-    public void Add(params string[] values)
-    {
-        _xSeriesElements.Add(values);
-    }
-
-    /// <summary>
-    /// Gets the enumerator.
-    /// </summary>
-    /// <returns></returns>
-    public IEnumerator GetEnumerator()
-    {
-        return _xSeriesElements.GetEnumerator();
-    }
-
-    #endregion
-
-    #region Properties
-
-    /// <summary>
-    /// Gets the number of xvalues actually contained in the xseries.
-    /// </summary>
-    public int Count
-    {
-        get { return _xSeriesElements.Count; }
-    }
-
-    #endregion
 }

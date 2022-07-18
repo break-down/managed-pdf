@@ -29,42 +29,43 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Drawing.BarCodes.enums;
-
-/// <summary>
-/// docDaSt
-/// </summary>
-public enum DataMatrixEncoding
+namespace BreakDown.ManagedPdf.Core.Drawing.BarCodes.enums
 {
     /// <summary>
     /// docDaSt
     /// </summary>
-    Ascii,
+    public enum DataMatrixEncoding
+    {
+        /// <summary>
+        /// docDaSt
+        /// </summary>
+        Ascii,
 
-    /// <summary>
-    /// docDaSt
-    /// </summary>
-    C40,
+        /// <summary>
+        /// docDaSt
+        /// </summary>
+        C40,
 
-    /// <summary>
-    /// docDaSt
-    /// </summary>
-    Text,
+        /// <summary>
+        /// docDaSt
+        /// </summary>
+        Text,
 
-    /// <summary>
-    /// docDaSt
-    /// </summary>
-    X12,
+        /// <summary>
+        /// docDaSt
+        /// </summary>
+        X12,
 
-    /// <summary>
-    /// docDaSt
-    /// </summary>
+        /// <summary>
+        /// docDaSt
+        /// </summary>
 
-    // ReSharper disable once InconsistentNaming
-    EDIFACT,
+        // ReSharper disable once InconsistentNaming
+        EDIFACT,
 
-    /// <summary>
-    /// docDaSt
-    /// </summary>
-    Base256
+        /// <summary>
+        /// docDaSt
+        /// </summary>
+        Base256
+    }
 }

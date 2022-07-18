@@ -38,32 +38,32 @@ using BreakDown.ManagedPdf.Core.Pdf.enums;
 using BreakDown.ManagedPdf.Core.SharpZipLib.Zip.Compression;
 using BreakDown.ManagedPdf.Core.SharpZipLib.Zip.Compression.Streams;
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Filters;
-
-/// <summary>
-/// Implements the FlateDecode filter by wrapping SharpZipLib.
-/// </summary>
-public class FlateDecode : Filter
+namespace BreakDown.ManagedPdf.Core.Pdf.Filters
 {
-    // Reference: 3.3.3  LZWDecode and FlateDecode Filters / Page 71
-
     /// <summary>
-    /// Encodes the specified data.
+    /// Implements the FlateDecode filter by wrapping SharpZipLib.
     /// </summary>
-    public override byte[] Encode(byte[] data)
+    public class FlateDecode : Filter
     {
-        return Encode(data, PdfFlateEncodeMode.Default);
-    }
+        // Reference: 3.3.3  LZWDecode and FlateDecode Filters / Page 71
 
-    /// <summary>
-    /// Encodes the specified data.
-    /// </summary>
-    public byte[] Encode(byte[] data, PdfFlateEncodeMode mode)
-    {
-        var ms = new MemoryStream();
+        /// <summary>
+        /// Encodes the specified data.
+        /// </summary>
+        public override byte[] Encode(byte[] data)
+        {
+            return Encode(data, PdfFlateEncodeMode.Default);
+        }
 
-        // DeflateStream/GZipStream does not work immediately and I have not the leisure to work it out.
-        // So I keep on using SharpZipLib even with .NET 2.0.
+        /// <summary>
+        /// Encodes the specified data.
+        /// </summary>
+        public byte[] Encode(byte[] data, PdfFlateEncodeMode mode)
+        {
+            var ms = new MemoryStream();
+
+            // DeflateStream/GZipStream does not work immediately and I have not the leisure to work it out.
+            // So I keep on using SharpZipLib even with .NET 2.0.
 #if NET_ZIP
             // See http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=97064
             // 
@@ -133,36 +133,36 @@ public class FlateDecode : Filter
             zip.Write(data, 0, data.Length);
             zip.Close();
 #else
-        var level = Deflater.DEFAULT_COMPRESSION;
-        switch (mode)
-        {
-            case PdfFlateEncodeMode.BestCompression:
-                level = Deflater.BEST_COMPRESSION;
-                break;
-            case PdfFlateEncodeMode.BestSpeed:
-                level = Deflater.BEST_SPEED;
-                break;
-        }
+            var level = Deflater.DEFAULT_COMPRESSION;
+            switch (mode)
+            {
+                case PdfFlateEncodeMode.BestCompression:
+                    level = Deflater.BEST_COMPRESSION;
+                    break;
+                case PdfFlateEncodeMode.BestSpeed:
+                    level = Deflater.BEST_SPEED;
+                    break;
+            }
 
-        var zip = new DeflaterOutputStream(ms, new Deflater(level, false));
-        zip.Write(data, 0, data.Length);
-        zip.Finish();
+            var zip = new DeflaterOutputStream(ms, new Deflater(level, false));
+            zip.Write(data, 0, data.Length);
+            zip.Finish();
 #endif
 #if !NETFX_CORE && !UWP
-        ms.Capacity = (int)ms.Length;
-        return ms.GetBuffer();
+            ms.Capacity = (int)ms.Length;
+            return ms.GetBuffer();
 #else
             return ms.ToArray();
 #endif
-    }
+        }
 
-    /// <summary>
-    /// Decodes the specified data.
-    /// </summary>
-    public override byte[] Decode(byte[] data, FilterParms parms)
-    {
-        var msInput = new MemoryStream(data);
-        var msOutput = new MemoryStream();
+        /// <summary>
+        /// Decodes the specified data.
+        /// </summary>
+        public override byte[] Decode(byte[] data, FilterParms parms)
+        {
+            var msInput = new MemoryStream(data);
+            var msOutput = new MemoryStream();
 #if NET_ZIP
             // See http://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=97064
             // It seems to work when skipping the first two bytes.
@@ -190,34 +190,35 @@ public class FlateDecode : Filter
             }
             return null;
 #else
-        var iis = new InflaterInputStream(msInput, new Inflater(false));
-        int cbRead;
-        var abResult = new byte[32768];
-        do
-        {
-            cbRead = iis.Read(abResult, 0, abResult.Length);
-            if (cbRead > 0)
+            var iis = new InflaterInputStream(msInput, new Inflater(false));
+            int cbRead;
+            var abResult = new byte[32768];
+            do
             {
-                msOutput.Write(abResult, 0, cbRead);
-            }
-        } while (cbRead > 0);
+                cbRead = iis.Read(abResult, 0, abResult.Length);
+                if (cbRead > 0)
+                {
+                    msOutput.Write(abResult, 0, cbRead);
+                }
+            } while (cbRead > 0);
 #if UWP
             iis.Dispose();
 #else
-        iis.Close();
+            iis.Close();
 #endif
-        msOutput.Flush();
-        if (msOutput.Length >= 0)
-        {
+            msOutput.Flush();
+            if (msOutput.Length >= 0)
+            {
 #if NETFX_CORE || UWP || DNC10
                 return msOutput.ToArray();
 #else
-            msOutput.Capacity = (int)msOutput.Length;
-            return msOutput.GetBuffer();
+                msOutput.Capacity = (int)msOutput.Length;
+                return msOutput.GetBuffer();
+#endif
+            }
+
+            return null;
 #endif
         }
-
-        return null;
-#endif
     }
 }

@@ -29,60 +29,61 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Charting.Charting.enums;
-
-/// <summary>
-/// Symbols of a data point in a line chart.
-/// </summary>
-public enum MarkerStyle
+namespace BreakDown.ManagedPdf.Charting.Charting.enums
 {
     /// <summary>
-    /// 
+    /// Symbols of a data point in a line chart.
     /// </summary>
-    None,
+    public enum MarkerStyle
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        None,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    Circle,
+        /// <summary>
+        /// 
+        /// </summary>
+        Circle,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    Dash,
+        /// <summary>
+        /// 
+        /// </summary>
+        Dash,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    Diamond,
+        /// <summary>
+        /// 
+        /// </summary>
+        Diamond,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    Dot,
+        /// <summary>
+        /// 
+        /// </summary>
+        Dot,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    Plus,
+        /// <summary>
+        /// 
+        /// </summary>
+        Plus,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    Square,
+        /// <summary>
+        /// 
+        /// </summary>
+        Square,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    Star,
+        /// <summary>
+        /// 
+        /// </summary>
+        Star,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    Triangle,
+        /// <summary>
+        /// 
+        /// </summary>
+        Triangle,
 
-    /// <summary>
-    /// 
-    /// </summary>
-    X
+        /// <summary>
+        /// 
+        /// </summary>
+        X
+    }
 }

@@ -36,165 +36,166 @@ using BreakDown.ManagedPdf.Core.Drawing.enums;
 using BreakDown.ManagedPdf.Core.Fonts.OpenType;
 using BreakDown.ManagedPdf.Core.Internal;
 
-namespace BreakDown.ManagedPdf.Core.Fonts;
-
-/// <summary>
-/// Global table of OpenType font descriptor objects.
-/// </summary>
-internal sealed class FontDescriptorCache
+namespace BreakDown.ManagedPdf.Core.Fonts
 {
-    FontDescriptorCache()
-    {
-        _cache = new Dictionary<string, FontDescriptor>();
-    }
-
-    ///// <summary>
-    ///// Gets the FontDescriptor identified by the specified FontSelector. If no such object 
-    ///// exists, a new FontDescriptor is created and added to the stock.
-    ///// </summary>
-    //public static FontDescriptor GetOrCreateDescriptor_DEL-ETE(string familyName, XFontStyle stlye, OpenTypeFontface fontface)
-    //{
-    //    //FontSelector1 selector = new FontSelector1(familyName, stlye);
-    //    string fontDescriptorKey = null; // FontDescriptor.ComputeKey(familyName, stlye);
-    //    try
-    //    {
-    //        Lock.EnterFontFactory();
-    //        FontDescriptor descriptor;
-    //        if (!Singleton._cache.TryGetValue(fontDescriptorKey, out descriptor))
-    //        {
-    //            descriptor = new OpenTypeDescriptor(fontDescriptorKey, familyName, stlye, fontface, null);
-    //            Singleton._cache.Add(fontDescriptorKey, descriptor);
-    //        }
-    //        return descriptor;
-    //    }
-    //    finally { Lock.ExitFontFactory(); }
-    //}
-
     /// <summary>
-    /// Gets the FontDescriptor identified by the specified XFont. If no such object 
-    /// exists, a new FontDescriptor is created and added to the cache.
+    /// Global table of OpenType font descriptor objects.
     /// </summary>
-    public static FontDescriptor GetOrCreateDescriptorFor(XFont font)
+    internal sealed class FontDescriptorCache
     {
-        if (font == null)
+        FontDescriptorCache()
         {
-            throw new ArgumentNullException("font");
+            _cache = new Dictionary<string, FontDescriptor>();
         }
 
-        //FontSelector1 selector = new FontSelector1(font);
-        var fontDescriptorKey = FontDescriptor.ComputeKey(font);
-        try
+        ///// <summary>
+        ///// Gets the FontDescriptor identified by the specified FontSelector. If no such object 
+        ///// exists, a new FontDescriptor is created and added to the stock.
+        ///// </summary>
+        //public static FontDescriptor GetOrCreateDescriptor_DEL-ETE(string familyName, XFontStyle stlye, OpenTypeFontface fontface)
+        //{
+        //    //FontSelector1 selector = new FontSelector1(familyName, stlye);
+        //    string fontDescriptorKey = null; // FontDescriptor.ComputeKey(familyName, stlye);
+        //    try
+        //    {
+        //        Lock.EnterFontFactory();
+        //        FontDescriptor descriptor;
+        //        if (!Singleton._cache.TryGetValue(fontDescriptorKey, out descriptor))
+        //        {
+        //            descriptor = new OpenTypeDescriptor(fontDescriptorKey, familyName, stlye, fontface, null);
+        //            Singleton._cache.Add(fontDescriptorKey, descriptor);
+        //        }
+        //        return descriptor;
+        //    }
+        //    finally { Lock.ExitFontFactory(); }
+        //}
+
+        /// <summary>
+        /// Gets the FontDescriptor identified by the specified XFont. If no such object 
+        /// exists, a new FontDescriptor is created and added to the cache.
+        /// </summary>
+        public static FontDescriptor GetOrCreateDescriptorFor(XFont font)
         {
-            Lock.EnterFontFactory();
-            if (!Singleton._cache.TryGetValue(fontDescriptorKey, out var descriptor))
+            if (font == null)
             {
-                descriptor = new OpenTypeDescriptor(fontDescriptorKey, font);
-                Singleton._cache.Add(fontDescriptorKey, descriptor);
+                throw new ArgumentNullException("font");
             }
 
-            return descriptor;
-        }
-        finally
-        {
-            Lock.ExitFontFactory();
-        }
-    }
-
-    /// <summary>
-    /// Gets the FontDescriptor identified by the specified FontSelector. If no such object 
-    /// exists, a new FontDescriptor is created and added to the stock.
-    /// </summary>
-    public static FontDescriptor GetOrCreateDescriptor(string fontFamilyName, XFontStyle style)
-    {
-        if (string.IsNullOrEmpty(fontFamilyName))
-        {
-            throw new ArgumentNullException("fontFamilyName");
-        }
-
-        //FontSelector1 selector = new FontSelector1(fontFamilyName, style);
-        var fontDescriptorKey = FontDescriptor.ComputeKey(fontFamilyName, style);
-        try
-        {
-            Lock.EnterFontFactory();
-            if (!Singleton._cache.TryGetValue(fontDescriptorKey, out var descriptor))
+            //FontSelector1 selector = new FontSelector1(font);
+            var fontDescriptorKey = FontDescriptor.ComputeKey(font);
+            try
             {
-                var font = new XFont(fontFamilyName, 10, style);
-                descriptor = GetOrCreateDescriptorFor(font);
-                if (Singleton._cache.ContainsKey(fontDescriptorKey))
+                Lock.EnterFontFactory();
+                if (!Singleton._cache.TryGetValue(fontDescriptorKey, out var descriptor))
                 {
-                    Singleton.GetType();
-                }
-                else
-                {
+                    descriptor = new OpenTypeDescriptor(fontDescriptorKey, font);
                     Singleton._cache.Add(fontDescriptorKey, descriptor);
                 }
+
+                return descriptor;
+            }
+            finally
+            {
+                Lock.ExitFontFactory();
+            }
+        }
+
+        /// <summary>
+        /// Gets the FontDescriptor identified by the specified FontSelector. If no such object 
+        /// exists, a new FontDescriptor is created and added to the stock.
+        /// </summary>
+        public static FontDescriptor GetOrCreateDescriptor(string fontFamilyName, XFontStyle style)
+        {
+            if (string.IsNullOrEmpty(fontFamilyName))
+            {
+                throw new ArgumentNullException("fontFamilyName");
             }
 
-            return descriptor;
-        }
-        finally
-        {
-            Lock.ExitFontFactory();
-        }
-    }
-
-    public static FontDescriptor GetOrCreateDescriptor(string idName, byte[] fontData)
-    {
-        //FontSelector1 selector = new FontSelector1(idName);
-        var fontDescriptorKey = FontDescriptor.ComputeKey(idName);
-        try
-        {
-            Lock.EnterFontFactory();
-            if (!Singleton._cache.TryGetValue(fontDescriptorKey, out var descriptor))
+            //FontSelector1 selector = new FontSelector1(fontFamilyName, style);
+            var fontDescriptorKey = FontDescriptor.ComputeKey(fontFamilyName, style);
+            try
             {
-                descriptor = GetOrCreateOpenTypeDescriptor(fontDescriptorKey, idName, fontData);
-                Singleton._cache.Add(fontDescriptorKey, descriptor);
-            }
-
-            return descriptor;
-        }
-        finally
-        {
-            Lock.ExitFontFactory();
-        }
-    }
-
-    static OpenTypeDescriptor GetOrCreateOpenTypeDescriptor(string fontDescriptorKey, string idName, byte[] fontData)
-    {
-        return new OpenTypeDescriptor(fontDescriptorKey, idName, fontData);
-    }
-
-    /// <summary>
-    /// Gets the singleton.
-    /// </summary>
-    static FontDescriptorCache Singleton
-    {
-        get
-        {
-            if (_singleton == null)
-            {
-                try
+                Lock.EnterFontFactory();
+                if (!Singleton._cache.TryGetValue(fontDescriptorKey, out var descriptor))
                 {
-                    Lock.EnterFontFactory();
-                    if (_singleton == null)
+                    var font = new XFont(fontFamilyName, 10, style);
+                    descriptor = GetOrCreateDescriptorFor(font);
+                    if (Singleton._cache.ContainsKey(fontDescriptorKey))
                     {
-                        _singleton = new FontDescriptorCache();
+                        Singleton.GetType();
+                    }
+                    else
+                    {
+                        Singleton._cache.Add(fontDescriptorKey, descriptor);
                     }
                 }
-                finally
-                {
-                    Lock.ExitFontFactory();
-                }
+
+                return descriptor;
             }
-
-            return _singleton;
+            finally
+            {
+                Lock.ExitFontFactory();
+            }
         }
+
+        public static FontDescriptor GetOrCreateDescriptor(string idName, byte[] fontData)
+        {
+            //FontSelector1 selector = new FontSelector1(idName);
+            var fontDescriptorKey = FontDescriptor.ComputeKey(idName);
+            try
+            {
+                Lock.EnterFontFactory();
+                if (!Singleton._cache.TryGetValue(fontDescriptorKey, out var descriptor))
+                {
+                    descriptor = GetOrCreateOpenTypeDescriptor(fontDescriptorKey, idName, fontData);
+                    Singleton._cache.Add(fontDescriptorKey, descriptor);
+                }
+
+                return descriptor;
+            }
+            finally
+            {
+                Lock.ExitFontFactory();
+            }
+        }
+
+        static OpenTypeDescriptor GetOrCreateOpenTypeDescriptor(string fontDescriptorKey, string idName, byte[] fontData)
+        {
+            return new OpenTypeDescriptor(fontDescriptorKey, idName, fontData);
+        }
+
+        /// <summary>
+        /// Gets the singleton.
+        /// </summary>
+        static FontDescriptorCache Singleton
+        {
+            get
+            {
+                if (_singleton == null)
+                {
+                    try
+                    {
+                        Lock.EnterFontFactory();
+                        if (_singleton == null)
+                        {
+                            _singleton = new FontDescriptorCache();
+                        }
+                    }
+                    finally
+                    {
+                        Lock.ExitFontFactory();
+                    }
+                }
+
+                return _singleton;
+            }
+        }
+
+        static volatile FontDescriptorCache _singleton;
+
+        /// <summary>
+        /// Maps font font descriptor key to font descriptor.
+        /// </summary>
+        readonly Dictionary<string, FontDescriptor> _cache;
     }
-
-    static volatile FontDescriptorCache _singleton;
-
-    /// <summary>
-    /// Maps font font descriptor key to font descriptor.
-    /// </summary>
-    readonly Dictionary<string, FontDescriptor> _cache;
 }

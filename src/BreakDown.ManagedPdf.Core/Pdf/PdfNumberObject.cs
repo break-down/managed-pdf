@@ -29,26 +29,27 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Pdf;
-
-/// <summary>
-/// Base class for indirect number values (not yet used, maybe superfluous).
-/// </summary>
-public abstract class PdfNumberObject : PdfObject
+namespace BreakDown.ManagedPdf.Core.Pdf
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="PdfNumberObject"/> class.
+    /// Base class for indirect number values (not yet used, maybe superfluous).
     /// </summary>
-    protected PdfNumberObject()
+    public abstract class PdfNumberObject : PdfObject
     {
-    }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PdfNumberObject"/> class.
+        /// </summary>
+        protected PdfNumberObject()
+        {
+        }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PdfNumberObject"/> class.
-    /// </summary>
-    /// <param name="document">The document.</param>
-    protected PdfNumberObject(PdfDocument document)
-        : base(document)
-    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PdfNumberObject"/> class.
+        /// </summary>
+        /// <param name="document">The document.</param>
+        protected PdfNumberObject(PdfDocument document)
+            : base(document)
+        {
+        }
     }
 }

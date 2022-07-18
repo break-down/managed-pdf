@@ -29,8 +29,9 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Drawing.Internal;
-
-internal abstract class ImageImporterRoot
+namespace BreakDown.ManagedPdf.Core.Drawing.Internal
 {
+    internal abstract class ImageImporterRoot
+    {
+    }
 }

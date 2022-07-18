@@ -15,78 +15,79 @@ using BreakDown.ManagedPdf.Core.Drawing;
 using BreakDown.ManagedPdf.Html.Adapters;
 using BreakDown.ManagedPdf.Html.Adapters.Entities;
 
-namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters;
-
-/// <summary>
-/// Adapter for WinForms graphics path object for core.
-/// </summary>
-internal sealed class GraphicsPathAdapter : RGraphicsPath
+namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
 {
     /// <summary>
-    /// The actual BreakDown.ManagedPdf.Core graphics path instance.
+    /// Adapter for WinForms graphics path object for core.
     /// </summary>
-    private readonly XGraphicsPath _graphicsPath = new XGraphicsPath();
-
-    /// <summary>
-    /// the last point added to the path to begin next segment from
-    /// </summary>
-    private RPoint _lastPoint;
-
-    /// <summary>
-    /// The actual BreakDown.ManagedPdf.Core graphics path instance.
-    /// </summary>
-    public XGraphicsPath GraphicsPath
+    internal sealed class GraphicsPathAdapter : RGraphicsPath
     {
-        get { return _graphicsPath; }
-    }
+        /// <summary>
+        /// The actual BreakDown.ManagedPdf.Core graphics path instance.
+        /// </summary>
+        private readonly XGraphicsPath _graphicsPath = new XGraphicsPath();
 
-    public override void Start(double x, double y)
-    {
-        _lastPoint = new RPoint(x, y);
-    }
+        /// <summary>
+        /// the last point added to the path to begin next segment from
+        /// </summary>
+        private RPoint _lastPoint;
 
-    public override void LineTo(double x, double y)
-    {
-        _graphicsPath.AddLine((float)_lastPoint.X, (float)_lastPoint.Y, (float)x, (float)y);
-        _lastPoint = new RPoint(x, y);
-    }
-
-    public override void ArcTo(double x, double y, double size, Corner corner)
-    {
-        var left = (float)(Math.Min(x, _lastPoint.X) - (corner == Corner.TopRight || corner == Corner.BottomRight ? size : 0));
-        var top = (float)(Math.Min(y, _lastPoint.Y) - (corner == Corner.BottomLeft || corner == Corner.BottomRight ? size : 0));
-        _graphicsPath.AddArc(left, top, (float)size * 2, (float)size * 2, GetStartAngle(corner), 90);
-        _lastPoint = new RPoint(x, y);
-    }
-
-    public override void Dispose()
-    {
-    }
-
-    /// <summary>
-    /// Get arc start angle for the given corner.
-    /// </summary>
-    private static int GetStartAngle(Corner corner)
-    {
-        int startAngle;
-        switch (corner)
+        /// <summary>
+        /// The actual BreakDown.ManagedPdf.Core graphics path instance.
+        /// </summary>
+        public XGraphicsPath GraphicsPath
         {
-            case Corner.TopLeft:
-                startAngle = 180;
-                break;
-            case Corner.TopRight:
-                startAngle = 270;
-                break;
-            case Corner.BottomLeft:
-                startAngle = 90;
-                break;
-            case Corner.BottomRight:
-                startAngle = 0;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException("corner");
+            get { return _graphicsPath; }
         }
 
-        return startAngle;
+        public override void Start(double x, double y)
+        {
+            _lastPoint = new RPoint(x, y);
+        }
+
+        public override void LineTo(double x, double y)
+        {
+            _graphicsPath.AddLine((float)_lastPoint.X, (float)_lastPoint.Y, (float)x, (float)y);
+            _lastPoint = new RPoint(x, y);
+        }
+
+        public override void ArcTo(double x, double y, double size, Corner corner)
+        {
+            var left = (float)(Math.Min(x, _lastPoint.X) - (corner == Corner.TopRight || corner == Corner.BottomRight ? size : 0));
+            var top = (float)(Math.Min(y, _lastPoint.Y) - (corner == Corner.BottomLeft || corner == Corner.BottomRight ? size : 0));
+            _graphicsPath.AddArc(left, top, (float)size * 2, (float)size * 2, GetStartAngle(corner), 90);
+            _lastPoint = new RPoint(x, y);
+        }
+
+        public override void Dispose()
+        {
+        }
+
+        /// <summary>
+        /// Get arc start angle for the given corner.
+        /// </summary>
+        private static int GetStartAngle(Corner corner)
+        {
+            int startAngle;
+            switch (corner)
+            {
+                case Corner.TopLeft:
+                    startAngle = 180;
+                    break;
+                case Corner.TopRight:
+                    startAngle = 270;
+                    break;
+                case Corner.BottomLeft:
+                    startAngle = 90;
+                    break;
+                case Corner.BottomRight:
+                    startAngle = 0;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("corner");
+            }
+
+            return startAngle;
+        }
     }
 }

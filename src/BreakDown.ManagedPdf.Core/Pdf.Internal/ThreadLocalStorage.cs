@@ -36,101 +36,102 @@ using System.IO;
 using BreakDown.ManagedPdf.Core.Pdf.IO;
 using BreakDown.ManagedPdf.Core.Pdf.IO.enums;
 
-namespace BreakDown.ManagedPdf.Core.Pdf.Internal;
-
-/// <summary>
-/// Provides a thread-local cache for large objects.
-/// </summary>
-internal class ThreadLocalStorage // #???
+namespace BreakDown.ManagedPdf.Core.Pdf.Internal
 {
-    public ThreadLocalStorage()
+    /// <summary>
+    /// Provides a thread-local cache for large objects.
+    /// </summary>
+    internal class ThreadLocalStorage // #???
     {
-        _importedDocuments = new Dictionary<string, PdfDocument.DocumentHandle>(StringComparer.OrdinalIgnoreCase);
-    }
-
-    public void AddDocument(string path, PdfDocument document)
-    {
-        _importedDocuments.Add(path, document.Handle);
-    }
-
-    public void RemoveDocument(string path)
-    {
-        _importedDocuments.Remove(path);
-    }
-
-    public PdfDocument GetDocument(string path)
-    {
-        Debug.Assert(path.StartsWith("*") || Path.IsPathRooted(path), "Path must be full qualified.");
-
-        PdfDocument document = null;
-        if (_importedDocuments.TryGetValue(path, out var handle))
+        public ThreadLocalStorage()
         {
-            document = handle.Target;
-            if (document == null)
-            {
-                RemoveDocument(path);
-            }
+            _importedDocuments = new Dictionary<string, PdfDocument.DocumentHandle>(StringComparer.OrdinalIgnoreCase);
         }
 
-        if (document == null)
+        public void AddDocument(string path, PdfDocument document)
         {
-            document = PdfReader.Open(path, PdfDocumentOpenMode.Import);
             _importedDocuments.Add(path, document.Handle);
         }
 
-        return document;
-    }
-
-    public PdfDocument[] Documents
-    {
-        get
+        public void RemoveDocument(string path)
         {
-            var list = new List<PdfDocument>();
-            foreach (var handle in _importedDocuments.Values)
+            _importedDocuments.Remove(path);
+        }
+
+        public PdfDocument GetDocument(string path)
+        {
+            Debug.Assert(path.StartsWith("*") || Path.IsPathRooted(path), "Path must be full qualified.");
+
+            PdfDocument document = null;
+            if (_importedDocuments.TryGetValue(path, out var handle))
             {
-                if (handle.IsAlive)
+                document = handle.Target;
+                if (document == null)
                 {
-                    list.Add(handle.Target);
+                    RemoveDocument(path);
                 }
             }
 
-            return list.ToArray();
-        }
-    }
-
-    public void DetachDocument(PdfDocument.DocumentHandle handle)
-    {
-        if (handle.IsAlive)
-        {
-            foreach (var path in _importedDocuments.Keys)
+            if (document == null)
             {
-                if (_importedDocuments[path] == handle)
+                document = PdfReader.Open(path, PdfDocumentOpenMode.Import);
+                _importedDocuments.Add(path, document.Handle);
+            }
+
+            return document;
+        }
+
+        public PdfDocument[] Documents
+        {
+            get
+            {
+                var list = new List<PdfDocument>();
+                foreach (var handle in _importedDocuments.Values)
                 {
-                    _importedDocuments.Remove(path);
-                    break;
+                    if (handle.IsAlive)
+                    {
+                        list.Add(handle.Target);
+                    }
+                }
+
+                return list.ToArray();
+            }
+        }
+
+        public void DetachDocument(PdfDocument.DocumentHandle handle)
+        {
+            if (handle.IsAlive)
+            {
+                foreach (var path in _importedDocuments.Keys)
+                {
+                    if (_importedDocuments[path] == handle)
+                    {
+                        _importedDocuments.Remove(path);
+                        break;
+                    }
+                }
+            }
+
+            // Clean table
+            var itemRemoved = true;
+            while (itemRemoved)
+            {
+                itemRemoved = false;
+                foreach (var path in _importedDocuments.Keys)
+                {
+                    if (!_importedDocuments[path].IsAlive)
+                    {
+                        _importedDocuments.Remove(path);
+                        itemRemoved = true;
+                        break;
+                    }
                 }
             }
         }
 
-        // Clean table
-        var itemRemoved = true;
-        while (itemRemoved)
-        {
-            itemRemoved = false;
-            foreach (var path in _importedDocuments.Keys)
-            {
-                if (!_importedDocuments[path].IsAlive)
-                {
-                    _importedDocuments.Remove(path);
-                    itemRemoved = true;
-                    break;
-                }
-            }
-        }
+        /// <summary>
+        /// Maps path to document handle.
+        /// </summary>
+        readonly Dictionary<string, PdfDocument.DocumentHandle> _importedDocuments;
     }
-
-    /// <summary>
-    /// Maps path to document handle.
-    /// </summary>
-    readonly Dictionary<string, PdfDocument.DocumentHandle> _importedDocuments;
 }

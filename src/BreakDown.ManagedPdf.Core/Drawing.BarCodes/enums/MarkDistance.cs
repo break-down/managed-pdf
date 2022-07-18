@@ -29,7 +29,9 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Drawing.BarCodes.enums;
+namespace BreakDown.ManagedPdf.Core.Drawing.BarCodes.enums
+{
+}
 
 ///// <summary>
 ///// Valid mark distances for OMR Codes.

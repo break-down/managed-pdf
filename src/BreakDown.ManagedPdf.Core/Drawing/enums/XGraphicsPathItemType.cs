@@ -29,21 +29,22 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Drawing.enums;
-
-/// <summary>
-/// Type of the path data.
-/// </summary>
-internal enum XGraphicsPathItemType
+namespace BreakDown.ManagedPdf.Core.Drawing.enums
 {
-    Lines,
-    Beziers,
-    Curve,
-    Arc,
-    Rectangle,
-    RoundedRectangle,
-    Ellipse,
-    Polygon,
-    CloseFigure,
-    StartFigure,
+    /// <summary>
+    /// Type of the path data.
+    /// </summary>
+    internal enum XGraphicsPathItemType
+    {
+        Lines,
+        Beziers,
+        Curve,
+        Arc,
+        Rectangle,
+        RoundedRectangle,
+        Ellipse,
+        Polygon,
+        CloseFigure,
+        StartFigure,
+    }
 }

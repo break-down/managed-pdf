@@ -29,25 +29,26 @@
 
 #endregion
 
-namespace BreakDown.ManagedPdf.Core.Fonts.OpenType.enums;
-
-/// <summary>
-/// Identifies the technology of an OpenType font file.
-/// </summary>
-enum FontTechnology
+namespace BreakDown.ManagedPdf.Core.Fonts.OpenType.enums
 {
     /// <summary>
-    /// Font is Adobe Postscript font in CFF.
+    /// Identifies the technology of an OpenType font file.
     /// </summary>
-    PostscriptOutlines,
+    enum FontTechnology
+    {
+        /// <summary>
+        /// Font is Adobe Postscript font in CFF.
+        /// </summary>
+        PostscriptOutlines,
 
-    /// <summary>
-    /// Font is a TrueType font.
-    /// </summary>
-    TrueTypeOutlines,
+        /// <summary>
+        /// Font is a TrueType font.
+        /// </summary>
+        TrueTypeOutlines,
 
-    /// <summary>
-    /// Font is a TrueType font collection.
-    /// </summary>
-    TrueTypeCollection
+        /// <summary>
+        /// Font is a TrueType font collection.
+        /// </summary>
+        TrueTypeCollection
+    }
 }
