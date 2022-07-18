@@ -121,7 +121,10 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
             glyphs.Keys.CopyTo(glyphArray, 0);
             if (!glyphs.ContainsKey(0))
             {
-                glyphs.Add(0, null);
+                lock (glyphs)
+                {
+                    glyphs.Add(0, null);
+                }
             }
 
             for (var idx = 0; idx < count; idx++)
@@ -160,7 +163,10 @@ namespace BreakDown.ManagedPdf.Core.Fonts.OpenType
                 int cGlyph = _fontData.ReadUFWord();
                 if (!glyphs.ContainsKey(cGlyph))
                 {
-                    glyphs.Add(cGlyph, null);
+                    lock (glyphs)
+                    {
+                        glyphs.Add(cGlyph, null);
+                    }
                 }
 
                 if ((flags & MORE_COMPONENTS) == 0)

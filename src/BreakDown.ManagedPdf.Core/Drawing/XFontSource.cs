@@ -112,7 +112,11 @@ namespace BreakDown.ManagedPdf.Core.Drawing
                         var fontName = fontCollection.Families[0].Name;
                         if (!FontFilePaths.ContainsKey(fontName))
                         {
-                            FontFilePaths.Add(fontName, fileName);
+                            lock (FontFilePaths)
+                            {
+                                FontFilePaths.Add(fontName, fileName);
+                            }
+
                             Debug.WriteLine($"Add font {fontName}: {fileName}");
                         }
                     }
