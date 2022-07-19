@@ -1,32 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>BreakDown.ManagedPdf.HtmlRenderer</PackageId>
-        <Version>1.0.0</Version>
-        <Authors>Arthur Teplitzki, Lionel Vallet, BreakDown</Authors>
-        <Company>BreakDown</Company>
-        <PackageLicenseFile>LICENSE</PackageLicenseFile>
-        <RepositoryUrl>https://github.com/break-down/managed-pdf</RepositoryUrl>
-        <Description>
-            .NET Standard 2.1 port of HtmlRenderer
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <LangVersion>latestmajor</LangVersion>
+        <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+        <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+        <Version>$(VersionNumber)</Version>
+        <AssemblyVersion>$(VersionNumber)</AssemblyVersion>
+        <FileVersion>$(VersionNumber)</FileVersion>
+        <AssemblyTitle>Managed Pdf Core</AssemblyTitle>
+        <Version>$(VersionNumber)</Version>
+        <PackageVersion>$(VersionNumber)</PackageVersion>
 
-            PDF document generator from HTML snippet, 100% managed (C#), High performance library using ManagedPdf (Disconnected Form of PdfSharp).
+        <Product>BreakDown.ManagedPdf</Product>
+        <Authors>BreakDown</Authors>
+        <Company>BreakDown</Company>
+        <PackageProjectUrl>https://github.com/break-down/managed-pdf</PackageProjectUrl>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <Description>
+            ManagedPdf is the Open Source .NET library that easily creates and processes PDF documents on the fly from any .NET language.
+            The same drawing routines can be used to create PDF documents, draw on the screen, or send output to any printer.
+
+            PDF document generator from HTML snippet, 100% managed (C#), High performance library using ManagedPdf (Disconnected Fork of PdfSharp).
 
             Features and Benefits:
             ---
-            * 100% managed code depends only on PdfSharp library, no ActiveX, no MSHTML.
-            * Extensive HTML 4.01 and CSS level 2 specifications support.
-            * Support separating CSS from HTML by loading stylesheet code separately.
-            * Handles "real world" malformed HTML, it doesn't have to be XHTML.
-            * Supports .NET 2.0 or higher including Client Profile.
-            * Lightweight, only two DLLs (~300K).
-            * High performance and low memory footprint.
-            * Extendable and configurable.
+
+            * 100% managed code depends only on ManagedPdf library
+            * Extensive HTML 4.01 and CSS level 2 specifications support
+            * Support separating CSS from HTML by loading stylesheet code separately
+            * Handles "real world" malformed HTML, it doesn't have to be XHTML
+            * High performance and low memory footprint
+            * Extendable and configurable
+            * Runs in Highly Concurrent Environment
         </Description>
-        <LangVersion>latestmajor</LangVersion>
-        <IsPackable>false</IsPackable>
-        <PackageVersion>1.0.0</PackageVersion>
-        <Product>BreakDown.ManagedPdf.Renderer</Product>
-        <TargetFramework>netstandard2.1</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>

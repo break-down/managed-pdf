@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <DefineConstants>$(DefineConstants);CORE;CORE_WITH_GDI</DefineConstants>
+        <!--        <VersionSuffix Condition="'$(VersionSuffix)' == ''">0</VersionSuffix>-->
+
         <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
         <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
         <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -10,22 +12,27 @@
         <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
         <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
         <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-        <PackageProjectUrl>https://github.com/break-down/managed-pdf</PackageProjectUrl>
-        <VersionSuffix Condition="'$(VersionSuffix)' == ''">0</VersionSuffix>
-        <Version>1.0.0</Version>
-        <Authors>empira Software GmbH, Lionel Vallet, BreakDown</Authors>
-        <Description>
-            PDFsharp is the Open Source .NET library that easily creates and processes PDF documents on the fly from any .NET language.
-            The same drawing routines can be used to create PDF documents, draw on the screen, or send output to any printer.
-            This is the .NET Standard version of the PDFsharp PDF Core package. See Project Information for details.
-        </Description>
-        <PackageLicenseFile>LICENSE</PackageLicenseFile>
-        <LangVersion>latestmajor</LangVersion>
-        <IsPackable>false</IsPackable>
-        <PackageVersion>1.0.0</PackageVersion>
-        <Company>empira Software GmbH, Lionel Vallet, BreakDown</Company>
-        <Product>BreakDown.ManagedPdf</Product>
+
         <TargetFramework>netstandard2.1</TargetFramework>
+        <LangVersion>latestmajor</LangVersion>
+        <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+        <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+        <Version>$(VersionNumber)</Version>
+        <AssemblyVersion>$(VersionNumber)</AssemblyVersion>
+        <FileVersion>$(VersionNumber)</FileVersion>
+        <AssemblyTitle>ManagedPdf Core</AssemblyTitle>
+        <Version>$(VersionNumber)</Version>
+        <PackageVersion>$(VersionNumber)</PackageVersion>
+
+        <Product>BreakDown.ManagedPdf</Product>
+        <Authors>BreakDown</Authors>
+        <Company>BreakDown</Company>
+        <PackageProjectUrl>https://github.com/break-down/managed-pdf</PackageProjectUrl>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <Description>
+            ManagedPdf is the Open Source .NET library that easily creates and processes PDF documents on the fly from any .NET language.
+            The same drawing routines can be used to create PDF documents, draw on the screen, or send output to any printer.
+        </Description>
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="!internal\Const.cs"/>

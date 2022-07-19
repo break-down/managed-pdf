@@ -1,28 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
-        <Description>PDF document generator from HTML snippet, 100% managed (C#), High performance library using ManagedPdf (Disconnected Form of PdfSharp).</Description>
-        <Version>1.5.1.1</Version>
-        <PackageId>BreakDown.ManagedPdf.Html</PackageId>
-        <Company>BreakDown</Company>
-        <Product>BreakDown.ManagedPdf.Html</Product>
-        <Authors>Arthur Teplitzki, Lionel Vallet, BreakDown</Authors>
-        <PackageLicenseFile>LICENSE</PackageLicenseFile>
-        <PackageIcon>icon.png</PackageIcon>
-        <PackageIconUrl/>
-        <RepositoryUrl>https://github.com/break-down/managed-pdf</RepositoryUrl>
-        <Description>
-            .NET Standard 2.1 port of HtmlRenderer
-
-            Cross framework (WinForms/WPF/PDF/Metro/Mono/etc.), Multipurpose (UI Controls / Image generation / PDF generation / etc.), 100% managed (C#), High performance HTML Rendering library.
-
-            The Core assembly of HTML Renderer does not bound to any rendering framework
-            Can be used to create framework specific renderer using adapter extensibility object model.
-        </Description>
-        <IsPackable>false</IsPackable>
-        <PackageVersion>1.0.0</PackageVersion>
         <TargetFramework>netstandard2.1</TargetFramework>
         <LangVersion>latestmajor</LangVersion>
+        <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+        <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+        <Version>$(VersionNumber)</Version>
+        <AssemblyVersion>$(VersionNumber)</AssemblyVersion>
+        <FileVersion>$(VersionNumber)</FileVersion>
+        <AssemblyTitle>ManagedPdf Html</AssemblyTitle>
+        <Version>$(VersionNumber)</Version>
+        <PackageVersion>$(VersionNumber)</PackageVersion>
+
+        <Product>BreakDown.ManagedPdf</Product>
+        <Authors>BreakDown</Authors>
+        <Company>BreakDown</Company>
+        <PackageProjectUrl>https://github.com/break-down/managed-pdf</PackageProjectUrl>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <Description>
+            ManagedPdf is the Open Source .NET library that easily creates and processes PDF documents on the fly from any .NET language.
+            The same drawing routines can be used to create PDF documents, draw on the screen, or send output to any printer.
+        </Description>
     </PropertyGroup>
 
     <ItemGroup>
