@@ -1,0 +1,28 @@
+﻿name: Publish Package to NuGet.org
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v2
+
+      - name: Build
+        run: dotnet build --configuration Release /p:VersionNumber=$(Build.BuildNumber)
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build
+
+      - name: Pack
+        run: dotnet pack --configuration Release --no-build --output .
+
+      - name: Publish
+        run: dotnet nuget push "*.nupkg" --api-key ${{secrets.nugetPublishKey}} --source https://api.nuget.org/v3/index.json
