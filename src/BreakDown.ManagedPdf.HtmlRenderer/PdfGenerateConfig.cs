@@ -20,83 +20,52 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
     /// </summary>
     public sealed class PdfGenerateConfig
     {
-        #region Fields/Consts
-
-        /// <summary>
-        /// the page size to use for each page in the generated pdf
-        /// </summary>
-        private PageSize _pageSize;
-
-        /// <summary>
-        /// if the page size is undefined this allow you to set manually the page size
-        /// </summary>
-        private XSize _xsize;
-
-        /// <summary>
-        /// the orientation of each page of the generated pdf
-        /// </summary>
-        private PageOrientation _pageOrientation;
-
         /// <summary>
         /// the top margin between the page start and the text
         /// </summary>
-        private int _marginTop;
+        private int marginTop;
 
         /// <summary>
         /// the bottom margin between the page end and the text
         /// </summary>
-        private int _marginBottom;
+        private int marginBottom;
 
         /// <summary>
         /// the left margin between the page start and the text
         /// </summary>
-        private int _marginLeft;
+        private int marginLeft;
 
         /// <summary>
         /// the right margin between the page end and the text
         /// </summary>
-        private int _marginRight;
-
-        #endregion
+        private int marginRight;
 
         /// <summary>
         /// the page size to use for each page in the generated pdf
         /// </summary>
-        public PageSize PageSize
-        {
-            get { return _pageSize; }
-            set { _pageSize = value; }
-        }
+        public PageSize PageSize { get; set; }
 
         /// <summary>
         /// if the page size is undefined this allow you to set manually the page size
         /// </summary>
-        public XSize ManualPageSize
-        {
-            get { return _xsize; }
-            set { _xsize = value; }
-        }
+        public XSize ManualPageSize { get; set; }
 
         /// <summary>
         /// the orientation of each page of the generated pdf
         /// </summary>
-        public PageOrientation PageOrientation
-        {
-            get { return _pageOrientation; }
-            set { _pageOrientation = value; }
-        }
+        public PageOrientation PageOrientation { get; set; }
 
         /// <summary>
         /// the top margin between the page start and the text
         /// </summary>
         public int MarginTop
         {
-            get { return _marginTop; }
+            get => marginTop;
             set
             {
                 if (value > -1)
                 {
-                    _marginTop = value;
+                    marginTop = value;
                 }
             }
         }
@@ -106,12 +75,12 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public int MarginBottom
         {
-            get { return _marginBottom; }
+            get => marginBottom;
             set
             {
                 if (value > -1)
                 {
-                    _marginBottom = value;
+                    marginBottom = value;
                 }
             }
         }
@@ -121,12 +90,12 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public int MarginLeft
         {
-            get { return _marginLeft; }
+            get => marginLeft;
             set
             {
                 if (value > -1)
                 {
-                    _marginLeft = value;
+                    marginLeft = value;
                 }
             }
         }
@@ -136,12 +105,12 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public int MarginRight
         {
-            get { return _marginRight; }
+            get => marginRight;
             set
             {
                 if (value > -1)
                 {
-                    _marginRight = value;
+                    marginRight = value;
                 }
             }
         }
@@ -154,7 +123,7 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         {
             if (value > -1)
             {
-                _marginBottom = _marginLeft = _marginTop = _marginRight = value;
+                marginBottom = marginLeft = marginTop = marginRight = value;
             }
         }
 
@@ -168,7 +137,7 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns></returns>
-        public static XSize MilimitersToUnits(double width, double height)
+        public static XSize MillimetersToUnits(double width, double height)
         {
             return new XSize(width / 25.4 * 72, height / 25.4 * 72);
         }

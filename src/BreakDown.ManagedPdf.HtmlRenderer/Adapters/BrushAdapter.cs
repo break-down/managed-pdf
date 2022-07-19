@@ -10,38 +10,21 @@
 // - Sun Tsu,
 // "The Art of War"
 
-using System;
-using BreakDown.ManagedPdf.Core.Drawing;
 using BreakDown.ManagedPdf.Html.Adapters;
 
 namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
 {
-    /// <summary>
-    /// Adapter for WinForms brushes objects for core.
-    /// </summary>
     internal sealed class BrushAdapter : RBrush
     {
-        /// <summary>
-        /// The actual BreakDown.ManagedPdf.Core brush instance.<br/>
-        /// Should be <see cref="XBrush"/> but there is some fucking issue inheriting from it =/
-        /// </summary>
-        private readonly Object _brush;
-
-        /// <summary>
-        /// Init.
-        /// </summary>
-        public BrushAdapter(Object brush)
+        public BrushAdapter(object brush)
         {
-            _brush = brush;
+            Brush = brush;
         }
 
         /// <summary>
         /// The actual WinForms brush instance.
         /// </summary>
-        public Object Brush
-        {
-            get { return _brush; }
-        }
+        public object Brush { get; }
 
         public override void Dispose()
         {

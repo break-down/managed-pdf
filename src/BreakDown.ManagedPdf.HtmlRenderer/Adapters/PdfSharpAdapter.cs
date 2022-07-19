@@ -22,23 +22,8 @@ using BreakDown.ManagedPdf.HtmlRenderer.Utilities;
 
 namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
 {
-    /// <summary>
-    /// Adapter for BreakDown.ManagedPdf.Core library platform.
-    /// </summary>
     internal sealed class PdfSharpAdapter : RAdapter
     {
-        #region Fields and Consts
-
-        /// <summary>
-        /// Singleton instance of global adapter.
-        /// </summary>
-        private static readonly PdfSharpAdapter _instance = new PdfSharpAdapter();
-
-        #endregion
-
-        /// <summary>
-        /// Init color resolve.
-        /// </summary>
         private PdfSharpAdapter()
         {
             AddFontFamilyMapping("monospace", "Courier New");
@@ -55,10 +40,7 @@ namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
         /// <summary>
         /// Singleton instance of global adapter.
         /// </summary>
-        public static PdfSharpAdapter Instance
-        {
-            get { return _instance; }
-        }
+        public static PdfSharpAdapter Instance { get; } = new();
 
         protected override RColor GetColorInt(string colorName)
         {
@@ -101,28 +83,16 @@ namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
             return new BrushAdapter(solidBrush);
         }
 
-        protected override RBrush CreateLinearGradientBrush(RRect rect, RColor color1, RColor color2, double angle)
-        {
-            XLinearGradientMode mode;
-            if (angle < 45)
-            {
-                mode = XLinearGradientMode.ForwardDiagonal;
-            }
-            else if (angle < 90)
-            {
-                mode = XLinearGradientMode.Vertical;
-            }
-            else if (angle < 135)
-            {
-                mode = XLinearGradientMode.BackwardDiagonal;
-            }
-            else
-            {
-                mode = XLinearGradientMode.Horizontal;
-            }
+        protected override RBrush CreateLinearGradientBrush(RRect rect, RColor color1, RColor color2, double angle) =>
+            new BrushAdapter(new XLinearGradientBrush(Utils.Convert(rect), Utils.Convert(color1), Utils.Convert(color2), GetLinearGradientMode(angle)));
 
-            return new BrushAdapter(new XLinearGradientBrush(Utils.Convert(rect), Utils.Convert(color1), Utils.Convert(color2), mode));
-        }
+        private static XLinearGradientMode GetLinearGradientMode(double angle) => angle switch
+        {
+            < 45 => XLinearGradientMode.ForwardDiagonal,
+            < 90 => XLinearGradientMode.Vertical,
+            < 135 => XLinearGradientMode.BackwardDiagonal,
+            _ => XLinearGradientMode.Horizontal
+        };
 
         protected override RImage ConvertImageInt(object image)
         {

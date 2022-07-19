@@ -19,58 +19,51 @@ namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
     /// </summary>
     internal sealed class XTextureBrush
     {
-        #region Fields/Consts
-
         /// <summary>
         /// The image to draw in the brush
         /// </summary>
-        private readonly XImage _image;
+        private readonly XImage image;
 
-        /// <summary>
-        /// the
-        /// </summary>
-        private readonly XRect _dstRect;
+        private readonly XRect destinationRect;
 
         /// <summary>
         /// the transform the location of the image to handle center alignment
         /// </summary>
-        private readonly XPoint _translateTransformLocation;
-
-        #endregion
+        private readonly XPoint translateTransformPoint;
 
         /// <summary>
         /// Init.
         /// </summary>
-        public XTextureBrush(XImage image, XRect dstRect, XPoint translateTransformLocation)
+        public XTextureBrush(XImage image, XRect destinationRect, XPoint translateTransformPoint)
         {
-            _image = image;
-            _dstRect = dstRect;
-            _translateTransformLocation = translateTransformLocation;
+            this.image = image;
+            this.destinationRect = destinationRect;
+            this.translateTransformPoint = translateTransformPoint;
         }
 
         /// <summary>
         /// Draw the texture image in the given graphics at the given location.
         /// </summary>
-        public void DrawRectangle(XGraphics g, double x, double y, double width, double height)
+        public void DrawRectangle(XGraphics graphics, double x, double y, double width, double height)
         {
-            var prevState = g.Save();
-            g.IntersectClip(new XRect(x, y, width, height));
+            var prevState = graphics.Save();
+            graphics.IntersectClip(new XRect(x, y, width, height));
 
-            var rx = _translateTransformLocation.X;
-            double w = _image.PixelWidth, h = _image.PixelHeight;
+            var rx = translateTransformPoint.X;
+            double w = image.PixelWidth, h = image.PixelHeight;
             while (rx < x + width)
             {
-                var ry = _translateTransformLocation.Y;
+                var ry = translateTransformPoint.Y;
                 while (ry < y + height)
                 {
-                    g.DrawImage(_image, rx, ry, w, h);
+                    graphics.DrawImage(image, rx, ry, w, h);
                     ry += h;
                 }
 
                 rx += w;
             }
 
-            g.Restore(prevState);
+            graphics.Restore(prevState);
         }
     }
 }

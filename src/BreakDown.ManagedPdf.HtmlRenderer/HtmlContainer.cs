@@ -28,23 +28,11 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
     /// <seealso cref="HtmlContainerInt"/>
     public sealed class HtmlContainer : IDisposable
     {
-        #region Fields and Consts
-
-        /// <summary>
-        /// The internal core html container
-        /// </summary>
-        private readonly HtmlContainerInt _htmlContainerInt;
-
-        #endregion
-
-        /// <summary>
-        /// Init.
-        /// </summary>
         public HtmlContainer()
         {
-            _htmlContainerInt = new HtmlContainerInt(PdfSharpAdapter.Instance);
-            _htmlContainerInt.AvoidAsyncImagesLoading = true;
-            _htmlContainerInt.AvoidImagesLateLoading = true;
+            HtmlContainerInt = new HtmlContainerInt(PdfSharpAdapter.Instance);
+            HtmlContainerInt.AvoidAsyncImagesLoading = true;
+            HtmlContainerInt.AvoidImagesLateLoading = true;
         }
 
         /// <summary>
@@ -53,8 +41,8 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public event EventHandler LoadComplete
         {
-            add { _htmlContainerInt.LoadComplete += value; }
-            remove { _htmlContainerInt.LoadComplete -= value; }
+            add => HtmlContainerInt.LoadComplete += value;
+            remove => HtmlContainerInt.LoadComplete -= value;
         }
 
         /// <summary>
@@ -65,8 +53,8 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </remarks>
         public event EventHandler<HtmlRenderErrorEventArgs> RenderError
         {
-            add { _htmlContainerInt.RenderError += value; }
-            remove { _htmlContainerInt.RenderError -= value; }
+            add => HtmlContainerInt.RenderError += value;
+            remove => HtmlContainerInt.RenderError -= value;
         }
 
         /// <summary>
@@ -76,8 +64,8 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public event EventHandler<HtmlStylesheetLoadEventArgs> StylesheetLoad
         {
-            add { _htmlContainerInt.StylesheetLoad += value; }
-            remove { _htmlContainerInt.StylesheetLoad -= value; }
+            add => HtmlContainerInt.StylesheetLoad += value;
+            remove => HtmlContainerInt.StylesheetLoad -= value;
         }
 
         /// <summary>
@@ -86,33 +74,27 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public event EventHandler<HtmlImageLoadEventArgs> ImageLoad
         {
-            add { _htmlContainerInt.ImageLoad += value; }
-            remove { _htmlContainerInt.ImageLoad -= value; }
+            add => HtmlContainerInt.ImageLoad += value;
+            remove => HtmlContainerInt.ImageLoad -= value;
         }
 
         /// <summary>
         /// The internal core html container
         /// </summary>
-        internal HtmlContainerInt HtmlContainerInt
-        {
-            get { return _htmlContainerInt; }
-        }
+        internal HtmlContainerInt HtmlContainerInt { get; }
 
         /// <summary>
         /// the parsed stylesheet data used for handling the html
         /// </summary>
-        public CssData CssData
-        {
-            get { return _htmlContainerInt.CssData; }
-        }
+        public CssData CssData => HtmlContainerInt.CssData;
 
         /// <summary>
         /// Gets or sets a value indicating if anti-aliasing should be avoided for geometry like backgrounds and borders (default - false).
         /// </summary>
         public bool AvoidGeometryAntialias
         {
-            get { return _htmlContainerInt.AvoidGeometryAntialias; }
-            set { _htmlContainerInt.AvoidGeometryAntialias = value; }
+            get => HtmlContainerInt.AvoidGeometryAntialias;
+            set => HtmlContainerInt.AvoidGeometryAntialias = value;
         }
 
         /// <summary>
@@ -125,8 +107,8 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </example>
         public XPoint ScrollOffset
         {
-            get { return Utils.Convert(_htmlContainerInt.ScrollOffset); }
-            set { _htmlContainerInt.ScrollOffset = Utils.Convert(value); }
+            get => Utils.Convert(HtmlContainerInt.ScrollOffset);
+            set => HtmlContainerInt.ScrollOffset = Utils.Convert(value);
         }
 
         /// <summary>
@@ -135,8 +117,8 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public XPoint Location
         {
-            get { return Utils.Convert(_htmlContainerInt.Location); }
-            set { _htmlContainerInt.Location = Utils.Convert(value); }
+            get => Utils.Convert(HtmlContainerInt.Location);
+            set => HtmlContainerInt.Location = Utils.Convert(value);
         }
 
         /// <summary>
@@ -148,8 +130,8 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public XSize MaxSize
         {
-            get { return Utils.Convert(_htmlContainerInt.MaxSize); }
-            set { _htmlContainerInt.MaxSize = Utils.Convert(value); }
+            get => Utils.Convert(HtmlContainerInt.MaxSize);
+            set => HtmlContainerInt.MaxSize = Utils.Convert(value);
         }
 
         /// <summary>
@@ -157,14 +139,14 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public XSize ActualSize
         {
-            get { return Utils.Convert(_htmlContainerInt.ActualSize); }
-            internal set { _htmlContainerInt.ActualSize = Utils.Convert(value); }
+            get => Utils.Convert(HtmlContainerInt.ActualSize);
+            internal set => HtmlContainerInt.ActualSize = Utils.Convert(value);
         }
 
         public XSize PageSize
         {
-            get { return new XSize(_htmlContainerInt.PageSize.Width, _htmlContainerInt.PageSize.Height); }
-            set { _htmlContainerInt.PageSize = new RSize(value.Width, value.Height); }
+            get => new XSize(HtmlContainerInt.PageSize.Width, HtmlContainerInt.PageSize.Height);
+            set => HtmlContainerInt.PageSize = new RSize(value.Width, value.Height);
         }
 
         /// <summary>
@@ -172,12 +154,12 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public int MarginTop
         {
-            get { return _htmlContainerInt.MarginTop; }
+            get => HtmlContainerInt.MarginTop;
             set
             {
                 if (value > -1)
                 {
-                    _htmlContainerInt.MarginTop = value;
+                    HtmlContainerInt.MarginTop = value;
                 }
             }
         }
@@ -187,12 +169,12 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public int MarginBottom
         {
-            get { return _htmlContainerInt.MarginBottom; }
+            get => HtmlContainerInt.MarginBottom;
             set
             {
                 if (value > -1)
                 {
-                    _htmlContainerInt.MarginBottom = value;
+                    HtmlContainerInt.MarginBottom = value;
                 }
             }
         }
@@ -202,12 +184,12 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public int MarginLeft
         {
-            get { return _htmlContainerInt.MarginLeft; }
+            get => HtmlContainerInt.MarginLeft;
             set
             {
                 if (value > -1)
                 {
-                    _htmlContainerInt.MarginLeft = value;
+                    HtmlContainerInt.MarginLeft = value;
                 }
             }
         }
@@ -217,12 +199,12 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// </summary>
         public int MarginRight
         {
-            get { return _htmlContainerInt.MarginRight; }
+            get => HtmlContainerInt.MarginRight;
             set
             {
                 if (value > -1)
                 {
-                    _htmlContainerInt.MarginRight = value;
+                    HtmlContainerInt.MarginRight = value;
                 }
             }
         }
@@ -235,25 +217,19 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         {
             if (value > -1)
             {
-                _htmlContainerInt.SetMargins(value);
+                HtmlContainerInt.SetMargins(value);
             }
         }
 
         /// <summary>
         /// Get the currently selected text segment in the html.
         /// </summary>
-        public string SelectedText
-        {
-            get { return _htmlContainerInt.SelectedText; }
-        }
+        public string SelectedText => HtmlContainerInt.SelectedText;
 
         /// <summary>
         /// Copy the currently selected html segment with style.
         /// </summary>
-        public string SelectedHtml
-        {
-            get { return _htmlContainerInt.SelectedHtml; }
-        }
+        public string SelectedHtml => HtmlContainerInt.SelectedHtml;
 
         /// <summary>
         /// Init with optional document and stylesheet.
@@ -262,7 +238,7 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// <param name="baseCssData">optional: the stylesheet to init with, init default if not given</param>
         public void SetHtml(string htmlSource, CssData baseCssData = null)
         {
-            _htmlContainerInt.SetHtml(htmlSource, baseCssData);
+            HtmlContainerInt.SetHtml(htmlSource, baseCssData);
         }
 
         /// <summary>
@@ -272,7 +248,7 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// <returns>generated html</returns>
         public string GetHtml(HtmlGenerationStyle styleGen = HtmlGenerationStyle.Inline)
         {
-            return _htmlContainerInt.GetHtml(styleGen);
+            return HtmlContainerInt.GetHtml(styleGen);
         }
 
         /// <summary>
@@ -284,7 +260,7 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// <returns>found attribute value or null if not found</returns>
         public string GetAttributeAt(XPoint location, string attribute)
         {
-            return _htmlContainerInt.GetAttributeAt(Utils.Convert(location), attribute);
+            return HtmlContainerInt.GetAttributeAt(Utils.Convert(location), attribute);
         }
 
         /// <summary>
@@ -309,7 +285,7 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// <returns>css link href if exists or null</returns>
         public string GetLinkAt(XPoint location)
         {
-            return _htmlContainerInt.GetLinkAt(Utils.Convert(location));
+            return HtmlContainerInt.GetLinkAt(Utils.Convert(location));
         }
 
         /// <summary>
@@ -321,8 +297,8 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         /// <returns>the rectangle of the element or null if not found</returns>
         public XRect? GetElementRectangle(string elementId)
         {
-            var r = _htmlContainerInt.GetElementRectangle(elementId);
-            return r.HasValue ? Utils.Convert(r.Value) : (XRect?)null;
+            var r = HtmlContainerInt.GetElementRectangle(elementId);
+            return r.HasValue ? Utils.Convert(r.Value) : null;
         }
 
         /// <summary>
@@ -333,10 +309,8 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         {
             ArgChecker.AssertArgNotNull(g, "g");
 
-            using (var ig = new GraphicsAdapter(g))
-            {
-                _htmlContainerInt.PerformLayout(ig);
-            }
+            using var ig = new GraphicsAdapter(g);
+            HtmlContainerInt.PerformLayout(ig);
         }
 
         /// <summary>
@@ -347,15 +321,13 @@ namespace BreakDown.ManagedPdf.HtmlRenderer
         {
             ArgChecker.AssertArgNotNull(g, "g");
 
-            using (var ig = new GraphicsAdapter(g))
-            {
-                _htmlContainerInt.PerformPaint(ig);
-            }
+            using var ig = new GraphicsAdapter(g);
+            HtmlContainerInt.PerformPaint(ig);
         }
 
         public void Dispose()
         {
-            _htmlContainerInt.Dispose();
+            HtmlContainerInt.Dispose();
         }
     }
 }

@@ -1536,7 +1536,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Dom
             }
 
             var pen = g.GetPen(ActualColor);
-            pen.Width = 1;
+            pen.PenWidth = 1;
             pen.DashStyle = RDashStyle.Solid;
             g.DrawLine(pen, x1, y, x2, y);
         }

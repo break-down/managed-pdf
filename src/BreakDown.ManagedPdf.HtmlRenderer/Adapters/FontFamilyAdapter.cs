@@ -20,30 +20,16 @@ namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
     /// </summary>
     internal sealed class FontFamilyAdapter : RFontFamily
     {
-        /// <summary>
-        /// the underline win-forms font.
-        /// </summary>
-        private readonly XFontFamily _fontFamily;
-
-        /// <summary>
-        /// Init.
-        /// </summary>
         public FontFamilyAdapter(XFontFamily fontFamily)
         {
-            _fontFamily = fontFamily;
+            FontFamily = fontFamily;
         }
 
         /// <summary>
         /// the underline win-forms font family.
         /// </summary>
-        public XFontFamily FontFamily
-        {
-            get { return _fontFamily; }
-        }
+        public XFontFamily FontFamily { get; }
 
-        public override string Name
-        {
-            get { return _fontFamily.Name; }
-        }
+        public override string Name => FontFamily.Name;
     }
 }

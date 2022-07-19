@@ -22,7 +22,7 @@ namespace BreakDown.ManagedPdf.Html.Adapters
         /// <summary>
         /// Gets or sets the width of this Pen, in units of the Graphics object used for drawing.
         /// </summary>
-        public abstract double Width { get; set; }
+        public abstract double PenWidth { get; set; }
 
         /// <summary>
         /// Gets or sets the style used for dashed lines drawn with this Pen.

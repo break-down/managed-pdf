@@ -30,25 +30,27 @@ namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
         /// <summary>
         /// The wrapped WinForms graphics object
         /// </summary>
-        private readonly XGraphics _g;
+        private readonly XGraphics g;
 
         /// <summary>
         /// if to release the graphics object on dispose
         /// </summary>
-        private readonly bool _releaseGraphics;
+        private readonly bool releaseGraphics;
 
         /// <summary>
         /// Used to measure and draw strings
         /// </summary>
-        private static readonly XStringFormat _stringFormat;
+        private static readonly XStringFormat stringFormat;
 
         #endregion
 
         static GraphicsAdapter()
         {
-            _stringFormat = new XStringFormat();
-            _stringFormat.Alignment = XStringAlignment.Near;
-            _stringFormat.LineAlignment = XLineAlignment.Near;
+            stringFormat = new XStringFormat
+            {
+                Alignment = XStringAlignment.Near,
+                LineAlignment = XLineAlignment.Near
+            };
         }
 
         /// <summary>
@@ -61,39 +63,39 @@ namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
         {
             ArgChecker.AssertArgNotNull(g, "g");
 
-            _g = g;
-            _releaseGraphics = releaseGraphics;
+            this.g = g;
+            this.releaseGraphics = releaseGraphics;
         }
 
         public override void PopClip()
         {
             _clipStack.Pop();
-            _g.Restore();
+            g.Restore();
         }
 
         public override void PushClip(RRect rect)
         {
             _clipStack.Push(rect);
-            _g.Save();
-            _g.IntersectClip(Utils.Convert(rect));
+            g.Save();
+            g.IntersectClip(Utils.Convert(rect));
         }
 
         public override void PushClipExclude(RRect rect)
         {
         }
 
-        public override Object SetAntiAliasSmoothingMode()
+        public override object SetAntiAliasSmoothingMode()
         {
-            var prevMode = _g.SmoothingMode;
-            _g.SmoothingMode = XSmoothingMode.AntiAlias;
+            var prevMode = g.SmoothingMode;
+            g.SmoothingMode = XSmoothingMode.AntiAlias;
             return prevMode;
         }
 
-        public override void ReturnPreviousSmoothingMode(Object prevMode)
+        public override void ReturnPreviousSmoothingMode(object prevMode)
         {
             if (prevMode != null)
             {
-                _g.SmoothingMode = (XSmoothingMode)prevMode;
+                g.SmoothingMode = (XSmoothingMode)prevMode;
             }
         }
 
@@ -101,14 +103,16 @@ namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
         {
             var fontAdapter = (FontAdapter)font;
             var realFont = fontAdapter.Font;
-            var size = _g.MeasureString(str, realFont, _stringFormat);
+            var size = g.MeasureString(str, realFont, stringFormat);
 
-            if (font.Height < 0)
+            if (!(font.Height < 0))
             {
-                var height = realFont.Height;
-                var descent = realFont.Size * realFont.FontFamily.GetCellDescent(realFont.Style) / realFont.FontFamily.GetEmHeight(realFont.Style);
-                fontAdapter.SetMetrics(height, (int)Math.Round((height - descent + 1f)));
+                return Utils.Convert(size);
             }
+
+            var height = realFont.Height;
+            var descent = realFont.Size * realFont.FontFamily.GetCellDescent(realFont.Style) / realFont.FontFamily.GetEmHeight(realFont.Style);
+            fontAdapter.SetMetrics(height, (int)Math.Round((height - descent + 1f)));
 
             return Utils.Convert(size);
         }
@@ -122,7 +126,7 @@ namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
         public override void DrawString(string str, RFont font, RColor color, RPoint point, RSize size, bool rtl)
         {
             var xBrush = ((BrushAdapter)_adapter.GetSolidBrush(color)).Brush;
-            _g.DrawString(str, ((FontAdapter)font).Font, (XBrush)xBrush, point.X, point.Y, _stringFormat);
+            g.DrawString(str, ((FontAdapter)font).Font, (XBrush)xBrush, point.X, point.Y, stringFormat);
         }
 
         public override RBrush GetTextureBrush(RImage image, RRect dstRect, RPoint translateTransformLocation)
@@ -137,9 +141,9 @@ namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
 
         public override void Dispose()
         {
-            if (_releaseGraphics)
+            if (releaseGraphics)
             {
-                _g.Dispose();
+                g.Dispose();
             }
         }
 
@@ -147,12 +151,12 @@ namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
 
         public override void DrawLine(RPen pen, double x1, double y1, double x2, double y2)
         {
-            _g.DrawLine(((PenAdapter)pen).Pen, x1, y1, x2, y2);
+            g.DrawLine(((PenAdapter)pen).Pen, x1, y1, x2, y2);
         }
 
         public override void DrawRectangle(RPen pen, double x, double y, double width, double height)
         {
-            _g.DrawRectangle(((PenAdapter)pen).Pen, x, y, width, height);
+            g.DrawRectangle(((PenAdapter)pen).Pen, x, y, width, height);
         }
 
         public override void DrawRectangle(RBrush brush, double x, double y, double width, double height)
@@ -161,45 +165,45 @@ namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
             var xTextureBrush = xBrush as XTextureBrush;
             if (xTextureBrush != null)
             {
-                xTextureBrush.DrawRectangle(_g, x, y, width, height);
+                xTextureBrush.DrawRectangle(g, x, y, width, height);
             }
             else
             {
-                _g.DrawRectangle((XBrush)xBrush, x, y, width, height);
+                g.DrawRectangle((XBrush)xBrush, x, y, width, height);
 
                 // handle bug in BreakDown.ManagedPdf.Core that keeps the brush color for next string draw
                 if (xBrush is XLinearGradientBrush)
                 {
-                    _g.DrawRectangle(XBrushes.White, 0, 0, 0.1, 0.1);
+                    g.DrawRectangle(XBrushes.White, 0, 0, 0.1, 0.1);
                 }
             }
         }
 
         public override void DrawImage(RImage image, RRect destRect, RRect srcRect)
         {
-            _g.DrawImage(((ImageAdapter)image).Image, Utils.Convert(destRect), Utils.Convert(srcRect), XGraphicsUnit.Point);
+            g.DrawImage(((ImageAdapter)image).Image, Utils.Convert(destRect), Utils.Convert(srcRect), XGraphicsUnit.Point);
         }
 
         public override void DrawImage(RImage image, RRect destRect)
         {
-            _g.DrawImage(((ImageAdapter)image).Image, Utils.Convert(destRect));
+            g.DrawImage(((ImageAdapter)image).Image, Utils.Convert(destRect));
         }
 
         public override void DrawPath(RPen pen, RGraphicsPath path)
         {
-            _g.DrawPath(((PenAdapter)pen).Pen, ((GraphicsPathAdapter)path).GraphicsPath);
+            g.DrawPath(((PenAdapter)pen).Pen, ((GraphicsPathAdapter)path).GraphicsPath);
         }
 
         public override void DrawPath(RBrush brush, RGraphicsPath path)
         {
-            _g.DrawPath((XBrush)((BrushAdapter)brush).Brush, ((GraphicsPathAdapter)path).GraphicsPath);
+            g.DrawPath((XBrush)((BrushAdapter)brush).Brush, ((GraphicsPathAdapter)path).GraphicsPath);
         }
 
         public override void DrawPolygon(RBrush brush, RPoint[] points)
         {
             if (points != null && points.Length > 0)
             {
-                _g.DrawPolygon((XBrush)((BrushAdapter)brush).Brush, Utils.Convert(points), XFillMode.Winding);
+                g.DrawPolygon((XBrush)((BrushAdapter)brush).Brush, Utils.Convert(points), XFillMode.Winding);
             }
         }
 

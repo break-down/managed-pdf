@@ -337,7 +337,7 @@ namespace BreakDown.ManagedPdf.Html.Core.Handlers
         private static RPen GetPen(RGraphics g, string style, RColor color, double width)
         {
             var p = g.GetPen(color);
-            p.Width = width;
+            p.PenWidth = width;
             switch (style)
             {
                 case "solid":

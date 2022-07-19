@@ -20,40 +20,23 @@ namespace BreakDown.ManagedPdf.HtmlRenderer.Adapters
     /// </summary>
     internal sealed class ImageAdapter : RImage
     {
-        /// <summary>
-        /// the underline win-forms image.
-        /// </summary>
-        private readonly XImage _image;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:System.Object"/> class.
-        /// </summary>
         public ImageAdapter(XImage image)
         {
-            _image = image;
+            Image = image;
         }
 
         /// <summary>
         /// the underline win-forms image.
         /// </summary>
-        public XImage Image
-        {
-            get { return _image; }
-        }
+        public XImage Image { get; }
 
-        public override double Width
-        {
-            get { return _image.PixelWidth; }
-        }
+        public override double Width => Image.PixelWidth;
 
-        public override double Height
-        {
-            get { return _image.PixelHeight; }
-        }
+        public override double Height => Image.PixelHeight;
 
         public override void Dispose()
         {
-            _image.Dispose();
+            Image.Dispose();
         }
     }
 }
