@@ -1,6 +1,9 @@
+[![Publish Package to NuGet.org](https://github.com/break-down/managed-pdf/actions/workflows/release.yml/badge.svg)](https://github.com/break-down/managed-pdf/actions/workflows/release.yml)
+
 # BreakDown.ManagedPdf
 
 Open Source .NET Library to create & process PDF from HTML on the fly with support for HTML 4.01 and CSS 2
+
 
 Features:
 ---------
