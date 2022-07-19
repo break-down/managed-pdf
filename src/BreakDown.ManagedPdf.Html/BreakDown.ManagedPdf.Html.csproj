@@ -16,6 +16,7 @@
         <Company>BreakDown</Company>
         <PackageProjectUrl>https://github.com/break-down/managed-pdf</PackageProjectUrl>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <Description>
             ManagedPdf is the Open Source .NET library that easily creates and processes PDF documents on the fly from any .NET language.
             The same drawing routines can be used to create PDF documents, draw on the screen, or send output to any printer.
@@ -26,6 +27,10 @@
         <None Remove="Core\Utils\ImageError.png"/>
         <None Remove="Core\Utils\ImageLoad.png"/>
         <None Include="..\..\LICENSE" Pack="true" PackagePath="">
+            <Pack>True</Pack>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\README.md" Pack="true" PackagePath="">
             <Pack>True</Pack>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
