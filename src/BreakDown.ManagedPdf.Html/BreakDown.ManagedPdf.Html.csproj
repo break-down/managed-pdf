@@ -25,8 +25,9 @@
     <ItemGroup>
         <None Remove="Core\Utils\ImageError.png"/>
         <None Remove="Core\Utils\ImageLoad.png"/>
-        <None Include="..\..\LICENSE">
+        <None Include="..\..\LICENSE" Pack="true" PackagePath="">
             <Pack>True</Pack>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 

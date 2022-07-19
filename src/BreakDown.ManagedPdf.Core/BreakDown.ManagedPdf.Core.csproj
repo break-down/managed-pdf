@@ -481,9 +481,9 @@
             <Generator>ResGen</Generator>
         </EmbeddedResource>
         <EmbeddedResource Include="Resources\Messages.restext"/>
-        <None Include="..\..\LICENSE">
+        <None Include="..\..\LICENSE" Pack="true" PackagePath="">
             <Pack>True</Pack>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
     <ItemGroup>

@@ -16,13 +16,13 @@ jobs:
         uses: actions/setup-dotnet@v2
 
       - name: Build
-        run: dotnet build --configuration Release /p:VersionNumber=${{ github.event.release.tag_name }}
+        run: dotnet build ./src/BreakDown.ManagedPdf.sln --configuration Release /p:VersionNumber=${{ github.event.release.tag_name }}
 
       - name: Test
-        run: dotnet test --configuration Release --no-build
+        run: dotnet test ./src/BreakDown.ManagedPdf.sln --configuration Release --no-build
 
       - name: Pack
-        run: dotnet pack --configuration Release --no-build --output .
+        run: dotnet pack ./src/BreakDown.ManagedPdf.sln --configuration Release --no-build --output ./publish/packaging
 
       - name: Publish
-        run: dotnet nuget push "*.nupkg" --api-key ${{secrets.nugetPublishKey}} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "./publish/packaging/*.nupkg" --api-key ${{secrets.nugetPublishKey}} --source https://api.nuget.org/v3/index.json
