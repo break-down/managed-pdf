@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-dotnet@v2
 
       - name: Build
-        run: dotnet build --configuration Release /p:VersionNumber=$(Build.BuildNumber)
+        run: dotnet build --configuration Release /p:VersionNumber=${{ github.event.release.tag_name }}
 
       - name: Test
         run: dotnet test --configuration Release --no-build
