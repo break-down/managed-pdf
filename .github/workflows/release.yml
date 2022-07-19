@@ -22,7 +22,7 @@ jobs:
         run: dotnet test ./src/BreakDown.ManagedPdf.sln --configuration Release --no-build
 
       - name: Pack
-        run: dotnet pack ./src/BreakDown.ManagedPdf.sln --configuration Release --no-build --output ./publish/packaging
+        run: dotnet pack ./src/BreakDown.ManagedPdf.sln --configuration Release --no-build --output ./publish/packaging /p:VersionNumber=${{ github.event.release.tag_name }}
 
       - name: Publish
         run: dotnet nuget push "**/*.nupkg" --api-key ${{secrets.nugetPublishKey}} --source https://api.nuget.org/v3/index.json
