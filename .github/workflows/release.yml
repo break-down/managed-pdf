@@ -25,4 +25,4 @@ jobs:
         run: dotnet pack ./src/BreakDown.ManagedPdf.sln --configuration Release --no-build --output ./publish/packaging
 
       - name: Publish
-        run: dotnet nuget push "./publish/packaging/*.nupkg" --api-key ${{secrets.nugetPublishKey}} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "**/*.nupkg" --api-key ${{secrets.nugetPublishKey}} --source https://api.nuget.org/v3/index.json
